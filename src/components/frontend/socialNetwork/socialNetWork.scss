@@ -1,0 +1,12 @@
+.social-network-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  a {
+    color: var(--golden2);
+    transition: 0.5s all;
+    &:hover {
+      color: var(--golden);
+    }
+  }
+}
