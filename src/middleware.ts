@@ -1,19 +1,30 @@
-import { withAuth } from 'next-auth/middleware'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
+export default withAuth(
+  function middleware(req: NextRequest & { nextauth: { token: any } }) {
+    // Acceso al token (incluyendo tu accessToken personalizado)
+    console.log("Token completo:", req.nextauth.token);
+    console.log("AccessToken:", req.nextauth.token?.accessToken);
 
-//export { default } from "next-auth/middleware"
+    // Ejemplo: Redirigir si no hay token
+    if (!req.nextauth.token) {
+      return NextResponse.redirect(new URL("/auth/login", req.url));
+    }
 
-export  default withAuth(
-    function middleware(req) {
-        console.log(req.nextauth.token)
-    },
-    {
-      callbacks: {
-        authorized: ({ token }) => token?.role === "admin",
+    // Puedes agregar más lógica de autorización aquí
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => {
+        // Verifica tanto el token como tu accessToken personalizado
+        return !!token?.accessToken;
       },
     },
-)
+  },
+);
 
-export const config = { matcher: ["/dashboard"] }
+export const config = {
+  matcher: ["/dashboard/:path*", "/api/protected/:path*"],
+};
