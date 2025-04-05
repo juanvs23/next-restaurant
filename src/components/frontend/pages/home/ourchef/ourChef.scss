@@ -1,0 +1,50 @@
+#chef{
+    display: flex;
+    align-items: center;
+    background-size: cover;
+    padding: 120px 10px;
+    position: relative;
+    z-index: 1;
+    p.subtitle {
+      font-size: 1.5rem;
+      font-family: "Cormorant Upright";
+      color: var(--white);
+    }
+    .firmImage {
+      max-width: 235px;
+    }
+    h5 {
+      font-family: "Open Sans";
+      font-weight: 400;
+      margin-bottom: 60px;
+      color: var(--white2);
+    }
+    h3 {
+      color: var(--golden);
+      letter-spacing: 2px;
+      font-size: 2.3rem;
+      margin-bottom: 10px;
+    }
+    h2.title {
+      font-size: 4rem;
+      color: var(--golden);
+      margin-bottom: 3rem;
+      letter-spacing: 4px;
+    }
+    p.text-Chef {
+      text-align: justify;
+      font-size: 1rem;
+      line-height: 2;
+      font-style: italic;
+      margin-bottom: 40px;
+      span {
+        margin-right: 10px !important;
+        width: 40px !important;
+        height: auto !important;
+      }
+  
+    }
+    @media (max-width: 991px) {
+      padding: 60px 10px;
+    }
+}

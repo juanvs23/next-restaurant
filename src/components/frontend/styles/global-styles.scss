@@ -13,7 +13,7 @@
 }
 
 .button {
-  padding: 8px 38px;
+  padding: 8px 40px;
   border-radius: 0;
   color: var(--black2);
   text-decoration: none;
@@ -23,7 +23,6 @@
   font-weight: bold;
   transition: 0.5s all;
   appearance: none;
-  display: inline-block;
   &:hover {
     background-color: transparent;
     color: var(--golden);
@@ -42,9 +41,7 @@ body {
   line-height: 1.5;
   scroll-behavior: smooth;
 }
-section {
-  min-height: 100vh;
-}
+
 h1,
 h2,
 h3,
@@ -83,9 +80,7 @@ h6 {
   width: 100%;
   position: relative;
 }
-.justify-center {
-  justify-content: center !important;
-}
+
 .row {
   display: flex;
   justify-content: space-between;

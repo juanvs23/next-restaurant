@@ -3,8 +3,8 @@ import "./logoBrand.scss";
 
 const LogoBrand = () => {
   return (
-    <div className="logo">
-      <Link href={"/"}>Gerícht</Link>
+    <div className="logo text-golden">
+      <Link className="text-golden" href={"/"}>Gerícht</Link>
     </div>
   );
 };

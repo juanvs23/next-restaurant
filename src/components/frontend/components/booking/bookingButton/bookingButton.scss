@@ -1,0 +1,27 @@
+.buuton-link {
+  padding: 5px;
+  transition: 0.5s all ease-in-out;
+  border-bottom: 2px solid transparent;
+  color: white;
+}
+
+.buuton-link:hover {
+  border-bottom: 2px solid var(--golden);
+}
+.active {
+  border-bottom: 2px solid var(--golden);
+}
+
+.button-inverse {
+  text-align: center;
+  font-weight: bold;
+  padding: 10px;
+  border: 1px solid var(--golden);
+  color: var(--golden);
+  transition: 0.3s all ease-in-out;
+}
+.button-inverse.completed,
+.button-inverse:hover {
+  background-color: var(--golden);
+  color: rgb(0 0 0 / 1);
+}

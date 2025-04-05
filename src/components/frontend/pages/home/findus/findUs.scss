@@ -1,0 +1,38 @@
+#find{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    h2 {
+      color: var(--golden);
+    }
+    padding: 40px 0;
+    p.direction {
+      margin-bottom: 40px;
+    }
+    h3.title {
+      color: var(--golden);
+    }
+    .working-hours {
+      margin-bottom: 50px;
+    }
+    .container {
+      z-index: 2;
+    }
+    .seudo-image {
+      position: absolute;
+      z-index: 1;
+      left: -10%;
+      top: 10%;
+      width: 80%;
+      @media (max-width: 991px) {
+        position: absolute;
+        z-index: 1;
+        left: auto;
+        top: 34%;
+        transform: rotate(90deg);
+  
+        right: -20%;
+      }
+    }
+}

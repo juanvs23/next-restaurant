@@ -1,0 +1,9 @@
+nav.nav-menu{
+    ul {
+        display: flex;
+        align-items: center;
+      }
+      @media (max-width: 991px) {
+        display: none;
+      }
+}

@@ -1,0 +1,31 @@
+.image-container-wrapper{
+    position: relative;
+    padding: 15px;
+    img.image-product {
+      z-index: 9999;
+      position: relative;
+  }
+    img.rectangle {
+      position: absolute;
+      max-width: 100%;
+    }
+    span {
+      z-index: 10;
+    }
+    img.rectangle-1 {
+      top: 0;
+      right: 0;
+    }
+    img.rectangle-2 {
+      bottom: 0;
+      left: 0;
+    }
+    @media (max-width: 768px) {
+      img.rectangle {
+        position: absolute;
+        max-width: 100%;
+        width: 45%;
+        height: 45%;
+      }
+    }
+}

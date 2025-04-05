@@ -1,30 +1,30 @@
 export const routes = [
   {
-    path: "#home",
+    path: "/",
     title: "Home",
   },
   {
-    path: "#aboutus",
+    path: "/about",
     title: "About us",
   },
   {
-    path: "#menu",
+    path: "/#menu",
     title: "Our Menu",
   },
   {
-    path: "#chef",
+    path: "/#chef",
     title: "Our chef",
   },
   {
-    path: "#gallery",
+    path: "/#gallery",
     title: "Our Gallery",
   },
   {
-    path: "#awards",
+    path: "/#awards",
     title: "Our awards",
   },
   {
-    path: "#find",
+    path: "/#find",
     title: "Find Us",
   },
 ];
