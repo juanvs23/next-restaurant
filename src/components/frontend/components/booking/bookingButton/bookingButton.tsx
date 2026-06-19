@@ -2,15 +2,16 @@
 import { useAppDispatch, useAppSelector } from "@/libs/store/hooks";
 import { setModal, setOpenModal } from "@/libs/store/slicers/modalSlicer";
 import BookingForm from "../bookingForm/bookingForm";
-import "./bookingButton.scss";
 
 export default function BookingButton() {
   const dispath = useAppDispatch();
   const { openModal } = useAppSelector((state) => state.modal);
-  const activeButton = openModal ? "buuton-link active" : "buuton-link";
+  const activeButton = openModal
+    ? "p-1 transition-all duration-500 border-b-2 border-golden text-white"
+    : "p-1 transition-all duration-500 border-b-2 border-transparent text-white hover:border-golden";
   return (
     <button
-      className={`bookingButton ${activeButton}`}
+      className={activeButton}
       onClick={() => {
         dispath(
           setModal({

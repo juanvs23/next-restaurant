@@ -1,6 +1,5 @@
 "use client";
 import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
-import "./socialNetWork.scss";
 
 export default function SocialNetwork() {
   const socials = [
@@ -24,7 +23,7 @@ export default function SocialNetwork() {
     },
   ];
   return (
-    <aside className="social-network-wrapper">
+    <aside className="flex justify-center gap-5">
       {socials.map((social, i) => {
         return (
           <a
@@ -33,6 +32,7 @@ export default function SocialNetwork() {
             title={social.title}
             target="_blank"
             rel="noopener noreferrer"
+            className="text-golden2 hover:text-golden transition-all duration-500"
           >
             <social.icon />
           </a>

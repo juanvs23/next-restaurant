@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Spoon from "@/public/spoon.svg";
-import "./SponImage.scss";
 
 interface PropsStyles {
   justify?: string;
@@ -8,7 +7,7 @@ interface PropsStyles {
 function SponImage({ justify }: PropsStyles) {
   const justifyStyle = justify ? `justify-${justify}` : "justify-center";
   return (
-    <div className={`SpoonWrapper ${justifyStyle}`}>
+    <div className={`flex ${justifyStyle}`}>
       <Image
         src={Spoon.src}
         height={Spoon.height}

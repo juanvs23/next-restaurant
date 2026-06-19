@@ -1,15 +1,13 @@
 import Link from "next/link";
 import { routes } from "@/routes";
 
-import "./scss/menu.scss";
-
 export default function Menu() {
   return (
-    <ul className="menu-wrapper">
+    <ul className="list-none p-0 m-0 flex items-center gap-1">
       {routes.map((link, i) => {
         return (
-          <li key={i} className={`links `}>
-            <Link href={`${link.path}`}>{link.title}</Link>
+          <li key={i} className="p-1 transition-all duration-500 border-b-2 border-transparent hover:border-golden">
+            <Link href={`${link.path}`} className="text-white no-underline">{link.title}</Link>
           </li>
         );
       })}
