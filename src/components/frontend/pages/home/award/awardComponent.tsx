@@ -10,11 +10,8 @@ import trophy3 from "@/public/awards/third-throphy.svg";
 import trophy4 from "@/public/awards/fourth-throphy.svg";
 
 import { SponImage } from "@/components/common";
-import bg from "@/public/BG.webp";
 
 const AwardWrapper = styled.section`
-  background: url(${bg.src});
-  background-size: cover;
   .row-trophy {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -77,7 +74,7 @@ const AwardWrapper = styled.section`
 `;
 export default function AwardComponent() {
   return (
-    <AwardWrapper id="awards">
+    <AwardWrapper id="awards" className="bg-overlay">
       <div className="container container-award">
         <div className="row">
           <div className="element-50">

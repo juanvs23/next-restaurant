@@ -1,4 +1,3 @@
-import BackgroundImage from "@/public/BG.webp";
 import ImageContainer from "@/components/frontend/components/imageContainer/imageContainer";
 import Image from "next/image";
 import { SponImage } from "@/components/common";
@@ -9,10 +8,7 @@ import "./ourChef.scss";
 
 export default function OurChef() {
   return (
-    <section
-      id="chef"
-      style={{ backgroundImage: `url(${BackgroundImage.src})` }}
-    >
+    <section id="chef" className="bg-overlay">
       <div className="container">
         <div className="row">
           <div className="element-50">

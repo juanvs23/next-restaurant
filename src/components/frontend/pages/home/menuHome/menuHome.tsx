@@ -21,7 +21,7 @@ import Image from "next/image";
 import { Product } from "@/types/menu";
 
 const MenuHomeWrapper = styled.section`
-  background-image: url(${BackgroundImage.src});
+  background-image: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 100%), url(${BackgroundImage.src});
   background-size: cover;
   display: flex;
   align-items: center;

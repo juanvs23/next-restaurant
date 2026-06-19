@@ -1,6 +1,4 @@
-import Image from "next/image";
 import React from "react";
-import BG from "@/public/BG.webp";
 import vitor from "@/public/find/vitor-pinto-bYSpfD0Wn04-unsplash 1.jpg";
 import ImageContainer from "@/components/frontend/components/imageContainer/imageContainer";
 import { SponImage } from "@/components/common";
@@ -9,7 +7,7 @@ import "./findUs.scss";
 
 function FindUs() {
   return (
-    <section id="find">
+    <section id="find" className="py-24">
       <div className="container">
         <div className="row">
           <div className="element-50">
@@ -39,15 +37,6 @@ function FindUs() {
             />
           </div>
         </div>
-      </div>
-      <div className="seudo-image">
-        <Image
-          src={BG}
-          className="seudo-bg"
-          alt=""
-          width={1920}
-          height={959}
-        />
       </div>
     </section>
   );

@@ -20,6 +20,7 @@ const HomeGalleryWrapper = styled.section`
     align-items: center;
     min-height: 447px;
     justify-content: center;
+    padding: 100px 0;
     .call-to-action-gallery {
       width: 30%;
       .text-content {

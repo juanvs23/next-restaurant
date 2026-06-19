@@ -185,3 +185,8 @@ h6 {
     width: 38%;
   }
 }
+
+.bg-overlay {
+  background-image: linear-gradient(90deg, #000000 0%, #0000 100%), url("/BG.webp");
+  background-size: cover;
+}
