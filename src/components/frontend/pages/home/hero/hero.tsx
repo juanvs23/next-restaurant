@@ -1,10 +1,9 @@
-import {SponImage} from "@/components/common";
+import { SponImage } from "@/components/common";
 import { Components } from "@/components/frontend";
 
-import './hero.scss'
+import "./hero.scss";
 
-
-export default function HeroHome(): JSX.Element {
+export default function HeroHome() {
   return (
     <section id="home" className="min-h-screen py-16">
       <div className="container">

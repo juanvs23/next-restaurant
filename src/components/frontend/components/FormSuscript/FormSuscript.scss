@@ -50,7 +50,7 @@
         font-family: "Cormorant Upright", serif;
         width: 100%;
         color: var(--white2);
-        &:placeholder {
+        &::placeholder {
           color: var(--white2);
         }
         &:focus {

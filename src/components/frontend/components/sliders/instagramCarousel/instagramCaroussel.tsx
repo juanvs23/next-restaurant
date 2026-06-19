@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React from "react";
 import styled from "styled-components";
 import Image from "next/image";
@@ -11,7 +11,6 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import "swiper/css/effect-fade";
-
 
 const InstagramCarousselWrapper = styled.div`
   .instagram-image {

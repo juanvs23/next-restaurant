@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useState, useEffect, createRef } from "react";
 import { VideoProps } from "@/types/React";
 import styled from "styled-components";

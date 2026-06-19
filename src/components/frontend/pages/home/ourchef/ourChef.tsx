@@ -1,16 +1,18 @@
 import BackgroundImage from "@/public/BG.svg";
 import ImageContainer from "@/components/frontend/components/imageContainer/imageContainer";
 import Image from "next/image";
-import {SponImage} from "@/components/common";
+import { SponImage } from "@/components/common";
 import Chef from "@/public/chef/pexels-ron-lach-8879653 1.jpg";
 import Quote from "@/public/quote.svg";
 import Firm from "@/public/chef/Kevin Luo.png";
-import './ourChef.scss'
-
+import "./ourChef.scss";
 
 export default function OurChef() {
   return (
-    <section id="chef" style={{backgroundImage:`url(${BackgroundImage.src})`}}>
+    <section
+      id="chef"
+      style={{ backgroundImage: `url(${BackgroundImage.src})` }}
+    >
       <div className="container">
         <div className="row">
           <div className="element-50">

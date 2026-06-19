@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { routes } from "@/routes";
 
-import './scss/menu.scss';
+import "./scss/menu.scss";
 
 export default function Menu() {
   return (

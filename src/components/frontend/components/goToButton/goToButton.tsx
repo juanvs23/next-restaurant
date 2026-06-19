@@ -33,15 +33,14 @@ const GoToButtonWrapper = styled.div`
 `;
 export default function GoToButton() {
   const [scroll, setScroll] = React.useState<number>(0);
-  React.useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   const handleScroll = () => {
     const position = window.pageYOffset;
     setScroll(position);
   };
+  React.useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <GoToButtonWrapper>

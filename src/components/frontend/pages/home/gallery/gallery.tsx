@@ -1,8 +1,8 @@
-'use client'
+"use client";
 import styled from "styled-components";
 import VideoComponent from "@/components/frontend/components/video/videoComponent";
 import bggallery from "@/public/gallery/fondo.jpg";
-import {SponImage} from "@/components/common";
+import { SponImage } from "@/components/common";
 import InstagramCaroussel from "@/components/frontend/components/sliders/instagramCarousel/instagramCaroussel";
 
 import image1 from "@/public/gallery/rammen-1.jpg";
@@ -55,7 +55,7 @@ export default function HomeGallery() {
   return (
     <HomeGalleryWrapper id="gallery">
       <VideoComponent
-        videoUrl={'/gallery/restaurant.mp4'}
+        videoUrl={"/gallery/restaurant.mp4"}
         typeVideo={"video/mp4"}
         showcontrol={false}
         mutedControl={true}

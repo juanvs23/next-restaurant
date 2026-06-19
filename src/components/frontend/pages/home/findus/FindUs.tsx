@@ -3,11 +3,9 @@ import React from "react";
 import BG from "@/public/BG.svg";
 import vitor from "@/public/find/vitor-pinto-bYSpfD0Wn04-unsplash 1.jpg";
 import ImageContainer from "@/components/frontend/components/imageContainer/imageContainer";
-import {SponImage} from "@/components/common";
+import { SponImage } from "@/components/common";
 
-import './findUs.scss'
-
-
+import "./findUs.scss";
 
 function FindUs() {
   return (

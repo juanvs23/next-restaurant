@@ -1,5 +1,5 @@
-'use client'
-import React, { useEffect, useState } from "react";
+"use client";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { getSlidesContents } from "@/app/api/slidesContents";
 import { SlideMenuSection } from "@/types/sections";
@@ -15,7 +15,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import {SponImage} from "@/components/common";
+import { SponImage } from "@/components/common";
 import Image from "next/image";
 
 import { Product } from "@/types/menu";
@@ -207,7 +207,7 @@ const SliderMenu = ({ slides }: PropsSlide) => {
                     src={SlideData.centerImage.src}
                     height={SlideData.centerImage.height}
                     width={SlideData.centerImage.width}
-                    alt={SlideData.centerImage.title||''}
+                    alt={SlideData.centerImage.title || ""}
                     priority
                   />
                 </div>
@@ -222,7 +222,7 @@ const SliderMenu = ({ slides }: PropsSlide) => {
                     src={SlideData.centerImage.src}
                     height={SlideData.centerImage.height}
                     width={SlideData.centerImage.width}
-                    alt={SlideData.centerImage.title||''}
+                    alt={SlideData.centerImage.title || ""}
                     priority
                   />
                 </div>
@@ -236,13 +236,9 @@ const SliderMenu = ({ slides }: PropsSlide) => {
 };
 
 export default function MenuHome() {
-  const [slidesContent, setslidesContent] = useState<null | SlideMenuSection[]>(
-    null,
+  const [slidesContent] = useState<null | SlideMenuSection[]>(() =>
+    getSlidesContents(),
   );
-
-  useEffect(() => {
-    setslidesContent(getSlidesContents());
-  }, []);
 
   const ShowMenu =
     slidesContent !== null ? <SliderMenu slides={slidesContent} /> : <></>;

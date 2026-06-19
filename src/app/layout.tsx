@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import './globals.css'
-import {cormorant} from '@/components/common/fonts'
+import "./globals.css";
+import { cormorant } from "@/components/common/fonts";
 import Providers from "@/libs/providers";
 
 export const metadata: Metadata = {
   title: "GERÍCHT - RESTAURANT",
   description: "the best restaurant in Berlin",
-  metadataBase: new URL('https://acme.com'),
+  metadataBase: new URL("https://acme.com"),
   openGraph: {
     title: "GERÍCHT - RESTAURANT",
     description: "the best restaurant in Berlin",
@@ -28,8 +28,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-}
-
+};
 
 export default function RootLayout({
   children,
@@ -39,9 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cormorant.className}>
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

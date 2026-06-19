@@ -3,7 +3,7 @@ import FormSuscript from "../FormSuscript/FormSuscript";
 import GoToButton from "../goToButton/goToButton";
 import LogoBrand from "@/components/common/logo/logoBrand";
 import SocialNetwork from "../socialNetwork/SocialNetwork";
-import {SponImage} from "@/components/common";
+import { SponImage } from "@/components/common";
 
 import "./footer.scss";
 
@@ -82,7 +82,6 @@ export default function Footer() {
         </div>
       </div>
       <GoToButton />
-     
     </footer>
   );
 }

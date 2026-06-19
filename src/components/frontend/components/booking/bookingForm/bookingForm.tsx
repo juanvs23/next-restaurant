@@ -1,11 +1,36 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAppSelector } from "@/libs/store/hooks";
+import type { BookingFormData } from "@/types/booking";
 import PersonalInfo from "./steps/PersonalInfo/PersonalInfo";
 import BookingInfo from "./steps/BookingInfo/BookingInfo";
 import DatingInfo from "./steps/datingInfo/DatingInfo";
 import Confirmation from "./steps/confirmations/confimation";
 import ResponseInfo from "./steps/responseInfo/responseInfo";
+
+function StepButton({
+  step,
+  useBooking,
+  setActiveIndex,
+}: {
+  step: { stepIndex: number; title: string };
+  useBooking: BookingFormData;
+  setActiveIndex: (index: number) => void;
+}) {
+  const completed = useBooking.form
+    ? Object.entries(useBooking.form)[step.stepIndex][1].completed
+    : false;
+
+  return (
+    <button
+      className={`w-full button-inverse${completed ? " completed" : ""}`}
+      type="button"
+      onClick={() => setActiveIndex(step.stepIndex)}
+    >
+      {step.title}
+    </button>
+  );
+}
 
 export default function BookingForm() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -51,30 +76,20 @@ export default function BookingForm() {
         <div className="mt-4 flex flex-col justify-center items-center gap-2">
           <div className="w-full flex gap-3 form-group flex-col md:flex-row ">
             {steps.map((step) => {
-              if (step.stepIndex < Object.keys(useBooking.form!).length) {
-                const [completed, setCompleted] = useState(false);
-
-                useEffect(() => {
-                  setCompleted(
-                    Object.entries(useBooking.form!)[step.stepIndex][1]
-                      .completed,
-                  );
-                  //  console.log(Object.entries(useBooking.form!)[step.stepIndex]);
-                }, [
-                  Object.entries(useBooking.form!)[step.stepIndex][1].completed,
-                ]);
+              if (step.stepIndex < Object.keys(useBooking.form ?? {}).length) {
                 return (
-                  <button
+                  <StepButton
                     key={step.stepIndex}
-                    className={`w-full button-inverse${completed ? " completed" : ""}`}
-                    type="button"
-                    onClick={() => setActiveIndex(step.stepIndex)}
-                  >
-                    {step.title}
-                  </button>
+                    step={step}
+                    useBooking={useBooking}
+                    setActiveIndex={setActiveIndex}
+                  />
                 );
               }
-              if (step.stepIndex < Object.keys(useBooking.form!).length + 1) {
+              if (
+                step.stepIndex <
+                Object.keys(useBooking.form ?? {}).length + 1
+              ) {
                 return (
                   <button
                     key={step.stepIndex}

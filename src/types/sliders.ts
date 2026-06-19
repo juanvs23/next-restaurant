@@ -1,5 +1,5 @@
 import { ImageData } from "./React";
 
-export interface ImagesProps{
-    images:ImageData []
+export interface ImagesProps {
+  images: ImageData[];
 }

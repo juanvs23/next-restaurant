@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import Image from "next/image";
 import styled from "styled-components";
 import logoTop from "@/public/awards/logo-87.svg";
@@ -9,7 +9,7 @@ import trophy2 from "@/public/awards/second-throphy.svg";
 import trophy3 from "@/public/awards/third-throphy.svg";
 import trophy4 from "@/public/awards/fourth-throphy.svg";
 
-import {SponImage} from "@/components/common";
+import { SponImage } from "@/components/common";
 import bg from "@/public/BG.svg";
 
 const AwardWrapper = styled.section`
@@ -89,7 +89,12 @@ export default function AwardComponent() {
               <div className="row-trophy">
                 <div className="trophy">
                   <div className="image">
-                    <Image src={trophy1.src} height={100} width={100}  alt="logo" />
+                    <Image
+                      src={trophy1.src}
+                      height={100}
+                      width={100}
+                      alt="logo"
+                    />
                   </div>
                   <div className="text">
                     <h5>Bib Gourmond</h5>
@@ -98,7 +103,12 @@ export default function AwardComponent() {
                 </div>
                 <div className="trophy">
                   <div className="image">
-                    <Image src={trophy2.src} height={100} width={100} alt="logo" />
+                    <Image
+                      src={trophy2.src}
+                      height={100}
+                      width={100}
+                      alt="logo"
+                    />
                   </div>
                   <div className="text">
                     <h5>Bib Gourmond</h5>
@@ -107,7 +117,12 @@ export default function AwardComponent() {
                 </div>
                 <div className="trophy">
                   <div className="image">
-                    <Image src={trophy3.src} height={100} width={100} alt="logo" />
+                    <Image
+                      src={trophy3.src}
+                      height={100}
+                      width={100}
+                      alt="logo"
+                    />
                   </div>
                   <div className="text">
                     <h5>Bib Gourmond</h5>
@@ -116,7 +131,12 @@ export default function AwardComponent() {
                 </div>
                 <div className="trophy">
                   <div className="image">
-                    <Image src={trophy4.src} height={100} width={100}  alt="logo"/>
+                    <Image
+                      src={trophy4.src}
+                      height={100}
+                      width={100}
+                      alt="logo"
+                    />
                   </div>
                   <div className="text">
                     <h5>Bib Gourmond</h5>
@@ -137,7 +157,12 @@ export default function AwardComponent() {
                 />
               </div>
               <div className="gImage">
-                <Image src={G.src} height={G.height} width={G.width} alt="logo" />
+                <Image
+                  src={G.src}
+                  height={G.height}
+                  width={G.width}
+                  alt="logo"
+                />
               </div>
             </div>
           </div>

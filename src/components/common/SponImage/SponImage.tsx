@@ -1,13 +1,12 @@
 import Image from "next/image";
 import Spoon from "@/public/spoon.svg";
-import './SponImage.scss'
-
+import "./SponImage.scss";
 
 interface PropsStyles {
   justify?: string;
 }
 function SponImage({ justify }: PropsStyles) {
-    const justifyStyle = justify ? `justify-${justify}` : "justify-center"
+  const justifyStyle = justify ? `justify-${justify}` : "justify-center";
   return (
     <div className={`SpoonWrapper ${justifyStyle}`}>
       <Image

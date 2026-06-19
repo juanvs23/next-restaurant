@@ -1,8 +1,8 @@
 import { connectDB, closeDB } from "@/database/connection";
 import { Suscription } from "@/database/models/suscription";
 import { suscriptionSchema } from "@/schemas/suscription";
-import { NextResponse } from "next/server";
-const handler = async (req: Request, resp: NextResponse) => {
+import { NextRequest, NextResponse } from "next/server";
+const handler = async (req: NextRequest) => {
   const { email } = await req.json();
   const isEMail = suscriptionSchema.safeParse({ email });
   if (!isEMail.success)

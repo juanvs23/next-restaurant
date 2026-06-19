@@ -1,11 +1,8 @@
-
 import Image from "next/image";
 
 import { ImageProps } from "@/types/React";
 import Rectangle from "@/public/rectangle-21.svg";
 import "./imagenContainer.scss";
-
-
 
 export default function ImageContainer({
   url,
@@ -41,4 +38,3 @@ export default function ImageContainer({
     </article>
   );
 }
-

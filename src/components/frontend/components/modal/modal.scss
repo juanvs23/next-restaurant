@@ -53,13 +53,8 @@ display: none;
                 height: 5px;
 
             }
-            &::scrollbar {
-                width: 5px;
-                background-color: var(--black2);
-                border-radius: 10px;
-                height: 5px;
-
-            }
+            scrollbar-width: thin;
+            scrollbar-color: var(--golden) var(--black2);
             h2,h3,h4,h5,h6 {
                 font-size: 1.2rem;
                 line-height: 1.2;

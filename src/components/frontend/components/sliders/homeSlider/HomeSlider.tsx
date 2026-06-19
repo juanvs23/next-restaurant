@@ -1,12 +1,10 @@
-'use client'
+"use client";
 import { useState } from "react";
-import { Swiper, SwiperSlide, SwiperClass  } from "swiper/react";
-import { Pagination, EffectFade, A11y,Controller } from "swiper/modules";
-
+import { Swiper, SwiperSlide, SwiperClass } from "swiper/react";
+import { Pagination, EffectFade, A11y, Controller } from "swiper/modules";
 
 import styled from "styled-components";
 import ImageContainer from "@/components/frontend/components/imageContainer/imageContainer";
-
 
 // Import Swiper styles
 import "swiper/css";
@@ -54,48 +52,54 @@ const SliderWrappper = styled.div`
 `;
 
 export default function HomeSlider() {
-  const {controlledSwiper, setControlledSwiper, activeIndex, handleSlideChange, images} = useSliderController()
- 
+  const {
+    controlledSwiper,
+    setControlledSwiper,
+    activeIndex,
+    handleSlideChange,
+    images,
+  } = useSliderController();
 
   return (
     <>
-    <SliderWrappper>
-      <Swiper
-        modules={[Pagination, EffectFade, A11y,Controller]}
-        spaceBetween={0}
-        slidesPerView={1}
-        controller={{ control: controlledSwiper }}
-        onSwiper={(swiper) => setControlledSwiper(swiper)}
-        effect={"fade"}
-        onSlideChange={handleSlideChange}
-        centeredSlides={true}
-        autoplay={{
-          delay: 2500,
-          disableOnInteraction: false,
-        }}
+      <SliderWrappper>
+        <Swiper
+          modules={[Pagination, EffectFade, A11y, Controller]}
+          spaceBetween={0}
+          slidesPerView={1}
+          controller={{ control: controlledSwiper }}
+          onSwiper={(swiper) => setControlledSwiper(swiper)}
+          effect={"fade"}
+          onSlideChange={handleSlideChange}
+          centeredSlides={true}
+          autoplay={{
+            delay: 2500,
+            disableOnInteraction: false,
+          }}
 
-        //onSwiper={(swiper) => console.log(swiper)}
-        // onSlideChange={() => console.log('slide change')}
-      >
-        {images.map((image, i) => {
-          return (
-            <SwiperSlide key={i}>
-              <ImageContainer
-                url={image.src}
-                altTitle={`products`}
-                widthProps={image.width}
-                heightProps={image.height}
-              />
-            </SwiperSlide>
-          );
-        })}
-      </Swiper>
-    </SliderWrappper>
-    <ArrowPagination 
-      current={activeIndex} 
-      total={images.length} 
-      onClickPrev={() => controlledSwiper?.slidePrev()} 
-      onClickNext={() => controlledSwiper?.slideNext()} />
+          //onSwiper={(swiper) => console.log(swiper)}
+          // onSlideChange={() => console.log('slide change')}
+        >
+          {images.map((image, i) => {
+            return (
+              <SwiperSlide key={i}>
+                <ImageContainer
+                  url={image.src}
+                  altTitle={`products`}
+                  widthProps={image.width}
+                  heightProps={image.height}
+                />
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+      </SliderWrappper>
+      <ArrowPagination
+        current={activeIndex}
+        total={images.length}
+        onClickPrev={() => controlledSwiper?.slidePrev()}
+        onClickNext={() => controlledSwiper?.slideNext()}
+      />
     </>
   );
 }
