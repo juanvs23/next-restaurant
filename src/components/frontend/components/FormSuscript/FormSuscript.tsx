@@ -5,7 +5,7 @@ import useSuscript from "./hooks/useSuscript";
 
 export default function FormSuscript() {
   const { handlerSubmit, handlerInput, data, error, loading, emailRef } =
-    useSuscript("api/suscription");
+    useSuscript("api/subscription");
 
   const subcribeText = loading ? (
     <CgSpinner className="animate-spin " />

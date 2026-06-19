@@ -1,14 +1,14 @@
 import { SyntheticEvent, useState, useRef } from "react";
 import { createInstance } from "@/libs";
-import { suscriptionSchema } from "@/schemas/suscription";
-import { SuscriptionResponse } from "@/types/suscription";
+import { subscriptionSchema } from "@/schemas/subscription";
+import { SubscriptionResponse } from "@/types/subscription";
 import { useAppDispatch } from "@/libs/store/hooks";
 import { setModal, setOpenModal } from "@/libs/store/slicers/modalSlicer";
 
 export default function useSuscript(url: string) {
   const dispatch = useAppDispatch();
-  const [data, setData] = useState<SuscriptionResponse | null>(null);
-  const [error, setError] = useState<SuscriptionResponse | null>(null);
+  const [data, setData] = useState<SubscriptionResponse | null>(null);
+  const [error, setError] = useState<SubscriptionResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const emailRef = useRef<HTMLInputElement | null>(null);
 
@@ -23,7 +23,7 @@ export default function useSuscript(url: string) {
     setLoading(true);
     e.preventDefault();
     const email = e.currentTarget.newsLetter.value;
-    const checkEmail = suscriptionSchema.safeParse({ email });
+    const checkEmail = subscriptionSchema.safeParse({ email });
     if (!checkEmail.success) {
       setError({
         status: "error",

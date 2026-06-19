@@ -26,7 +26,7 @@ export default function MobilMenu() {
         animate={isOpen ? "open" : "closed"}
         variants={variants}
         transition={{ duration: 0.5 }}
-        className="fixed top-0 left-0 inset-0 w-full h-full flex justify-center items-center flex-col gap-2.5 bg-black2 z-[999]"
+        className="fixed top-0 left-0 inset-0 w-full h-full flex justify-center items-center flex-col gap-2.5 bg-black2 z-[999] pt-[200px] lg:pt-0"
       >
         <motion.button
           animate={{ rotate: hovered ? 40 : 0 }}
@@ -40,9 +40,7 @@ export default function MobilMenu() {
           <BsXLg color="white" size="2rem" />
         </motion.button>
         <div>
-          <ul className="flex-col w-full">
             <Menu />
-          </ul>
         </div>
       </motion.nav>
     </div>

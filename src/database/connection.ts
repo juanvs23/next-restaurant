@@ -1,27 +1,31 @@
-import mongoose, { ConnectOptions } from "mongoose";
+import mongoose from "mongoose";
+
+const MONGODB_URI = process.env.MONGO_URI || "";
+
+if (!MONGODB_URI) {
+  throw new Error("Please define the MONGO_URI environment variable");
+}
+
+let cached = (global as any).mongoose;
+
+if (!cached) {
+  cached = (global as any).mongoose = { conn: null, promise: null };
+}
 
 export const connectDB = async () => {
-  const option = {
-    dbName: process.env.DB_NAME,
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  };
-  try {
-    mongoose.set("strictQuery", false);
-    const conn = await mongoose.connect(
-      process.env.MONGO_URI || "",
-      option as ConnectOptions,
-    );
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.log(error);
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      dbName: process.env.DB_NAME,
+    });
   }
+
+  cached.conn = await cached.promise;
+  return cached.conn;
 };
 
 export const closeDB = async () => {
-  try {
-    await mongoose.connection.close();
-  } catch (error) {
-    console.log(error);
-  }
+  // No-op: connection pooling manages this automatically.
+  // Calling closeDB() per request defeats connection reuse.
 };
