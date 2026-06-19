@@ -649,3 +649,257 @@ span.hero-counter.swiper-pagination-bullet-active::after {
   width: 17px;
   background: var(--golden);
 }
+
+.menu-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 120px 30px;
+}
+
+.menu-home .container-slide {
+  margin: auto;
+  max-width: 1300px;
+}
+
+.menu-home .swiper-button-next,
+.menu-home .swiper-button-prev {
+  color: var(--golden);
+}
+
+.menu-home .swiper-button-disabled {
+  display: none;
+}
+
+.menu-home .row {
+  justify-content: center;
+}
+
+.menu-home .product {
+  margin-bottom: 40px;
+}
+
+.menu-home .product .rowProduct {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.menu-home .product .rowProduct p.size {
+  font-size: 0.7rem;
+}
+
+.menu-home .product .rowProduct .price {
+  font-family: "Cormorant Upright", serif;
+  font-size: 1.3rem;
+  color: var(--white);
+}
+
+.menu-home .product .rowProduct p.price,
+.menu-home .product .rowProduct p.size {
+  margin: 0;
+  display: flex;
+  line-height: 1;
+  align-items: center;
+}
+
+.menu-home .product .rowProduct p.price .separate,
+.menu-home .product .rowProduct p.size .separate {
+  width: 120px;
+  height: 1px;
+  border-top: 1px solid var(--white2);
+  margin-right: 10px;
+}
+
+.menu-home .product .rowProduct ul.ingredients {
+  list-style: none;
+  display: flex;
+  justify-content: flex-start;
+  padding-inline-start: 0;
+  flex-flow: wrap;
+  margin: 0;
+}
+
+.menu-home .product .rowProduct ul.ingredients li {
+  padding: 0 5px;
+  border-right: 1px solid var(--white2);
+  line-height: 1;
+  font-size: 0.7rem;
+}
+
+.menu-home .product .rowProduct ul.ingredients li:last-of-type {
+  border-right: none;
+}
+
+.menu-home .product .rowProduct h4.title {
+  color: var(--golden);
+}
+
+.menu-home h2 {
+  text-align: center;
+  color: var(--golden);
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.menu-home .swiper-slide {
+  width: 100% !important;
+}
+
+.menu-home .swiper-slide .row {
+  align-items: flex-start;
+}
+
+.menu-home .swiper-slide .container-slide h3 {
+  text-align: center;
+  color: white;
+  font-size: 2.8rem;
+}
+
+.menu-home p.subtitle {
+  text-align: center;
+  font-family: "Cormorant Upright", serif;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--white);
+}
+
+.menu-home .container-menus {
+  max-width: 90%;
+}
+
+@media (max-width: 991px) {
+  .menu-home {
+    padding: 60px 10px;
+  }
+
+  .menu-home .container-menus {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 992px) {
+  .menu-home h2 {
+    font-size: 3.5rem;
+    color: var(--golden);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+}
+
+.gallery-home {
+  background-size: cover;
+}
+
+.gallery-home .gallery-container {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  min-height: 447px;
+  justify-content: center;
+  padding: 100px 0;
+}
+
+.gallery-home .gallery-container .call-to-action-gallery {
+  width: 30%;
+}
+
+.gallery-home .gallery-container .call-to-action-gallery .text-content {
+  padding: 12%;
+}
+
+.gallery-home .gallery-container .instagram-gallery {
+  width: 70%;
+  overflow: hidden;
+  padding-top: 40px;
+  padding-bottom: 20px;
+}
+
+@media (max-width: 767px) {
+  .gallery-home .gallery-container {
+    flex-direction: column;
+  }
+
+  .gallery-home .gallery-container .call-to-action-gallery {
+    width: 100%;
+  }
+
+  .gallery-home .gallery-container .call-to-action-gallery .text-content {
+    padding: 12%;
+  }
+
+  .gallery-home .gallery-container .instagram-gallery {
+    width: 100%;
+  }
+}
+
+.award-wrapper .row-trophy {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.award-wrapper .row-trophy .trophy {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.award-wrapper .row-trophy .trophy h5 {
+  color: var(--golden);
+}
+
+.award-wrapper .row-trophy .trophy p {
+  color: var(--white2);
+  margin-bottom: 0;
+}
+
+.award-wrapper .container-award {
+  padding-top: 50px;
+  padding-bottom: 70px;
+}
+
+.award-wrapper .container-award .row-award {
+  margin-left: 20%;
+  margin-top: 16%;
+}
+
+.award-wrapper .container-award .row-award h2 {
+  color: var(--golden);
+  margin-bottom: 25px;
+}
+
+.award-wrapper .container-award .row-award .row-content {
+  height: 100%;
+  margin-top: 11%;
+  width: 100%;
+}
+
+.award-wrapper .container-award .row {
+  align-items: flex-start;
+}
+
+.award-wrapper .container-award .row .imageaWard {
+  position: relative;
+}
+
+.award-wrapper .container-award .row .imageaWard .gImage {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.award-wrapper .container-award .row .imageaWard .steak {
+  padding-left: 10%;
+  padding-top: 10%;
+}
+
+@media (max-width: 991px) {
+  .award-wrapper .container-award .row-award {
+    margin-left: 0;
+    margin-top: 16%;
+  }
+}

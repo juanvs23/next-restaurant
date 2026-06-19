@@ -1,5 +1,4 @@
 "use client";
-import styled from "styled-components";
 import VideoComponent from "@/components/frontend/components/video/videoComponent";
 import bggallery from "@/public/gallery/fondo.webp";
 import { SponImage } from "@/components/common";
@@ -11,50 +10,15 @@ import image3 from "@/public/gallery/egg-3.webp";
 import image4 from "@/public/gallery/soup-4.webp";
 import image5 from "@/public/gallery/waffle-5.webp";
 
-const HomeGalleryWrapper = styled.section`
-  background-image: url(${bggallery.src});
-  background-size: cover;
-  .gallery-container {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    min-height: 447px;
-    justify-content: center;
-    padding: 100px 0;
-    .call-to-action-gallery {
-      width: 30%;
-      .text-content {
-        padding: 12%;
-      }
-    }
-
-    .instagram-gallery {
-      width: 70%;
-      overflow: hidden;
-      padding-top: 40px;
-      padding-bottom: 20px;
-    }
-    @media (max-width: 767px) {
-      flex-direction: column;
-      .call-to-action-gallery {
-        width: 100%;
-        .text-content {
-          padding: 12%;
-        }
-      }
-
-      .instagram-gallery {
-        width: 100%;
-        overflow: hidden;
-      }
-    }
-  }
-`;
-
 export default function HomeGallery() {
   const imagesList = [image1, image2, image3, image4, image5];
   return (
-    <HomeGalleryWrapper id="gallery">
+    <section id="gallery" className="gallery-home"
+      style={{
+        backgroundImage: `url(${bggallery.src})`,
+        backgroundSize: "cover",
+      }}
+    >
       <VideoComponent
         videoUrl={"/gallery/restaurant.mp4"}
         typeVideo={"video/mp4"}
@@ -84,6 +48,6 @@ export default function HomeGallery() {
           <InstagramCaroussel images={imagesList} />
         </div>
       </div>
-    </HomeGalleryWrapper>
+    </section>
   );
 }

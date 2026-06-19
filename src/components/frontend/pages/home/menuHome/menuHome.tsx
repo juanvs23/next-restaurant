@@ -1,6 +1,5 @@
 "use client";
-import React, { useState } from "react";
-import styled from "styled-components";
+import { useState } from "react";
 import { getSlidesContents } from "@/app/api/slidesContents";
 import { SlideMenuSection } from "@/types/sections";
 import BackgroundImage from "@/public/menu/bg.jpg";
@@ -20,121 +19,6 @@ import Image from "next/image";
 
 import { Product } from "@/types/menu";
 
-const MenuHomeWrapper = styled.section`
-  background-image: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 100%), url(${BackgroundImage.src});
-  background-size: cover;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 120px 30px;
-  .container-slide {
-    margin: auto;
-    max-width: 1300px;
-  }
-  .swiper-button-next,
-  .swiper-button-prev {
-    color: var(--golden);
-    &.swiper-button-disabled {
-      display: none;
-    }
-  }
-
-  .row {
-    justify-content: center;
-  }
-  .product {
-    margin-bottom: 40px;
-    .rowProduct {
-      p.size {
-        font-size: 0.7rem;
-      }
-      .price {
-        font-family: "Cormorant Upright";
-        font-size: 1.3rem;
-        color: var(--white);
-      }
-      p.price,
-      p.size {
-        margin: 0;
-        display: flex;
-        line-height: 1;
-        align-items: center;
-        .separate {
-          width: 120px;
-          height: 1px;
-          border-top: 1px solid var(--white2);
-          margin-right: 10px;
-        }
-      }
-      ul.ingredients {
-        list-style: none;
-        display: flex;
-        justify-content: flex-start;
-        padding-inline-start: 0;
-        flex-flow: wrap;
-        margin: 0;
-        li {
-          padding: 0 5px;
-          border-right: 1px solid var(--white2);
-          line-height: 1;
-          font-size: 0.7rem;
-          &:last-of-type {
-            border-right: none;
-          }
-        }
-      }
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-content: space-between;
-      h4.title {
-        color: var(--golden);
-      }
-    }
-  }
-  h2 {
-    text-align: center;
-    color: var(--golden);
-    letter-spacing: 2px;
-    margin-bottom: 20px;
-  }
-  .swiper-slide {
-    width: 100% !important;
-    .row {
-      align-items: flex-start;
-    }
-    .container-slide h3 {
-      text-align: center;
-      color: white;
-      font-size: 2.8rem;
-    }
-  }
-  p.subtitle {
-    text-align: center;
-    font-family: "Cormorant Upright";
-    font-size: 22px;
-    line-height: 1;
-    color: var(--white);
-  }
-  .container-menus {
-    max-width: 90%;
-  }
-  @media (max-width: 991px) {
-    padding: 60px 10px;
-    .container-menus {
-      max-width: 100%;
-    }
-  }
-  @media (min-width: 992px) {
-    h2 {
-      font-size: 3.5rem;
-      color: var(--golden);
-      letter-spacing: 2px;
-      margin-bottom: 20px;
-    }
-  }
-`;
 interface PropsSlide {
   slides: SlideMenuSection[];
 }
@@ -243,10 +127,15 @@ export default function MenuHome() {
   const ShowMenu =
     slidesContent !== null ? <SliderMenu slides={slidesContent} /> : <></>;
   return (
-    <MenuHomeWrapper id="menu">
+    <section id="menu" className="menu-home"
+      style={{
+        backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 100%), url(${BackgroundImage.src})`,
+        backgroundSize: "cover",
+      }}
+    >
       <div className="container-menus">
         <div className="row">{ShowMenu}</div>
       </div>
-    </MenuHomeWrapper>
+    </section>
   );
 }

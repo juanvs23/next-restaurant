@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import styled from "styled-components";
 import logoTop from "@/public/awards/logo-87.svg";
 import awardImga from "@/public/awards/mgg-vitchakorn-J5ZivsKiu9c-unsplash 2.jpg";
 import G from "@/public/awards/G.svg";
@@ -11,70 +10,9 @@ import trophy4 from "@/public/awards/fourth-throphy.svg";
 
 import { SponImage } from "@/components/common";
 
-const AwardWrapper = styled.section`
-  .row-trophy {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    .trophy {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      h5 {
-        color: var(--golden);
-      }
-      p {
-        color: var(--white2);
-        margin-bottom: 0;
-      }
-    }
-  }
-  .container-award {
-    padding-top: 50px;
-    padding-bottom: 70px;
-    .row-award {
-      h2 {
-        color: var(--golden);
-        margin-bottom: 25px;
-      }
-      margin-left: 20%;
-      margin-top: 16%;
-      .row-award .row-content {
-        height: 100%;
-        /* display: flex; */
-        margin-top: 11%;
-        width: 100%;
-      }
-    }
-    .row {
-      align-items: flex-start;
-      .imageaWard {
-        position: relative;
-        .gImage {
-          position: absolute;
-          bottom: 0;
-          left: 0;
-        }
-        .steak {
-          padding-left: 10%;
-          padding-top: 10%;
-        }
-      }
-    }
-  }
-  @media (max-width: 991px) {
-    .container-award {
-      .row-award {
-        margin-left: 0;
-        margin-top: 16%;
-      }
-    }
-  }
-`;
 export default function AwardComponent() {
   return (
-    <AwardWrapper id="awards" className="bg-overlay">
+    <section id="awards" className="bg-overlay award-wrapper">
       <div className="container container-award">
         <div className="row">
           <div className="element-50">
@@ -165,6 +103,6 @@ export default function AwardComponent() {
           </div>
         </div>
       </div>
-    </AwardWrapper>
+    </section>
   );
 }

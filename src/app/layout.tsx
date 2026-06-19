@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { openSans, cormorant } from "@/components/common/fonts";
 import Providers from "@/libs/providers";
-import StyledComponentsRegistry from "@/lib/registry";
 
 export const metadata: Metadata = {
   title: "GERÍCHT - RESTAURANT",
@@ -39,9 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${openSans.variable} ${cormorant.variable}`}>
-        <StyledComponentsRegistry>
-          <Providers>{children}</Providers>
-        </StyledComponentsRegistry>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
