@@ -5,8 +5,6 @@ import LogoBrand from "@/components/common/logo/logoBrand";
 import SocialNetwork from "../socialNetwork/SocialNetwork";
 import { SponImage } from "@/components/common";
 
-import "./footer.scss";
-
 export default function Footer() {
   return (
     <footer
@@ -17,68 +15,66 @@ export default function Footer() {
       <div className="container">
         <FormSuscript />
 
-        <div className="row footer-middle">
+        <div className="row footer-middle flex justify-between py-5">
           <div className="element onlyDesktop">
-            <h3>Contact Us</h3>
-            <ul>
-              <li>
-                <p>9 W 53rd St, New York, NY 10019, USA</p>
+            <h3 className="text-center text-white">Contact Us</h3>
+            <ul className="list-none p-0 m-0">
+              <li className="mb-4">
+                <p className="text-center m-0">9 W 53rd St, New York, NY 10019, USA</p>
               </li>
-              <li>
-                <p>+1 212-344-1230</p>
-
-                <p>+1 212-555-1230</p>
+              <li className="mb-4">
+                <p className="text-center m-0">+1 212-344-1230</p>
+                <p className="text-center m-0">+1 212-555-1230</p>
               </li>
             </ul>
           </div>
           <div className="element center">
-            <h2>
+            <h2 className="text-center text-white">
               <LogoBrand />
             </h2>
-            <ul>
-              <li>
-                <p>
+            <ul className="list-none p-0 m-0">
+              <li className="mb-4">
+                <p className="text-center m-0">
                   The best way to find yourself is to lose yourself in the
                   service of others.
                 </p>
               </li>
-              <li>
+              <li className="mb-4">
                 <SponImage />
               </li>
-              <li>
+              <li className="mb-4">
                 <SocialNetwork />
               </li>
             </ul>
           </div>
           <div className="element onlyMobil">
-            <h3>Contact Us</h3>
-            <ul>
-              <li>
-                <p>9 W 53rd St, New York, NY 10019, USA</p>
+            <h3 className="text-center text-white">Contact Us</h3>
+            <ul className="list-none p-0 m-0">
+              <li className="mb-4">
+                <p className="text-center m-0">9 W 53rd St, New York, NY 10019, USA</p>
               </li>
-              <li>
-                <p>+1 212-344-1230</p>
-
-                <p>+1 212-555-1230</p>
+              <li className="mb-4">
+                <p className="text-center m-0">+1 212-344-1230</p>
+                <p className="text-center m-0">+1 212-555-1230</p>
               </li>
             </ul>
           </div>
           <div className="element">
-            <h3>Working Hours</h3>
-            <ul>
-              <li>
-                <p>Monday-Friday:</p>
-                <p>08:00 am -12:00 am</p>
+            <h3 className="text-center text-white">Working Hours</h3>
+            <ul className="list-none p-0 m-0">
+              <li className="mb-4">
+                <p className="text-center m-0">Monday-Friday:</p>
+                <p className="text-center m-0">08:00 am -12:00 am</p>
               </li>
-              <li>
-                <p>Saturday-Sunday:</p>
-                <p>07:00am -11:00 pm</p>
+              <li className="mb-4">
+                <p className="text-center m-0">Saturday-Sunday:</p>
+                <p className="text-center m-0">07:00am -11:00 pm</p>
               </li>
             </ul>
           </div>
         </div>
-        <div className="footer-bottom">
-          <p>2021 Gerícht. All Rights reserved.</p>
+        <div className="p-2.5 text-center pb-20 lg:pb-10">
+          <p className="text-center m-0 text-xs">2021 Gerícht. All Rights reserved.</p>
         </div>
       </div>
       <GoToButton />
