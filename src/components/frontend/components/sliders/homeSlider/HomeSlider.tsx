@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Swiper, SwiperSlide, SwiperClass } from "swiper/react";
 import { Pagination, EffectFade, A11y, Controller } from "swiper/modules";
 
-import styled from "styled-components";
 import ImageContainer from "@/components/frontend/components/imageContainer/imageContainer";
 
 // Import Swiper styles
@@ -13,43 +12,6 @@ import "swiper/css/scrollbar";
 import "swiper/css/effect-fade";
 import { ArrowPagination } from "./ArrowComponent";
 import { useSliderController } from "./useSliderController";
-
-const SliderWrappper = styled.div`
-  .swiper-pagination {
-    position: relative;
-    display: flex;
-    color: white;
-    font-size: 17px;
-    padding-top: 30px;
-    padding-bottom: 20px;
-  }
-  .swiper.swiper-initialized {
-    display: flex;
-    flex-direction: column-reverse;
-  }
-
-  span.hero-counter {
-    color: var(--white);
-    opacity: 1;
-    background: transparent;
-    font-family: Cormorant Upright;
-    font-size: 1.5rem;
-    padding: 8px;
-    height: auto;
-    width: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-  }
-  span.hero-counter.swiper-pagination-bullet-active:after {
-    content: "";
-    display: block;
-    height: 1px;
-    width: 17px;
-    background: var(--golden);
-  }
-`;
 
 export default function HomeSlider() {
   const {
@@ -62,7 +24,7 @@ export default function HomeSlider() {
 
   return (
     <>
-      <SliderWrappper>
+      <div>
         <Swiper
           modules={[Pagination, EffectFade, A11y, Controller]}
           spaceBetween={0}
@@ -76,9 +38,6 @@ export default function HomeSlider() {
             delay: 2500,
             disableOnInteraction: false,
           }}
-
-          //onSwiper={(swiper) => console.log(swiper)}
-          // onSlideChange={() => console.log('slide change')}
         >
           {images.map((image, i) => {
             return (
@@ -93,7 +52,7 @@ export default function HomeSlider() {
             );
           })}
         </Swiper>
-      </SliderWrappper>
+      </div>
       <ArrowPagination
         current={activeIndex}
         total={images.length}
