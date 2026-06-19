@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# GERÍCHT — Fine Dining Restaurant
+
+A full-stack restaurant web application built with **Next.js 14 (App Router)**, **MongoDB**, and **NextAuth**. Showcases menu, reservations, gallery, and chef profiles for GERÍCHT, a fine dining restaurant in Berlin.
+
+## Tech Stack
+
+| Category | Technology |
+|----------|-----------|
+| **Framework** | Next.js 14.2.3 (App Router) |
+| **Language** | TypeScript 5 |
+| **Styling** | TailwindCSS + Styled Components + SCSS |
+| **State** | Redux Toolkit |
+| **Database** | MongoDB + Mongoose 8 |
+| **Auth** | NextAuth v4 (Google OAuth) |
+| **Validation** | Zod 3 |
+| **HTTP** | Axios |
+| **Animation** | Framer Motion, Swiper |
+| **Testing** | Jest + Testing Library |
+
+## Architecture
+
+```
+src/
+├── app/               # Next.js App Router (routes, API handlers, layouts)
+├── components/        # UI components (common + feature-based)
+├── database/          # MongoDB connection + Mongoose models
+├── libs/              # Redux store, Axios instance, React providers
+├── schemas/           # Zod validation schemas
+├── types/             # TypeScript interfaces
+├── utils/             # Utilities
+├── middleware.ts      # NextAuth route protection
+└── routes.ts          # Navigation routes
+```
+
+### Pages
+
+- **Home** — Hero, About Us, Menu, Chef, Gallery, Awards, Find Us sections
+- **About** — Restaurant information
+- **Dashboard** — Protected admin panel (WIP)
+- **404** — Custom not-found page
+
+### API Routes
+
+- `POST /api/suscription` — Newsletter email subscription
+- `GET/POST /api/auth/[...nextauth]` — Google OAuth authentication
+- Menu data served from statically defined data (file-based)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- MongoDB instance (local or Atlas)
+- Google OAuth credentials
+
+### Setup
 
 ```bash
-npm run dev
-# or
+# Clone and install
+yarn install
+
+# Configure environment
+cp .env.example .env
+# Fill in: MONGO_URI, DB_NAME, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET,
+# NEXTAUTH_URL, NEXTAUTH_SECRET, NEXT_PUBLIC_BASE_URL
+
+# Run development server
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+| Command | Description |
+|---------|-------------|
+| `yarn dev` | Start development server |
+| `yarn build` | Build for production |
+| `yarn start` | Start production server |
+| `yarn lint` | Run ESLint |
+| `yarn test` | Run Jest tests |
 
-## Learn More
+## Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GOOGLE_CLIENT_ID` | Yes | Google OAuth client ID |
+| `GOOGLE_CLIENT_SECRET` | Yes | Google OAuth client secret |
+| `NEXTAUTH_URL` | Yes | Application base URL |
+| `NEXTAUTH_SECRET` | Yes | NextAuth encryption secret |
+| `MONGO_URI` | Yes | MongoDB connection string |
+| `DB_NAME` | Yes | MongoDB database name |
+| `NEXT_PUBLIC_BASE_URL` | Yes | Public base URL for API requests |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project Status
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This project is under active development. See [CHANGELOG.md](./CHANGELOG.md) for version history and [docs/context.md](./docs/context.md) for detailed technical context.
