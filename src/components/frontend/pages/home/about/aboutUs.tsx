@@ -3,7 +3,6 @@ import Image from "next/image";
 import Gblack from "@/public/aboutus/g-black.svg";
 import KnifeImage from "@/public/aboutus/savernake-knives-f4jl2ezowuM-unsplash 2.png";
 import { SponImage } from "@/components/common";
-import "./aboutUs.scss";
 
 export default function AboutUs() {
   return (

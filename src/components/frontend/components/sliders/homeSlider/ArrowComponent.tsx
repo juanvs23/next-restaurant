@@ -1,5 +1,4 @@
 import React from "react";
-import "./ArrowComponent.scss";
 
 type ArrowPaginationProps = {
   current: number;

@@ -4,7 +4,6 @@ import { SponImage } from "@/components/common";
 import Chef from "@/public/chef/pexels-ron-lach-8879653 1.jpg";
 import Quote from "@/public/quote.svg";
 import Firm from "@/public/chef/Kevin Luo.png";
-import "./ourChef.scss";
 
 export default function OurChef() {
   return (

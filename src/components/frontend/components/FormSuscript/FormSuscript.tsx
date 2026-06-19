@@ -2,7 +2,6 @@
 import { CgSpinner } from "react-icons/cg";
 import { SponImage } from "@/components/common";
 import useSuscript from "./hooks/useSuscript";
-import "./FormSuscript.scss";
 
 export default function FormSuscript() {
   const { handlerSubmit, handlerInput, data, error, loading, emailRef } =

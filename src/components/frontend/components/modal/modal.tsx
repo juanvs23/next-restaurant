@@ -1,8 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
 import { LiaTimesSolid } from "react-icons/lia";
-
-import "./modal.scss";
 import { useAppDispatch, useAppSelector } from "@/libs/store/hooks";
 import { RestoState } from "@/types/state";
 import { setModal, setOpenModal } from "@/libs/store/slicers/modalSlicer";
