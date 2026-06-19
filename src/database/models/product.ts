@@ -34,4 +34,4 @@ productSchema.index({ categoryId: 1 });
 productSchema.index({ type: 1 });
 
 export const Product =
-  mongoose.models.Product || mongoose.model("Product", productSchema);
+  (mongoose.models?.Product as any) || mongoose.model("Product", productSchema);

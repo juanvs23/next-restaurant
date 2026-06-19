@@ -18,4 +18,4 @@ const categorySchema = new mongoose.Schema(
 categorySchema.index({ name: 1 }, { unique: true });
 
 export const Category =
-  mongoose.models.Category || mongoose.model("Category", categorySchema);
+  (mongoose.models?.Category as any) || mongoose.model("Category", categorySchema);

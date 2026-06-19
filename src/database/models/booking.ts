@@ -33,4 +33,4 @@ bookingSchema.index({ email: 1 });
 bookingSchema.index({ status: 1 });
 
 export const Booking =
-  mongoose.models.Booking || mongoose.model("Booking", bookingSchema);
+  (mongoose.models?.Booking as any) || mongoose.model("Booking", bookingSchema);

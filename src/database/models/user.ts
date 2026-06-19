@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Model } from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
@@ -15,8 +15,5 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.index({ email: 1 }, { unique: true });
-userSchema.index({ googleId: 1 }, { unique: true, sparse: true });
-
-export const User =
-  mongoose.models.User || mongoose.model("User", userSchema);
+const UserModel = (mongoose.models?.User as Model<any>) || mongoose.model("User", userSchema);
+export { UserModel as User };
