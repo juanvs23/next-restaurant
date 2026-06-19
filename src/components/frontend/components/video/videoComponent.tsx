@@ -60,6 +60,7 @@ function VideoComponent({
   showcontrol,
   mutedControl,
   autoPlayed,
+  posterUrl,
 }: VideoProps) {
   const videoRef = createRef<any>();
   const [playAction, setplayAction] = useState<boolean>(false);
@@ -112,9 +113,10 @@ function VideoComponent({
         controls={showcontrol}
         muted={mutedControl}
         autoPlay={autoPlayed}
-        preload="auto"
+        preload="none"
         className="video"
         ref={videoRef}
+        poster={posterUrl}
       >
         <source src={videoUrl} type={typeVideo} />
         <p>

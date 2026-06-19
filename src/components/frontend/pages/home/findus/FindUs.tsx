@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import BG from "@/public/BG.svg";
+import BG from "@/public/BG.webp";
 import vitor from "@/public/find/vitor-pinto-bYSpfD0Wn04-unsplash 1.jpg";
 import ImageContainer from "@/components/frontend/components/imageContainer/imageContainer";
 import { SponImage } from "@/components/common";
@@ -42,11 +42,11 @@ function FindUs() {
       </div>
       <div className="seudo-image">
         <Image
-          src={BG.src}
+          src={BG}
           className="seudo-bg"
-          alt={BG.blurDataURL}
-          width={BG.width}
-          height={BG.height}
+          alt=""
+          width={1920}
+          height={959}
         />
       </div>
     </section>

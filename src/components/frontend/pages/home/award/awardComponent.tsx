@@ -10,7 +10,7 @@ import trophy3 from "@/public/awards/third-throphy.svg";
 import trophy4 from "@/public/awards/fourth-throphy.svg";
 
 import { SponImage } from "@/components/common";
-import bg from "@/public/BG.svg";
+import bg from "@/public/BG.webp";
 
 const AwardWrapper = styled.section`
   background: url(${bg.src});

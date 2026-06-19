@@ -1,4 +1,4 @@
-import BackgroundImage from "@/public/BG.svg";
+import BackgroundImage from "@/public/BG.webp";
 import ImageContainer from "@/components/frontend/components/imageContainer/imageContainer";
 import Image from "next/image";
 import { SponImage } from "@/components/common";

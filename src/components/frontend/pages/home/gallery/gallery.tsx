@@ -1,15 +1,15 @@
 "use client";
 import styled from "styled-components";
 import VideoComponent from "@/components/frontend/components/video/videoComponent";
-import bggallery from "@/public/gallery/fondo.jpg";
+import bggallery from "@/public/gallery/fondo.webp";
 import { SponImage } from "@/components/common";
 import InstagramCaroussel from "@/components/frontend/components/sliders/instagramCarousel/instagramCaroussel";
 
-import image1 from "@/public/gallery/rammen-1.jpg";
-import image2 from "@/public/gallery/whisky-2.jpg";
-import image3 from "@/public/gallery/egg-3.jpg";
-import image4 from "@/public/gallery/soup-4.jpg";
-import image5 from "@/public/gallery/waffle-5.jpg";
+import image1 from "@/public/gallery/rammen-1.webp";
+import image2 from "@/public/gallery/whisky-2.webp";
+import image3 from "@/public/gallery/egg-3.webp";
+import image4 from "@/public/gallery/soup-4.webp";
+import image5 from "@/public/gallery/waffle-5.webp";
 
 const HomeGalleryWrapper = styled.section`
   background-image: url(${bggallery.src});
@@ -60,6 +60,7 @@ export default function HomeGallery() {
         showcontrol={false}
         mutedControl={true}
         autoPlayed={false}
+        posterUrl="/gallery/restaurant-poster.jpg"
       />
       <div className="gallery-container">
         <div className="call-to-action-gallery">

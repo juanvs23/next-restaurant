@@ -1,5 +1,5 @@
 import { menu } from "./menu";
-import CenterImage from "@/public/menu/cocktell.jpg";
+import CenterImage from "@/public/menu/cocktell.webp";
 import { SlideMenuSection } from "@/types/sections";
 
 const categories = ["Wine & Beer", "Cocktails"];
