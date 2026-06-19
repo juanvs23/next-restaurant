@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { cormorant } from "@/components/common/fonts";
+import { openSans, cormorant } from "@/components/common/fonts";
 import Providers from "@/libs/providers";
 import StyledComponentsRegistry from "@/lib/registry";
 
@@ -38,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cormorant.className}>
+      <body className={`${openSans.variable} ${cormorant.variable}`}>
         <StyledComponentsRegistry>
           <Providers>{children}</Providers>
         </StyledComponentsRegistry>

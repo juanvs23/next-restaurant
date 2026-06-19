@@ -12,12 +12,11 @@ export default function ImageContainer({
 }: ImageProps) {
   return (
     <article className="images-containers image-container-wrapper">
-      <img
-        src={Rectangle.src}
+      <Image
+        src={Rectangle}
         className="rectangle-1 rectangle"
-        alt={Rectangle.blurDataURL}
-        width={Rectangle.width}
-        height={Rectangle.height}
+        alt=""
+        role="presentation"
       />
 
       <Image
@@ -28,12 +27,11 @@ export default function ImageContainer({
         priority
         className="image-product"
       />
-      <img
-        src={Rectangle.src}
+      <Image
+        src={Rectangle}
         className="rectangle-2 rectangle"
-        alt={Rectangle.blurDataURL}
-        width={Rectangle.width}
-        height={Rectangle.height}
+        alt=""
+        role="presentation"
       />
     </article>
   );
