@@ -532,3 +532,27 @@ h6 {
     padding: 60px 10px;
   }
 }
+
+.goTobutton {
+  position: fixed;
+  bottom: 20%;
+  right: 8vw;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  text-decoration: none;
+  z-index: 99;
+}
+
+.goTobutton:focus {
+  outline: none;
+}
+
+.goTobutton::before {
+  content: "";
+  margin: auto;
+  display: block;
+  height: 61px;
+  width: 1px;
+  background: var(--golden);
+}
