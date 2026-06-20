@@ -2,136 +2,127 @@
 
 ## Overview
 
-Full-stack restaurant web application for **GERÍCHT**, a fine dining restaurant in Berlin. Built with Next.js 14 App Router, MongoDB persistence, and Google OAuth authentication. The site covers a public-facing landing page with menu display, booking system, and gallery, plus a protected admin dashboard.
+Full-stack restaurant web application for **GERÍCHT**, a fine dining restaurant in Berlin. Built with Next.js 16 + React 19 + MongoDB. Includes public landing page, menu display, booking system, gallery, admin backoffice, and Google OAuth authentication.
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| **Framework** | Next.js 14.2.3 (App Router) |
+| **Framework** | Next.js 16.2.9 (App Router, Turbopack) |
 | **Language** | TypeScript 5 |
-| **UI Styling** | TailwindCSS + Styled Components v6 + SCSS |
-| **State Management** | Redux Toolkit + React Redux |
-| **Database** | MongoDB + Mongoose 8 |
-| **Auth** | NextAuth v4 (Google OAuth) |
+| **Styling** | TailwindCSS 3 + globals.css (SCSS y styled-components eliminados) |
+| **State** | Redux Toolkit |
+| **Database** | MongoDB 7.0.37 LTS + Mongoose 8 |
+| **Auth** | Auth.js v5 (next-auth@beta, Google OAuth) |
 | **Validation** | Zod 3 |
-| **HTTP Client** | Axios |
-| **Animation** | Framer Motion, Swiper |
-| **Testing** | Jest + Testing Library (installed, no tests yet) |
+| **Animation** | Framer Motion 11, Swiper 11 |
+| **Testing** | Jest 29 + @testing-library/react (5 tests) |
+| **Package Manager** | npm 10.9.2 |
 
-## Architecture
+## Current Architecture
 
 ```
 src/
 ├── app/
-│   ├── (frontend)/         # Public pages (route group)
-│   │   ├── page.tsx        # Home — Hero, About, Menu, Chef, Gallery, Awards, FindUs
-│   │   ├── about/page.tsx  # About page
-│   │   └── [...not-found]/ # Custom 404
+│   ├── (frontend)/          # Public pages
+│   │   ├── page.tsx         # Home sections
+│   │   ├── about/page.tsx
+│   │   └── [...not-found]/
 │   ├── api/
-│   │   ├── auth/[...nextauth]/  # NextAuth route handler
-│   │   ├── menu.ts              # Hardcoded menu data
-│   │   ├── slidesContents.ts    # Menu sections for slider
-│   │   └── suscription/route.ts # Newsletter subscription endpoint
-│   ├── dashboard/           # Protected admin area (WIP placeholder)
-│   ├── auth.ts              # NextAuth config (Google provider)
-│   ├── globals.css          # Tailwind base styles
-│   └── layout.tsx           # Root layout with Providers
+│   │   ├── auth/[...nextauth]/
+│   │   ├── subscription/    # Newsletter
+│   │   ├── products/        # CRUD
+│   │   ├── categories/      # CRUD
+│   │   ├── bookings/        # GET list
+│   │   ├── users/           # GET list + PUT role
+│   │   ├── media/           # GET + POST
+│   │   ├── menu.ts          # Hardcoded (pending migration to DB)
+│   │   └── slidesContents.ts
+│   ├── dashboard/           # Admin panel
+│   │   ├── products/
+│   │   ├── categories/
+│   │   ├── bookings/
+│   │   └── users/
+│   ├── auth.ts              # Auth.js v5 + user sync + JWT refresh
+│   ├── middleware.ts         # Role-based protection
+│   ├── globals.css          # Tailwind + estilos globales
+│   └── layout.tsx           # Root layout
 ├── components/
-│   ├── common/              # Shared: Fonts, Logo, SponImage
-│   └── frontend/            # Feature components
-│       ├── components/      # Header, Footer, Booking, Modal, Sliders, etc.
-│       └── pages/           # Section components for home page
+│   ├── common/              # Logo, SponImage, fonts
+│   └── frontend/            # Header, Footer, Booking, Sliders, etc.
 ├── database/
-│   ├── connection.ts        # Mongoose connect/disconnect helpers
-│   └── models/              # Mongoose models (Suscription)
+│   ├── connection.ts        # Mongoose cached connection
+│   └── models/              # 7 modelos
+│       ├── subscription.ts
+│       ├── user.ts
+│       ├── booking.ts
+│       ├── table.ts
+│       ├── product.ts
+│       ├── category.ts
+│       └── media.ts
 ├── libs/
-│   ├── axios/createInstance.ts  # Axios instance
-│   ├── store/                   # Redux store (booking + modal slices)
-│   ├── providers.tsx            # SessionProvider + StoreProvider
-│   └── index.ts
-├── schemas/                 # Zod validation schemas
-├── types/                   # TypeScript interfaces (auth, booking, menu, etc.)
-├── utils/                   # Utilities (phoneRegex)
-├── middleware.ts            # NextAuth middleware (protects /dashboard)
-└── routes.ts                # Navigation routes configuration
+│   ├── axios/               # Axios instance (sin AbortController)
+│   ├── store/               # Redux (booking + modal)
+│   └── providers.tsx
+├── schemas/                 # Zod schemas
+├── types/                   # TypeScript interfaces
+├── __tests__/               # Jest tests
+└── routes.ts
 ```
 
-## Key Architecture Decisions
+## Database Models
 
-### App Router Route Groups
-- `(frontend)` groups all public pages under a shared layout (Header + Footer).
-- `dashboard` has its own layout, protected by middleware.
+| Model | Key Fields | Indexes |
+|-------|-----------|---------|
+| Subscription | email (unique) | email:1 |
+| User | name, email, googleId, role | email:1, googleId:1 |
+| Booking | firstName, lastName, email, dateTime, turnTime, numberPersons, tableId, status | dateTime+turnTime, email, status |
+| Table | tableId (unique), name, capacity, location, status | tableId:1, capacity:1 |
+| Product | name, price, categoryId, type, sizes, SKU (unique) | SKU:1, categoryId:1, type:1 |
+| Category | name (unique), description, image, items[] | name:1 |
+| Media | filename, url, mimeType, alt, title, caption, description | refType+refId |
 
-### State Management
-- Redux Toolkit for global state: modal visibility + booking form multi-step data.
-- No server state library (React Query/SWR) — API calls go through Axios directly.
+## Auth Flow
 
-### Styling Strategy
-Three systems coexist (intentional during migration or legacy):
-1. **TailwindCSS** — utility classes in layouts and globals
-2. **Styled Components** — component-level styling with SSR support via Next.js compiler
-3. **SCSS** — global-styles.scss for section-level styles
+- Google OAuth via Auth.js v5
+- User auto-created in DB on first sign-in (role: "user")
+- JWT includes role + userId
+- Session includes accessToken, role, userId
+- Middleware protects /dashboard (requires auth) and /dashboard/users (admin only)
+- JWT token refresh with Google refresh_token
 
-### Authentication
-- Google OAuth via NextAuth v4.
-- JWT strategy with custom `accessToken` stored in token.
-- Middleware checks `token.accessToken` for protected routes.
+## Roadmap
 
-## Known Issues & Tech Debt
+| Phase | Status | Description |
+|-------|--------|-------------|
+| **Fase 0 — Upgrade** | ✅ | Next 16 + React 19 + ESLint flat config + Auth.js v5 |
+| **Fase 1 — Foundation** | ✅ | Estilos consolidados, modelos DB, fixes connection/AbortController/JWT |
+| **Fase 2 — Backoffice** | 🟡 En progreso | CRUD productos/categorías, admin UI, roles, migración menú |
+| **Fase 3 — Reservas** | ⏳ | Availability, booking API, gestión |
+| **Fase 4 — Comandas** | ⏳ | Pedidos, cocina SSE |
 
-1. **`return await` on JSX** — `src/app/(frontend)/page.tsx` uses `return await (...)` which is a no-op on JSX.
-2. **Singleton AbortController** — `createInstance.ts` creates one `AbortController` at module level; if aborted, all subsequent requests fail.
-3. **MongoDB connection closed per request** — `closeDB()` called immediately after `save()` in subscription route, defeating connection pooling.
-4. **No tests** — Jest + Testing Library installed but zero test files exist.
-5. **Hardcoded menu data** — `menu.ts` has 200+ lines of inline data; no CMS or DB backend for menu items.
-6. **NextAuth token refresh gap** — `accessToken` is only set on initial sign-in (when `account` exists), not on token refresh.
-7. **No documentation folder** — `docs/` created now, but no architecture diagrams or SDD artifacts exist.
-8. **Styled Components v6 with `resolutions` pin to v5** — `resolutions: { "styled-components": "^5" }` in package.json suggests a compatibility workaround.
+## Known Issues
 
-## Patterns & Conventions
-
-- **Exports**: Barrel files (`index.ts`) at each directory level.
-- **Naming**: PascalCase for components, camelCase for utilities, kebab-case for SCSS.
-- **Path aliases**: `@/` → `src/`, `@/public/*` → `public/*`.
-- **Components**: Atomic-ish design with `pages/` (sections) and `components/` (reusable pieces).
-- **Validation**: Zod schemas in `schemas/`, mirroring database models.
+1. **Menú hardcodeado** — `menu.ts` (214 líneas) pendiente de migrar a MongoDB
+2. **No file upload real** — Media model creado, falta uploadthing o S3
+3. **API sin auth** — Las rutas /api/products, /api/categories no tienen protección (solo dashboard UI)
+4. **Booking form apunta a API inexistente** — POST /api/booking no creado aún
+5. **Sin MSW** — Tests no tienen mock de API
 
 ## Environment Variables
 
 | Variable | Description |
 |----------|-------------|
-| `GOOGLE_CLIENT_ID` | Google OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
-| `NEXTAUTH_URL` | Application base URL |
-| `NEXTAUTH_SECRET` | NextAuth encryption secret |
-| `MONGO_URI` | MongoDB connection string |
-| `DB_NAME` | MongoDB database name |
-| `NEXT_PUBLIC_BASE_URL` | Public base URL for Axios |
+| GOOGLE_CLIENT_ID | Google OAuth client ID |
+| GOOGLE_CLIENT_SECRET | Google OAuth client secret |
+| NEXTAUTH_URL / AUTH_URL | Application base URL |
+| NEXTAUTH_SECRET / AUTH_SECRET | Auth encryption secret |
+| AUTH_TRUST_HOST | Trust host for Auth.js |
+| MONGO_URI | MongoDB connection string |
+| DB_NAME | MongoDB database name |
+| NEXT_PUBLIC_BASE_URL | Public base URL |
 
-## Setup
+## MongoDB
 
-```bash
-cp .env.example .env   # Fill in your variables
-yarn install           # or npm install
-yarn dev               # http://localhost:3000
-```
-
-## Git
-
-- Remote: Not configured (no origin set up yet).
-- Current branch: `main` (4 commits).
-- Package manager: Yarn 1.22.19 (classic).
-
-## Local Environment Setup
-
-### MongoDB
-
-**Version**: MongoDB 7.0.37 LTS (tarball from fastdl.mongodb.org)
-**Status**: ✅ Running on `mongodb://localhost:27017` via `mongod7` systemd service
-**Service**: `mongod7.service` (enabled, running)
-**Config**: `/etc/mongod7.conf` — dbPath `/var/lib/mongodb7`, log `/var/log/mongodb7/mongod.log`
-**Binary**: `/usr/local/mongodb7/bin/mongod` (symlinked from `/usr/local/mongodb-linux-x86_64-ubuntu2204-7.0.37/`)
-**Why 7.0 LTS**: Ubuntu 26.04 ships kernel 7.0.0, which is incompatible with MongoDB 8.0+ (tcmalloc/rseq crash, SERVER-121912). MongoDB 7.0.x runs without issues on this kernel — the kernel check was only added in 8.0. The latest patch (7.0.37) includes all bug/security fixes.
-**Auth**: Disabled (development) — bindIP `127.0.0.1`
-**Future upgrade**: When MongoDB 8.x releases a fix for the tcmalloc issue, upgrade is straightforward — stop `mongod7`, install new version via repo, point to same `dbPath`, run `setFeatureCompatibilityVersion`, start new service.
+- **Version**: 7.0.37 LTS (service: mongod7)
+- **Kernel note**: Ubuntu 26.04 (kernel 7.0.0) incompatible with MongoDB 8.0+ (SIGSEGV). Upgrade blocked until 8.x fixes tcmalloc/rseq issue.

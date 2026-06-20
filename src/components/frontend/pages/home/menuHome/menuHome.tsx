@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getSlidesContents } from "@/app/api/slidesContents";
 import { SlideMenuSection } from "@/types/sections";
 import BackgroundImage from "@/public/menu/bg.jpg";
@@ -120,9 +120,11 @@ const SliderMenu = ({ slides }: PropsSlide) => {
 };
 
 export default function MenuHome() {
-  const [slidesContent] = useState<null | SlideMenuSection[]>(() =>
-    getSlidesContents(),
-  );
+  const [slidesContent, setSlidesContent] = useState<null | SlideMenuSection[]>(null);
+
+  useEffect(() => {
+    getSlidesContents().then(setSlidesContent);
+  }, []);
 
   const ShowMenu =
     slidesContent !== null ? <SliderMenu slides={slidesContent} /> : <></>;

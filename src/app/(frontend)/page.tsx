@@ -1,7 +1,7 @@
 import { Pages } from "@/components/frontend";
 
-export default async function Home() {
-  return await (
+export default function Home() {
+  return (
     <main className="mt-10 ">
       <Pages.Hero />
       <Pages.AboutUs />
