@@ -10,33 +10,33 @@ async function downloadTicket(data: any) {
   });
   const id = data._id?.slice(-8) || "00000000";
 
-  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: [80, 140] });
+  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: [100, 160] });
 
   // Golden border
   doc.setDrawColor(220, 202, 135);
   doc.setLineWidth(1.5);
-  doc.rect(3, 3, 74, 134);
+  doc.rect(3, 3, 94, 154);
 
   // Header
   doc.setFontSize(14);
   doc.setTextColor(220, 202, 135);
   doc.setFont("helvetica", "bold");
-  doc.text("GERÍCHT", 40, 18, { align: "center" });
+  doc.text("GERÍCHT", 50, 18, { align: "center" });
 
   doc.setFontSize(8);
   doc.setTextColor(170, 170, 170);
   doc.setFont("helvetica", "normal");
-  doc.text("Booking Confirmation", 40, 24, { align: "center" });
+  doc.text("Booking Confirmation", 50, 24, { align: "center" });
 
   // Divider
   doc.setDrawColor(220, 202, 135);
   doc.setLineWidth(0.3);
-  doc.line(10, 28, 70, 28);
+  doc.line(10, 28, 90, 28);
 
   // Booking details
-  doc.setFontSize(7);
+  doc.setFontSize(8);
   let y = 36;
-  const lineHeight = 5.5;
+  const lineHeight = 6;
 
   const fields = [
     { label: "Name", value: `${data.firstName} ${data.lastName}` },
@@ -51,10 +51,10 @@ async function downloadTicket(data: any) {
   fields.forEach((f) => {
     doc.setTextColor(220, 202, 135);
     doc.setFont("helvetica", "bold");
-    doc.text(`${f.label}:`, 10, y);
-    doc.setTextColor(255, 255, 255);
+    doc.text(`${f.label}:`, 12, y);
+    doc.setTextColor(0, 0, 0);
     doc.setFont("helvetica", "normal");
-    doc.text(f.value, 40, y);
+    doc.text(f.value, 45, y);
     y += lineHeight;
   });
 
@@ -67,7 +67,7 @@ async function downloadTicket(data: any) {
     img.crossOrigin = "anonymous";
     const imgPromise = new Promise<void>((resolve) => {
       img.onload = () => {
-        doc.addImage(img, "PNG", 24, y + 5, 32, 32);
+        doc.addImage(img, "PNG", 34, y + 5, 32, 32);
         resolve();
       };
       img.onerror = () => resolve();
@@ -79,9 +79,9 @@ async function downloadTicket(data: any) {
   }
 
   // Footer
-  doc.setFontSize(6);
+  doc.setFontSize(7);
   doc.setTextColor(170, 170, 170);
-  doc.text("Thank you for choosing GERÍCHT", 40, y + 45, { align: "center" });
+  doc.text("Thank you for choosing GERÍCHT", 50, y + 45, { align: "center" });
 
   doc.save(`gericht-booking-${id}.pdf`);
 }
