@@ -10,6 +10,13 @@ import trophy4 from "@/public/awards/fourth-throphy.svg";
 
 import { SponImage } from "@/components/common";
 
+const trophies = [
+  { src: trophy1, title: "Bib Gourmond", desc: "Lorem ipsum dolor sit amet, consectetur." },
+  { src: trophy2, title: "Bib Gourmond", desc: "Lorem ipsum dolor sit amet, consectetur." },
+  { src: trophy3, title: "Bib Gourmond", desc: "Lorem ipsum dolor sit amet, consectetur." },
+  { src: trophy4, title: "Bib Gourmond", desc: "Lorem ipsum dolor sit amet, consectetur." },
+];
+
 export default function AwardComponent() {
   return (
     <section id="awards" className="bg-overlay award-wrapper">
@@ -22,82 +29,25 @@ export default function AwardComponent() {
               <SponImage justify="start" />
               <h2>Our Laurels</h2>
               <div className="row-trophy">
-                <div className="trophy">
-                  <div className="image">
-                    <Image
-                      src={trophy1.src}
-                      height={100}
-                      width={100}
-                      alt="logo"
-                    />
+                {trophies.map((t, i) => (
+                  <div key={i} className="trophy">
+                    <Image src={t.src.src} height={100} width={100} alt="logo" />
+                    <div className="text">
+                      <h5>{t.title}</h5>
+                      <p>{t.desc}</p>
+                    </div>
                   </div>
-                  <div className="text">
-                    <h5>Bib Gourmond</h5>
-                    <p>Lorem ipsum dolor sit amet, consectetur.</p>
-                  </div>
-                </div>
-                <div className="trophy">
-                  <div className="image">
-                    <Image
-                      src={trophy2.src}
-                      height={100}
-                      width={100}
-                      alt="logo"
-                    />
-                  </div>
-                  <div className="text">
-                    <h5>Bib Gourmond</h5>
-                    <p>Lorem ipsum dolor sit amet, consectetur.</p>
-                  </div>
-                </div>
-                <div className="trophy">
-                  <div className="image">
-                    <Image
-                      src={trophy3.src}
-                      height={100}
-                      width={100}
-                      alt="logo"
-                    />
-                  </div>
-                  <div className="text">
-                    <h5>Bib Gourmond</h5>
-                    <p>Lorem ipsum dolor sit amet, consectetur.</p>
-                  </div>
-                </div>
-                <div className="trophy">
-                  <div className="image">
-                    <Image
-                      src={trophy4.src}
-                      height={100}
-                      width={100}
-                      alt="logo"
-                    />
-                  </div>
-                  <div className="text">
-                    <h5>Bib Gourmond</h5>
-                    <p>Lorem ipsum dolor sit amet, consectetur.</p>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
           <div className="element-50">
             <div className="imageaWard">
               <div className="steak">
-                <Image
-                  src={awardImga.src}
-                  height={awardImga.height}
-                  width={awardImga.width}
-                  alt="logo"
-                />
+                <Image src={awardImga.src} height={awardImga.height} width={awardImga.width} alt="logo" />
               </div>
               <div className="gImage">
-                <Image
-                  src={G.src}
-                  height={G.height}
-                  width={G.width}
-                  alt="logo"
-                />
+                <Image src={G.src} height={G.height} width={G.width} alt="logo" />
               </div>
             </div>
           </div>

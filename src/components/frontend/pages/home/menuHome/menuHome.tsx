@@ -86,7 +86,7 @@ const SliderMenu = ({ slides }: PropsSlide) => {
                     <ProductMenu key={i} Product={product} />
                   ))}
                 </div>
-                <div className="element-30 no-gutter onlyDesktop">
+                <div className="element-30 no-gutter hidden lg:block">
                   <Image
                     src={SlideData.centerImage.src}
                     height={SlideData.centerImage.height}
@@ -101,7 +101,7 @@ const SliderMenu = ({ slides }: PropsSlide) => {
                     <ProductMenu key={i} Product={product} />
                   ))}
                 </div>
-                <div className="element-30 no-gutter onlyMobil">
+                <div className="element-30 no-gutter lg:hidden">
                   <Image
                     src={SlideData.centerImage.src}
                     height={SlideData.centerImage.height}

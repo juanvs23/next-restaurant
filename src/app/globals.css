@@ -158,25 +158,9 @@ h6 {
   .center {
     width: 100% !important;
   }
-
-  .onlyMobil {
-    display: block !important;
-  }
-
-  .onlyDesktop {
-    display: none !important;
-  }
 }
 
 @media (min-width: 992px) {
-  .onlyMobil {
-    display: none !important;
-  }
-
-  .onlydesktop {
-    display: block !important;
-  }
-
   .element {
     width: 25%;
   }
