@@ -13,8 +13,6 @@ const subscriptionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-subscriptionSchema.index({ email: 1 }, { unique: true });
-
 export const Subscription =
   (mongoose.models?.Subscription as any) ||
   mongoose.model("Subscription", subscriptionSchema);

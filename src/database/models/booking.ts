@@ -28,9 +28,5 @@ const bookingSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-bookingSchema.index({ dateTime: 1, turnTime: 1 });
-bookingSchema.index({ email: 1 });
-bookingSchema.index({ status: 1 });
-
 export const Booking =
   (mongoose.models?.Booking as any) || mongoose.model("Booking", bookingSchema);

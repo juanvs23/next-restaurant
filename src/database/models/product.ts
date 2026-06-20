@@ -29,9 +29,5 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-productSchema.index({ SKU: 1 }, { unique: true });
-productSchema.index({ categoryId: 1 });
-productSchema.index({ type: 1 });
-
 export const Product =
   (mongoose.models?.Product as any) || mongoose.model("Product", productSchema);

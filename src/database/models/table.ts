@@ -19,8 +19,5 @@ const tableSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-tableSchema.index({ tableId: 1 }, { unique: true });
-tableSchema.index({ capacity: 1 });
-
 export const TableModel =
   (mongoose.models?.Table as any) || mongoose.model("Table", tableSchema);
