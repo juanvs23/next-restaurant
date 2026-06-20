@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/libs/store/hooks";
 import type { BookingFormData } from "@/types/booking";
 import { asyncHandler } from "@/libs/store/slicers/bookingSlicer";
@@ -37,6 +37,13 @@ export default function BookingForm() {
   const dispatch = useAppDispatch();
   const [activeIndex, setActiveIndex] = useState(0);
   const useBooking = useAppSelector((state) => state.booking);
+
+  // Advance to confirmation step after submit completes
+  useEffect(() => {
+    if (useBooking.response && activeIndex === 3) {
+      setActiveIndex(4);
+    }
+  }, [useBooking.response]);
   const steps = [
     {
       stepIndex: 0,
