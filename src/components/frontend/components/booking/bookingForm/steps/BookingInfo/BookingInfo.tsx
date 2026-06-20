@@ -1,13 +1,27 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Inputs from "@/components/frontend/components/formComponents/inputs";
+import { useAppDispatch, useAppSelector } from "@/libs/store/hooks";
+import { getBookingInfo } from "@/libs/store/slicers/bookingSlicer";
 
 export default function BookingInfo() {
-  const [personsNumber, setPersonsNumber] = React.useState<string>("1");
+  const dispatch = useAppDispatch();
+  const { bookingInfo } = useAppSelector((state) => state.booking.form!);
+  const [personsNumber, setPersonsNumber] = React.useState<string>(
+    bookingInfo.numberPersons || "1",
+  );
+  const [comments, setComments] = React.useState<string>(bookingInfo.comments || "");
 
-  console.log(personsNumber);
-
-  const persons = Number.isNaN(parseInt(personsNumber)) ? true : false;
+  useEffect(() => {
+    dispatch(
+      getBookingInfo({
+        ...bookingInfo,
+        numberPersons: personsNumber,
+        comments,
+        completed: personsNumber !== "",
+      }),
+    );
+  }, [personsNumber, comments]);
 
   return (
     <div className="booking">
@@ -32,30 +46,10 @@ export default function BookingInfo() {
           />
         </div>
       </div>
-      {false && (
-        <div className="flex flex-col gap-2 md:flex-row">
-          <div className="w-full md:w-6/12">
-            <Inputs
-              getValue={(value: string) => console.log(value)}
-              name="togglePerson"
-              title="Do you want special reservation"
-              type="toggle"
-            />
-          </div>
-          <div className="w-full form-group md:w-6/12">
-            <Inputs
-              getValue={(value: string) => console.log(value)}
-              name="totalPersons"
-              title="Total persons"
-              type="text"
-            />
-          </div>
-        </div>
-      )}
       <div className="flex flex-col gap-2">
         <div className="w-full">
           <Inputs
-            getValue={(value: string) => console.log(value)}
+            getValue={(value: string) => setComments(value)}
             name="comments"
             title="Any diners with intolerance/allergy?"
             type="textarea"
