@@ -111,7 +111,7 @@ export default function ResponseInfo() {
           onClick={() => downloadTicket(resp)}
           className="button inline-flex items-center gap-2 whitespace-nowrap"
         >
-          <span className="flex justify-center items-center gap-4">
+          <span className="flex justify-center items-center gap-4 text-[#0000] hover:text-[#dcca87]">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
               <polyline points="7 10 12 15 17 10"/>
