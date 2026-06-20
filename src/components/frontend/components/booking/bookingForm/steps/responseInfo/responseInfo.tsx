@@ -59,7 +59,7 @@ async function downloadTicket(data: any) {
   });
 
   // QR Code
-  const qrData = `${typeof window !== "undefined" ? window.location.origin : "http://localhost:3000"}/verify/${id}`;
+  const qrData = `${process.env.NEXT_PUBLIC_BASE_URL}/verify/${id}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(qrData)}`;
 
   try {
