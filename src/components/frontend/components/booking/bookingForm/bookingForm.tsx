@@ -14,13 +14,13 @@ function StepButton({
   useBooking,
   setActiveIndex,
 }: {
-  step: { stepIndex: number; title: string };
+  step: { stepIndex: number; title: string; formKey?: string };
   useBooking: BookingFormData;
   setActiveIndex: (index: number) => void;
 }) {
-  const completed = useBooking.form
-    ? Object.entries(useBooking.form)[step.stepIndex][1].completed
-    : false;
+  const form = useBooking.form;
+  const key = step.formKey || "";
+  const completed = form ? (form as any)[key]?.completed ?? false : false;
 
   return (
     <button
@@ -48,16 +48,19 @@ export default function BookingForm() {
     {
       stepIndex: 0,
       title: "Personal Info",
+      formKey: "profileInfo",
       content: <PersonalInfo />,
     },
     {
       stepIndex: 1,
       title: "Booking Info",
+      formKey: "bookingInfo",
       content: <BookingInfo />,
     },
     {
       stepIndex: 2,
       title: "Dating",
+      formKey: "bookingDate",
       content: <DatingInfo />,
     },
     {
@@ -71,6 +74,14 @@ export default function BookingForm() {
       content: <ResponseInfo />,
     },
   ];
+
+  // Prevent submit if any step is incomplete
+  const isFormComplete = useBooking.form
+    ? steps.every((s) => {
+        if (!s.formKey) return true;
+        return (useBooking.form as any)[s.formKey]?.completed === true;
+      })
+    : false;
   return (
     <div className="booking">
       <h2 className="text-lg text-center">{steps[activeIndex].title}</h2>
@@ -141,13 +152,21 @@ export default function BookingForm() {
                 </button>
               )}
               {activeIndex === 3 && (
-                <button
-                  className="w-fit button"
-                  type="button"
-                  onClick={() => dispatch(asyncHandler(useBooking))}
-                >
-                  Submit
-                </button>
+                <div className="flex flex-col items-end gap-2">
+                  {!isFormComplete && (
+                    <p className="text-red-500 text-xs text-right">
+                      Complete all steps before submitting
+                    </p>
+                  )}
+                  <button
+                    className={`button ${!isFormComplete ? "opacity-50 cursor-not-allowed" : ""}`}
+                    type="button"
+                    disabled={!isFormComplete}
+                    onClick={() => dispatch(asyncHandler(useBooking))}
+                  >
+                    Submit
+                  </button>
+                </div>
               )}
             </div>
           </div>
