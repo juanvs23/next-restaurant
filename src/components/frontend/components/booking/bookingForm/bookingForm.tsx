@@ -1,7 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import { useAppSelector } from "@/libs/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/libs/store/hooks";
 import type { BookingFormData } from "@/types/booking";
+import { asyncHandler } from "@/libs/store/slicers/bookingSlicer";
 import PersonalInfo from "./steps/PersonalInfo/PersonalInfo";
 import BookingInfo from "./steps/BookingInfo/BookingInfo";
 import DatingInfo from "./steps/datingInfo/DatingInfo";
@@ -33,6 +34,7 @@ function StepButton({
 }
 
 export default function BookingForm() {
+  const dispatch = useAppDispatch();
   const [activeIndex, setActiveIndex] = useState(0);
   const useBooking = useAppSelector((state) => state.booking);
   const steps = [
@@ -131,14 +133,15 @@ export default function BookingForm() {
                   Next
                 </button>
               )}
-              {useBooking.form?.bookingDate.completed === false &&
-                useBooking.form?.bookingInfo.completed === false &&
-                useBooking.form?.profileInfo.completed === false &&
-                activeIndex === 3 && (
-                  <button className="w-fit button" type="submit">
-                    Submit
-                  </button>
-                )}
+              {activeIndex === 3 && (
+                <button
+                  className="w-fit button"
+                  type="button"
+                  onClick={() => dispatch(asyncHandler(useBooking))}
+                >
+                  Submit
+                </button>
+              )}
             </div>
           </div>
         </div>

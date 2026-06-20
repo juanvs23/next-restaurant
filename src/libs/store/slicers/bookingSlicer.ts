@@ -1,18 +1,29 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { BookingFormData, TurnTime } from "@/types/booking";
 
-const asyncHandler = createAsyncThunk(
+export const asyncHandler = createAsyncThunk(
   "booking/response",
   async (data: BookingFormData) => {
-    const response = await fetch("/api/booking", {
+    const form = data.form!;
+    const payload = {
+      firstName: form.profileInfo.firstName,
+      lastName: form.profileInfo.lastName,
+      email: form.profileInfo.email,
+      phoneNumber: form.profileInfo.phoneNumber,
+      dateTime: form.bookingDate.dateTime,
+      turnTime: form.bookingDate.turnTime,
+      numberPersons: form.bookingInfo.numberPersons,
+      comments: form.bookingInfo.comments,
+    };
+    const response = await fetch("/api/bookings", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     });
     const result = await response.json();
-    return result;
+    return { ...result, status: response.status };
   },
 );
 
