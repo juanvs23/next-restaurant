@@ -133,6 +133,12 @@ h6 {
   appearance: none;
   display: inline-block;
 }
+.modal-wrapper .modal-body .ticket-button span{
+   color: var(--black2);
+}
+.modal-wrapper .modal-body .ticket-button:hover span{
+  color: var(--golden);
+}
 
 .button:hover {
   background-color: transparent;
