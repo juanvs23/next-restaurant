@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ImPlus, ImPencil, ImCheckmark, ImCross } from "react-icons/im";
+import { ImPlus, ImPencil, ImBin, ImCheckmark, ImCross } from "react-icons/im";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,6 +44,8 @@ export default function UsersPage() {
   const [form, setForm] = useState({ ...emptyCreate });
   const [editForm, setEditForm] = useState({ name: "", email: "", role: "", password: "" });
   const [editId, setEditId] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmTarget, setConfirmTarget] = useState<{ id: string; name: string; active: boolean } | null>(null);
 
   const fetchUsers = () => {
     fetch("/api/users")
@@ -152,11 +154,15 @@ export default function UsersPage() {
                         <option value="admin">admin</option>
                       </select>
                       <Button
-                        variant={u.active ? "destructive" : "outline"}
-                        size="sm"
-                        onClick={() => toggleActive(u._id, u.active)}
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setConfirmTarget({ id: u._id, name: u.name, active: u.active });
+                          setConfirmOpen(true);
+                        }}
+                        title={u.active ? "Deactivate user" : "Activate user"}
                       >
-                        {u.active ? "Deactivate" : "Activate"}
+                        <ImBin className="w-4 h-4 text-destructive" />
                       </Button>
                     </div>
                   </TableCell>
@@ -233,6 +239,34 @@ export default function UsersPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
             <Button onClick={handleEdit} className="gap-2"><ImCheckmark /> Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirm Deactivate/Activate Dialog */}
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent className="bg-popover sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{confirmTarget?.active ? "Deactivate User" : "Activate User"}</DialogTitle>
+          </DialogHeader>
+          <p className="text-muted-foreground py-4">
+            Are you sure you want to {confirmTarget?.active ? "deactivate" : "activate"}{" "}
+            <strong>{confirmTarget?.name}</strong>?
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmOpen(false)} className="gap-2">
+              <ImCross /> Cancel
+            </Button>
+            <Button
+              variant={confirmTarget?.active ? "destructive" : "default"}
+              onClick={() => {
+                if (confirmTarget) toggleActive(confirmTarget.id, confirmTarget.active);
+                setConfirmOpen(false);
+              }}
+              className="gap-2"
+            >
+              <ImCheckmark /> Yes, {confirmTarget?.active ? "deactivate" : "activate"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
