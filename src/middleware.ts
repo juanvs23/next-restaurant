@@ -7,7 +7,7 @@ export default auth((req) => {
   // Dashboard requires authentication
   if (pathname.startsWith("/dashboard")) {
     if (!req.auth?.accessToken) {
-      return NextResponse.redirect(new URL("/auth/login", req.url));
+      return NextResponse.redirect(new URL("/api/auth/signin", req.url));
     }
   }
 
