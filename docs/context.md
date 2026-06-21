@@ -107,6 +107,12 @@ src/
 2. **API sin auth** — Las rutas /api/products, /api/categories no tienen protección (solo dashboard UI)
 3. **Sin MSW** — Tests no tienen mock de API
 
+## Pending Tasks
+
+1. **Custom credentials provider** — Añadir login con email/contraseña vía Auth.js CredentialsProvider, además de Google OAuth.
+2. **Redirect post-login** — Al iniciar sesión, redirigir siempre al dashboard (`/dashboard`), no al home. Configurar `pages` en Auth.js o callback por defecto.
+3. **Separar backoffice del frontend** — El backoffice debe tener su propio diseño y layout independiente del frontend, permitiendo modificar uno sin afectar el otro. Migrar a shadcn/ui para componentes del admin, manteniendo el frontend con Tailwind puro.
+
 ## Environment Variables
 
 | Variable | Description |
