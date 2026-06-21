@@ -51,14 +51,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.expiresAt = account.expires_at
           ? account.expires_at * 1000
           : undefined;
-      }
 
-      // Attach role on first JWT creation or periodically
-      if (token.email) {
-        await connectDB();
-        const user = await User.findOne({ email: token.email });
-        token.role = user?.role ?? "user";
-        token.userId = user?._id?.toString();
+        // Set role at sign-in (avoids DB call on every middleware request)
+        if (token.email) {
+          try {
+            await connectDB();
+            const user = await User.findOne({ email: token.email });
+            token.role = user?.role ?? "user";
+            token.userId = user?._id?.toString();
+          } catch {
+            token.role = "user";
+          }
+        }
       }
 
       // Return previous token if not expired
