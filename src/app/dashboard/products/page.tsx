@@ -210,7 +210,7 @@ export default function ProductsPage() {
 
       {/* Product form dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg bg-popover">
           <DialogHeader>
             <DialogTitle>{editingId ? "Edit" : "New"} Product</DialogTitle>
           </DialogHeader>
