@@ -1,28 +1,46 @@
-"use client";
-import { useSession } from "next-auth/react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Package, CalendarDays, Users } from "lucide-react";
+import { auth } from "@/app/auth";
+import { redirect } from "next/navigation";
 
-export default function DashboardHome() {
-  const { data: session } = useSession();
+const stats = [
+  { label: "Products", icon: Package, value: "10", href: "/dashboard/products" },
+  { label: "Bookings", icon: CalendarDays, value: "—", href: "/dashboard/bookings" },
+  { label: "Users", icon: Users, value: "—", href: "/dashboard/users" },
+];
+
+export default async function DashboardHome() {
+  const session = await auth();
+  if (!session) redirect("/api/auth/signin");
 
   return (
-    <div>
-      <h1 className="text-3xl text-white mb-6">Dashboard</h1>
-      <p className="text-white2 mb-4">
-        Welcome{session?.user?.name ? `, ${session.user.name}` : ""}!
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-black/50 border border-golden/20 rounded-lg p-6">
-          <h2 className="text-golden text-xl mb-2">Products</h2>
-          <p className="text-white2">Manage your menu items</p>
-        </div>
-        <div className="bg-black/50 border border-golden/20 rounded-lg p-6">
-          <h2 className="text-golden text-xl mb-2">Bookings</h2>
-          <p className="text-white2">View reservations</p>
-        </div>
-        <div className="bg-black/50 border border-golden/20 rounded-lg p-6">
-          <h2 className="text-golden text-xl mb-2">Users</h2>
-          <p className="text-white2">Manage staff accounts</p>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground mt-1">
+          Welcome{session.user?.name ? `, ${session.user.name}` : ""}!
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        {stats.map((s) => {
+          const Icon = s.icon;
+          return (
+            <a key={s.label} href={s.href} className="block">
+              <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    {s.label}
+                  </CardTitle>
+                  <Icon className="w-4 h-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold">{s.value}</p>
+                </CardContent>
+              </Card>
+            </a>
+          );
+        })}
       </div>
     </div>
   );
