@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { ImPlus, ImPencil, ImBin, ImCross, ImImages, ImCheckmark } from "react-icons/im";
 
 interface Product {
   _id: string;
@@ -120,7 +121,7 @@ export default function ProductsPage() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl text-white">Products</h1>
-        <button onClick={openCreate} className="button">+ Add Product</button>
+        <button onClick={openCreate} className="button flex items-center gap-2"><ImPlus /> Add Product</button>
       </div>
 
       {/* Product form modal */}
@@ -182,11 +183,11 @@ export default function ProductsPage() {
                       placeholder="https://..."
                       className="flex-1 bg-black border border-golden/30 rounded px-3 py-2 text-white text-sm" />
                     {form.images.length > 1 && (
-                      <button onClick={() => removeImageField(i)} className="text-red-500 px-2">✕</button>
+                      <button onClick={() => removeImageField(i)} className="text-red-500 px-2"><ImCross /></button>
                     )}
                   </div>
                 ))}
-                <button onClick={addImageField} className="text-golden text-sm hover:underline">+ Add image</button>
+                <button onClick={addImageField} className="text-golden text-sm hover:underline flex items-center gap-1"><ImPlus size={12} /> Add image</button>
               </div>
               <div className="col-span-2 flex items-center gap-2">
                 <input type="checkbox" checked={form.available} onChange={(e) => setForm({ ...form, available: e.target.checked })} id="avail" />
@@ -195,8 +196,8 @@ export default function ProductsPage() {
             </div>
 
             <div className="flex justify-end gap-3 pt-2">
-              <button onClick={() => setShowForm(false)} className="px-4 py-2 text-white2 hover:text-white">Cancel</button>
-              <button onClick={handleSave} className="button">{editingId ? "Update" : "Create"}</button>
+              <button onClick={() => setShowForm(false)} className="px-4 py-2 text-white2 hover:text-white flex items-center gap-2"><ImCross /> Cancel</button>
+              <button onClick={handleSave} className="button flex items-center gap-2"><ImCheckmark /> {editingId ? "Update" : "Create"}</button>
             </div>
           </div>
         </div>
@@ -233,8 +234,8 @@ export default function ProductsPage() {
                   </div>
                 </td>
                 <td className="py-3 flex gap-2">
-                  <button onClick={() => openEdit(p)} className="text-golden hover:underline text-sm">Edit</button>
-                  <button onClick={() => handleDelete(p._id)} className="text-red-500 hover:underline text-sm">Delete</button>
+                  <button onClick={() => openEdit(p)} className="text-golden hover:underline flex items-center gap-1"><ImPencil /> Edit</button>
+                  <button onClick={() => handleDelete(p._id)} className="text-red-500 hover:underline flex items-center gap-1"><ImBin /> Delete</button>
                 </td>
               </tr>
             ))}
