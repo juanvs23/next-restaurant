@@ -7,9 +7,15 @@ export default auth((req) => {
   // Dashboard requires authentication
   if (pathname.startsWith("/dashboard")) {
     if (!req.auth?.accessToken) {
-      return NextResponse.redirect(
-        new URL(`/api/auth/signin?callbackUrl=${encodeURIComponent(req.url)}`, req.url)
-      );
+      const signInUrl = new URL("/api/auth/signin", req.url);
+      signInUrl.searchParams.set("callbackUrl", req.url);
+      const response = NextResponse.redirect(signInUrl);
+      // Set the callback URL cookie that Auth.js reads
+      response.cookies.set("authjs.callback-url", req.url, {
+        path: "/",
+        httpOnly: false,
+      });
+      return response;
     }
   }
 
