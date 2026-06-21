@@ -6,6 +6,7 @@ import {
   Tags,
   CalendarDays,
   Users,
+  ClipboardList,
   Moon,
   Sun,
 } from "lucide-react";
@@ -18,6 +19,7 @@ const navItems = [
   { label: "Categories", path: "/dashboard/categories", icon: Tags },
   { label: "Bookings", path: "/dashboard/bookings", icon: CalendarDays },
   { label: "Users", path: "/dashboard/users", icon: Users },
+  { label: "Orders", path: "/dashboard/orders", icon: ClipboardList },
 ];
 
 export function Sidebar() {
