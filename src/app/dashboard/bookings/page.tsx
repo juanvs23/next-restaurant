@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<any[]>([]);
@@ -15,22 +17,26 @@ export default function BookingsPage() {
   }, []);
 
   return (
-    <div>
-      <h1 className="text-3xl text-white mb-6">Bookings</h1>
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold tracking-tight">Bookings</h1>
       {loading ? (
-        <p className="text-white2">Loading...</p>
+        <p className="text-muted-foreground">Loading...</p>
       ) : (
         <div className="grid gap-4">
           {bookings.map((b) => (
-            <div key={b._id} className="bg-black/50 border border-golden/20 rounded-lg p-4">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-golden">{b.firstName} {b.lastName}</h3>
-                <span className="px-2 py-1 rounded text-xs bg-golden/20 text-golden">{b.status}</span>
-              </div>
-              <p className="text-white2 text-sm">{b.email}</p>
-              <p className="text-white2 text-sm">{new Date(b.dateTime).toLocaleString()}</p>
-              <p className="text-white2 text-sm">{b.numberPersons} guests</p>
-            </div>
+            <Card key={b._id}>
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-lg">{b.firstName} {b.lastName}</CardTitle>
+                  <span className="text-xs px-2 py-0.5 rounded bg-primary/10 text-primary capitalize">{b.status}</span>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-1 text-sm text-muted-foreground">
+                <p>{b.email}</p>
+                <p>{new Date(b.dateTime).toLocaleString()}</p>
+                <p>{b.numberPersons} guests</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}
