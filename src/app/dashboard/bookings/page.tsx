@@ -18,7 +18,7 @@ export default function BookingsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">Bookings</h1>
+      <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Bookings</h1>
       {loading ? (
         <p className="text-muted-foreground">Loading...</p>
       ) : (

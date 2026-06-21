@@ -988,3 +988,18 @@ span.hero-counter.swiper-pagination-bullet-active::after {
     color: var(--foreground);
   }
 }
+
+/* Dashboard headings: golden in dark, black2 in light */
+:root {
+  --heading: #0c0b08;
+}
+
+.dark {
+  --heading: #dcca87;
+}
+
+h1.dashboard-heading,
+h2.dashboard-heading {
+  color: var(--heading);
+  font-family: var(--font-cormorant), "Cormorant Upright", serif;
+}
