@@ -8,7 +8,8 @@ async function downloadTicket(data: any) {
   const date = new Date(data.dateTime).toLocaleDateString("en-US", {
     weekday: "long", year: "numeric", month: "long", day: "numeric",
   });
-  const id = data._id?.slice(-8) || "00000000";
+  const id = data._id || "00000000";
+  const shortId = id.slice(-8);
 
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: [100, 160] });
 
@@ -45,7 +46,7 @@ async function downloadTicket(data: any) {
     { label: "Time", value: data.turnTime.charAt(0).toUpperCase() + data.turnTime.slice(1) },
     { label: "Guests", value: String(data.numberPersons) },
     { label: "Table", value: tableName },
-    { label: "Code", value: `#${id}` },
+    { label: "Code", value: `#${shortId}` },
   ];
 
   fields.forEach((f) => {
