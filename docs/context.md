@@ -97,17 +97,15 @@ src/
 |-------|--------|-------------|
 | **Fase 0 — Upgrade** | ✅ | Next 16 + React 19 + ESLint flat config + Auth.js v5 |
 | **Fase 1 — Foundation** | ✅ | Estilos consolidados, modelos DB, fixes connection/AbortController/JWT |
-| **Fase 2 — Backoffice** | 🟡 En progreso | CRUD productos/categorías, admin UI, roles, migración menú |
-| **Fase 3 — Reservas** | ⏳ | Availability, booking API, gestión |
-| **Fase 4 — Comandas** | ⏳ | Pedidos, cocina SSE |
+| **Fase 2 — Backoffice** | ✅ | CRUD productos/categorías, admin UI, roles, menú migrado a DB |
+| **Fase 3 — Reservas** | ✅ | APIs disponibilidad/booking, formulario conectado, PDF ticket, verificación QR |
+| **Fase 4 — Comandas** | ⏳ | Pendiente |
 
 ## Known Issues
 
-1. **Menú hardcodeado** — `menu.ts` (214 líneas) pendiente de migrar a MongoDB
-2. **No file upload real** — Media model creado, falta uploadthing o S3
-3. **API sin auth** — Las rutas /api/products, /api/categories no tienen protección (solo dashboard UI)
-4. **Booking form apunta a API inexistente** — POST /api/booking no creado aún
-5. **Sin MSW** — Tests no tienen mock de API
+1. **No file upload real** — Media model creado, falta uploadthing o S3
+2. **API sin auth** — Las rutas /api/products, /api/categories no tienen protección (solo dashboard UI)
+3. **Sin MSW** — Tests no tienen mock de API
 
 ## Environment Variables
 
