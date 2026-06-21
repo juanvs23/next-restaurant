@@ -21,9 +21,10 @@ interface User {
   name: string;
   email: string;
   role: string;
+  active: boolean;
 }
 
-const emptyForm = { name: "", email: "", role: "staff" };
+const emptyForm = { name: "", email: "", role: "staff" as string };
 
 const roleBadge = (role: string) => {
   const map: Record<string, string> = {
@@ -50,23 +51,23 @@ export default function UsersPage() {
   useEffect(fetchUsers, []);
 
   const openCreate = () => { setForm({ ...emptyForm }); setEditingId(null); setOpen(true); };
-  const openEdit = (u: User) => { setForm({ name: u.name, email: u.email, role: u.role }); setEditingId(u._id); setOpen(true); };
 
   const handleSave = async () => {
-    if (editingId) {
-      await fetch(`/api/users/${editingId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role: form.role }),
-      });
-    }
+    await fetch("/api/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
     setOpen(false);
     fetchUsers();
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Delete this user?")) return;
-    await fetch(`/api/users/${id}`, { method: "DELETE" });
+  const toggleActive = async (id: string, current: boolean) => {
+    await fetch(`/api/users/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: !current }),
+    });
     fetchUsers();
   };
 
@@ -97,15 +98,23 @@ export default function UsersPage() {
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {users.map((u) => (
-                <TableRow key={u._id}>
+                <TableRow key={u._id} className={!u.active ? "opacity-50" : ""}>
                   <TableCell className="font-medium">{u.name}</TableCell>
                   <TableCell className="text-muted-foreground">{u.email}</TableCell>
                   <TableCell><Badge variant="outline" className={roleBadge(u.role)}>{u.role}</Badge></TableCell>
+                  <TableCell>
+                    <span className={`text-xs px-2 py-0.5 rounded ${
+                      u.active ? "bg-green-500/10 text-green-500" : "bg-red-500/10 text-red-500"
+                    }`}>
+                      {u.active ? "Active" : "Inactive"}
+                    </span>
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2 items-center">
                       <select
@@ -117,7 +126,13 @@ export default function UsersPage() {
                         <option value="staff">staff</option>
                         <option value="admin">admin</option>
                       </select>
-                      <Button variant="ghost" size="sm" onClick={() => openEdit(u)}>Edit</Button>
+                      <Button
+                        variant={u.active ? "destructive" : "outline"}
+                        size="sm"
+                        onClick={() => toggleActive(u._id, u.active)}
+                      >
+                        {u.active ? "Deactivate" : "Activate"}
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -128,8 +143,8 @@ export default function UsersPage() {
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogHeader><DialogTitle>{editingId ? "Edit User" : "New User"}</DialogTitle></DialogHeader>
+        <DialogContent className="bg-popover">
+          <DialogHeader><DialogTitle>New User</DialogTitle></DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label>Name</Label>
@@ -153,7 +168,7 @@ export default function UsersPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
-            <Button onClick={handleSave} className="gap-2"><ImCheckmark /> {editingId ? "Update" : "Create"}</Button>
+            <Button onClick={handleSave} className="gap-2"><ImCheckmark /> Create</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

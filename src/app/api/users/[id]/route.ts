@@ -14,7 +14,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   await connectDB();
-  const deleted = await User.findByIdAndDelete(id);
-  if (!deleted) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json({ success: true });
+  // Soft delete — deactivate user
+  const updated = await User.findByIdAndUpdate(id, { active: false }, { new: true });
+  if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json({ success: true, active: false });
 }

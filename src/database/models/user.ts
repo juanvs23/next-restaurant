@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
     image: { type: String },
+    active: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
