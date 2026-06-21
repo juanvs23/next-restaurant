@@ -26,6 +26,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { MediaPicker } from "@/components/dashboard/media-picker";
 import {
   Dialog,
   DialogContent,
@@ -270,10 +271,12 @@ export default function ProductsPage() {
             <div className="grid gap-2">
               <Label>Images</Label>
               {form.images.map((url, i) => (
-                <div key={i} className="flex gap-2">
-                  <Input value={url} onChange={(e) => setImage(i, e.target.value)} placeholder="https://..." />
+                <div key={i} className="flex gap-2 items-start">
+                  <div className="flex-1">
+                    <MediaPicker value={url} onChange={(v) => setImage(i, v)} label="" />
+                  </div>
                   {form.images.length > 1 && (
-                    <Button variant="ghost" size="icon" onClick={() => removeImageField(i)}>
+                    <Button variant="ghost" size="icon" className="mt-6" onClick={() => removeImageField(i)}>
                       <ImCross className="w-3 h-3" />
                     </Button>
                   )}

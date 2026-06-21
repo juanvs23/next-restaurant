@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
+import { MediaPicker } from "@/components/dashboard/media-picker";
 
 interface Category {
   _id: string;
@@ -127,11 +128,7 @@ export default function CategoriesPage() {
               <Input id="desc" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
             </div>
             <div className="grid gap-2">
-              <Label>Image URL</Label>
-              <Input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://..." />
-              {form.image && (
-                <img src={form.image} alt="" className="w-20 h-20 object-cover rounded border mt-1" />
-              )}
+              <MediaPicker value={form.image} onChange={(v) => setForm({ ...form, image: v })} label="Image" />
             </div>
           </div>
           <DialogFooter>
