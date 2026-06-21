@@ -11,8 +11,13 @@ export default auth((req) => {
     }
   }
 
-  // Admin-only routes (future: product/category/user management)
-  if (pathname.startsWith("/dashboard/users") && req.auth?.role !== "admin") {
+  // Admin-only routes
+  if (
+    (pathname.startsWith("/dashboard/users") ||
+     pathname.startsWith("/dashboard/products") ||
+     pathname.startsWith("/dashboard/categories")) &&
+    req.auth?.role !== "admin"
+  ) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 });
