@@ -16,10 +16,11 @@ interface Category {
   _id: string;
   name: string;
   description?: string;
+  image?: string;
   items?: any[];
 }
 
-const emptyForm = { name: "", description: "" };
+const emptyForm = { name: "", description: "", image: "" };
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -37,7 +38,7 @@ export default function CategoriesPage() {
   useEffect(fetchCategories, []);
 
   const openCreate = () => { setForm({ ...emptyForm }); setEditingId(null); setOpen(true); };
-  const openEdit = (c: Category) => { setForm({ name: c.name, description: c.description || "" }); setEditingId(c._id); setOpen(true); };
+  const openEdit = (c: Category) => { setForm({ name: c.name, description: c.description || "", image: c.image || "" }); setEditingId(c._id); setOpen(true); };
 
   const handleSave = async () => {
     const url = editingId ? `/api/categories/${editingId}` : "/api/categories";
@@ -74,6 +75,7 @@ export default function CategoriesPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Image</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Products</TableHead>
@@ -83,6 +85,13 @@ export default function CategoriesPage() {
             <TableBody>
               {categories.map((c) => (
                 <TableRow key={c._id}>
+                  <TableCell>
+                    {c.image ? (
+                      <img src={c.image} alt="" className="w-10 h-10 object-cover rounded border" />
+                    ) : (
+                      <span className="text-muted-foreground text-xs">—</span>
+                    )}
+                  </TableCell>
                   <TableCell className="font-medium">{c.name}</TableCell>
                   <TableCell className="text-muted-foreground">{c.description || "—"}</TableCell>
                   <TableCell className="text-muted-foreground">{c.items?.length || 0}</TableCell>
@@ -116,6 +125,13 @@ export default function CategoriesPage() {
             <div className="grid gap-2">
               <Label htmlFor="desc">Description</Label>
               <Input id="desc" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            </div>
+            <div className="grid gap-2">
+              <Label>Image URL</Label>
+              <Input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://..." />
+              {form.image && (
+                <img src={form.image} alt="" className="w-20 h-20 object-cover rounded border mt-1" />
+              )}
             </div>
           </div>
           <DialogFooter>
