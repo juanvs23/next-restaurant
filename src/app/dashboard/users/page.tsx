@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ImPlus, ImCheckmark, ImCross } from "react-icons/im";
+import { ImPlus, ImPencil, ImCheckmark, ImCross } from "react-icons/im";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,7 +24,7 @@ interface User {
   active: boolean;
 }
 
-const emptyForm = { name: "", email: "", role: "staff" as string };
+const emptyCreate = { name: "", email: "", role: "staff" as string };
 
 const roleBadge = (role: string) => {
   const map: Record<string, string> = {
@@ -38,9 +38,12 @@ const roleBadge = (role: string) => {
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState({ ...emptyForm });
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [form, setForm] = useState({ ...emptyCreate });
+  const [editForm, setEditForm] = useState({ name: "", email: "", role: "", password: "" });
+  const [editId, setEditId] = useState<string | null>(null);
 
   const fetchUsers = () => {
     fetch("/api/users")
@@ -50,15 +53,34 @@ export default function UsersPage() {
 
   useEffect(fetchUsers, []);
 
-  const openCreate = () => { setForm({ ...emptyForm }); setEditingId(null); setOpen(true); };
+  const openCreate = () => { setForm({ ...emptyCreate }); setCreateOpen(true); };
 
-  const handleSave = async () => {
+  const openEdit = (u: User) => {
+    setEditId(u._id);
+    setEditForm({ name: u.name, email: u.email, role: u.role, password: "" });
+    setEditOpen(true);
+  };
+
+  const handleCreate = async () => {
     await fetch("/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
-    setOpen(false);
+    setCreateOpen(false);
+    fetchUsers();
+  };
+
+  const handleEdit = async () => {
+    if (!editId) return;
+    const payload: any = { name: editForm.name, email: editForm.email, role: editForm.role };
+    if (editForm.password) payload.password = editForm.password;
+    await fetch(`/api/users/${editId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    setEditOpen(false);
     fetchUsers();
   };
 
@@ -117,6 +139,9 @@ export default function UsersPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2 items-center">
+                      <Button variant="ghost" size="icon" onClick={() => openEdit(u)} title="Edit user">
+                        <ImPencil className="w-4 h-4" />
+                      </Button>
                       <select
                         value={u.role}
                         onChange={(e) => updateRole(u._id, e.target.value)}
@@ -142,7 +167,8 @@ export default function UsersPage() {
         </CardContent>
       </Card>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      {/* Create User Dialog */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="bg-popover">
           <DialogHeader><DialogTitle>New User</DialogTitle></DialogHeader>
           <div className="grid gap-4 py-4">
@@ -167,8 +193,46 @@ export default function UsersPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
-            <Button onClick={handleSave} className="gap-2"><ImCheckmark /> Create</Button>
+            <Button variant="outline" onClick={() => setCreateOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
+            <Button onClick={handleCreate} className="gap-2"><ImCheckmark /> Create</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit User Dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="bg-popover">
+          <DialogHeader><DialogTitle>Edit User</DialogTitle></DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label>Name</Label>
+              <Input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
+            </div>
+            <div className="grid gap-2">
+              <Label>Email</Label>
+              <Input type="email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} />
+            </div>
+            <div className="grid gap-2">
+              <Label>Role</Label>
+              <Select value={editForm.role} onValueChange={(v) => setEditForm({ ...editForm, role: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="staff">Staff</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label>New Password</Label>
+              <Input type="password" value={editForm.password}
+                onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                placeholder="Leave blank to keep current" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
+            <Button onClick={handleEdit} className="gap-2"><ImCheckmark /> Save Changes</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
