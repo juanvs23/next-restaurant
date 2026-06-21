@@ -21,8 +21,6 @@ html,
 body {
   box-sizing: border-box;
   font-size: 16px;
-  background-color: var(--black2);
-  color: var(--white2);
   margin: 0;
   overflow-x: hidden;
   font-family: var(--font-open-sans), "Open Sans", sans-serif;
