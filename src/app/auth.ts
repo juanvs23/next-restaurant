@@ -22,6 +22,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user, account }) {
       if (account?.provider === "google" && user.email) {
         await connectDB();
+
+        const userCount = await User.countDocuments();
         const existing = await User.findOne({ email: user.email });
 
         if (!existing) {
@@ -30,7 +32,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             email: user.email,
             googleId: account.providerAccountId,
             image: user.image,
-            role: "user",
+            role: userCount === 0 ? "admin" : "staff",
           });
         } else {
           // Update profile on each sign in
