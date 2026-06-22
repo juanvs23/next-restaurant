@@ -42,10 +42,12 @@ const emptyForm = {
   firstName: "", lastName: "", email: "", phoneNumber: "",
   dateTime: "", turnTime: "evening", numberPersons: "2",
   arrivalTime: "", departureTime: "", comments: "", status: "confirmed",
+  tableId: "",
 };
 
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [tables, setTables] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -61,7 +63,7 @@ export default function BookingsPage() {
 
   useEffect(fetchBookings, []);
 
-  const openCreate = () => { setForm({ ...emptyForm }); setEditingId(null); setOpen(true); };
+  const openCreate = () => { setForm({ ...emptyForm }); setEditingId(null); setOpen(true); fetch("/api/tables").then(r=>r.json()).then(setTables); };
 
   const openEdit = (b: Booking) => {
     setForm({
@@ -70,9 +72,11 @@ export default function BookingsPage() {
       turnTime: b.turnTime, numberPersons: String(b.numberPersons),
       arrivalTime: b.arrivalTime || "", departureTime: b.departureTime || "",
       comments: b.comments || "", status: b.status,
+      tableId: b.tableId?._id || b.tableId || "",
     });
     setEditingId(b._id);
     setOpen(true);
+    fetch("/api/tables").then(r=>r.json()).then(setTables);
   };
 
   const handleSave = async () => {
@@ -272,6 +276,18 @@ export default function BookingsPage() {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+            <div className="grid gap-2">
+              <Label>Table</Label>
+              <Select value={form.tableId} onValueChange={(v) => setForm({ ...form, tableId: v })}>
+                <SelectTrigger><SelectValue placeholder="Auto-assign" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Auto-assign</SelectItem>
+                  {tables.filter((t) => t.status === "available").map((t) => (
+                    <SelectItem key={t._id} value={t._id}>{t.name || t.tableId} ({t.capacity} pax)</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid gap-2">
               <Label>Comments</Label>
