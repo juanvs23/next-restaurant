@@ -477,13 +477,32 @@ h6 {
 }
 
 .react-calendar__tile--now {
-  background: rgba(220, 202, 135, 0.08) !important;
-  border: 1px solid rgba(220, 202, 135, 0.4) !important;
+  background: rgba(220, 202, 135, 0.12) !important;
+  border: 1px solid var(--golden) !important;
+  color: var(--golden) !important;
+  font-weight: 700;
 }
 
 .react-calendar__tile--disabled {
-  color: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 0.2) !important;
   cursor: not-allowed;
+  text-decoration: line-through;
+  opacity: 0.4;
+}
+
+.react-calendar__tile--disabled:hover {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.react-calendar__tile.no-tables {
+  color: rgba(255, 255, 255, 0.3) !important;
+  cursor: not-allowed;
+}
+
+.react-calendar__tile.no-tables:hover {
+  background: rgba(255, 0, 0, 0.05) !important;
+  color: rgba(255, 255, 255, 0.3) !important;
 }
 
 .react-calendar__month-view__days__day--weekend {
