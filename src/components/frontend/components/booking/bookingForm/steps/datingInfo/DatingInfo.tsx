@@ -8,6 +8,8 @@ export default function DatingInfo() {
   const { bookingDate } = useAppSelector((state) => state.booking.form!);
   const [dateTime, setDateTime] = useState(bookingDate.dateTime);
   const [turnTime, setTurnTime] = useState(bookingDate.turnTime);
+  const [arrivalTime, setArrivalTime] = useState(bookingDate.arrivalTime || "");
+  const [departureTime, setDepartureTime] = useState(bookingDate.departureTime || "");
   const [availability, setAvailability] = useState<Record<string, number>>({});
   const [loadingAvail, setLoadingAvail] = useState(false);
 
@@ -32,10 +34,12 @@ export default function DatingInfo() {
         ...bookingDate,
         dateTime,
         turnTime,
+        arrivalTime: dateTime ? arrivalTime : "",
+        departureTime: dateTime ? departureTime : "",
         completed: dateTime !== "",
       }),
     );
-  }, [dateTime, turnTime]);
+  }, [dateTime, turnTime, arrivalTime, departureTime]);
 
   const [placeholderDate] = useState(() => `${Date.now()}`);
 
@@ -68,6 +72,28 @@ export default function DatingInfo() {
           />
         </div>
       </div>
+
+      {/* Arrival / Departure times */}
+      {dateTime && (
+        <div className="flex flex-col gap-2 md:flex-row">
+          <div className="w-full md:w-6/12">
+            <Inputs
+              getValue={(value: string) => setArrivalTime(value)}
+              name="arrivalTime"
+              title="Arrival time"
+              type="time"
+            />
+          </div>
+          <div className="w-full md:w-6/12">
+            <Inputs
+              getValue={(value: string) => setDepartureTime(value)}
+              name="departureTime"
+              title="Departure time"
+              type="time"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Availability feedback */}
       {dateTime && (

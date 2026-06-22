@@ -13,8 +13,8 @@ export const asyncHandler = createAsyncThunk(
       dateTime: form.bookingDate.dateTime,
       turnTime: form.bookingDate.turnTime,
       numberPersons: form.bookingInfo.numberPersons,
-      arrivalTime: form.bookingInfo.arrivalTime || undefined,
-      departureTime: form.bookingInfo.departureTime || undefined,
+      arrivalTime: form.bookingDate.arrivalTime || undefined,
+      departureTime: form.bookingDate.departureTime || undefined,
       comments: form.bookingInfo.comments,
     };
     const response = await fetch("/api/bookings", {
@@ -44,13 +44,13 @@ const initialState: BookingFormData = {
       step: 1,
       dateTime: "",
       turnTime: TurnTime.Morning,
+      arrivalTime: "",
+      departureTime: "",
       completed: false,
     },
     bookingInfo: {
       step: 2,
       numberPersons: "",
-      arrivalTime: "",
-      departureTime: "",
       comments: "",
       completed: false,
     },

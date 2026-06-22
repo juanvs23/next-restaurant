@@ -10,8 +10,6 @@ export default function BookingInfo() {
   const [personsNumber, setPersonsNumber] = React.useState<string>(
     bookingInfo.numberPersons || "1",
   );
-  const [arrivalTime, setArrivalTime] = React.useState<string>(bookingInfo.arrivalTime || "");
-  const [departureTime, setDepartureTime] = React.useState<string>(bookingInfo.departureTime || "");
   const [comments, setComments] = React.useState<string>(bookingInfo.comments || "");
 
   useEffect(() => {
@@ -19,16 +17,14 @@ export default function BookingInfo() {
       getBookingInfo({
         ...bookingInfo,
         numberPersons: personsNumber,
-        arrivalTime,
-        departureTime,
         comments,
         completed: personsNumber !== "",
       }),
     );
-  }, [personsNumber, arrivalTime, departureTime, comments]);
+  }, [personsNumber, comments]);
 
   return (
-    <div className="booking space-y-4">
+    <div className="space-y-4">
       <div className="w-full form-group">
         <Inputs
           getValue={(value: string) => setPersonsNumber(value)}
@@ -47,24 +43,6 @@ export default function BookingInfo() {
             { value: "other", label: "More persons" },
           ]}
         />
-      </div>
-      <div className="flex gap-4">
-        <div className="w-1/2">
-          <Inputs
-            getValue={(value: string) => setArrivalTime(value)}
-            name="arrivalTime"
-            title="Arrival time"
-            type="time"
-          />
-        </div>
-        <div className="w-1/2">
-          <Inputs
-            getValue={(value: string) => setDepartureTime(value)}
-            name="departureTime"
-            title="Departure time"
-            type="time"
-          />
-        </div>
       </div>
       <div className="w-full">
         <Inputs

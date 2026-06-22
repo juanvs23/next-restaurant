@@ -43,13 +43,13 @@ export interface BookingForm {
     step: number;
     dateTime: string;
     turnTime: TurnTime;
+    arrivalTime?: string;
+    departureTime?: string;
     completed: boolean;
   };
   bookingInfo: {
     step: number;
     numberPersons: string;
-    arrivalTime?: string;
-    departureTime?: string;
     comments: string;
     completed: boolean;
   };

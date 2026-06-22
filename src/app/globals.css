@@ -383,7 +383,6 @@ h6 {
 
 .modal-wrapper .modal-body {
   margin-bottom: 10px;
-  max-height: 70vh;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
