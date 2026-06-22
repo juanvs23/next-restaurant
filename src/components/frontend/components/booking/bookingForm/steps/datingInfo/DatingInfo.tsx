@@ -57,13 +57,6 @@ export default function DatingInfo() {
             placeHolder={placeholderDate}
             type="date"
           />
-          {!dateTime && (
-            <div className="border border-golden/20 rounded-lg p-3 mt-2">
-              <p className="text-white2 text-xs text-center font-serif">
-                Select a date to check availability
-              </p>
-            </div>
-          )}
         </div>
         <div className="w-full md:w-6/12 space-y-2">
           <Inputs
