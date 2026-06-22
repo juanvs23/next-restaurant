@@ -23,7 +23,7 @@ export default function AwardComponent() {
       <div className="container container-award">
         <div className="row">
           <div className="element-50">
-            <Image src={logoTop.src} height={120} width={120} alt="logo" />
+            <Image src={logoTop.src} height={120} width={120} alt="GERÍCHT restaurant awards logo" />
             <div className="row-award">
               <h5>Awards & recognition</h5>
               <SponImage justify="start" />
@@ -31,7 +31,7 @@ export default function AwardComponent() {
               <div className="row-trophy">
                 {trophies.map((t, i) => (
                   <div key={i} className="trophy">
-                    <Image src={t.src.src} height={100} width={100} alt="logo" />
+                    <Image src={t.src.src} height={100} width={100} alt={`${t.title} award trophy`} />
                     <div className="text">
                       <h5>{t.title}</h5>
                       <p>{t.desc}</p>
@@ -44,10 +44,10 @@ export default function AwardComponent() {
           <div className="element-50">
             <div className="imageaWard">
               <div className="steak">
-                <Image src={awardImga.src} height={awardImga.height} width={awardImga.width} alt="logo" />
+                <Image src={awardImga.src} height={awardImga.height} width={awardImga.width} alt="Grilled steak with vegetables" />
               </div>
               <div className="gImage">
-                <Image src={G.src} height={G.height} width={G.width} alt="logo" />
+                <Image src={G.src} height={G.height} width={G.width} alt="GERÍCHT ornamental letter G" />
               </div>
             </div>
           </div>

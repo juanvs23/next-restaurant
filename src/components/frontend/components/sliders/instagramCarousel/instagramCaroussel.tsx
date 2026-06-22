@@ -29,7 +29,7 @@ function ImageInstagram({ image }: ImageProps) {
         src={image.src}
         width={image.width}
         height={image.height}
-        alt="instagram"
+        alt="Instagram gallery image from GERÍCHT restaurant"
         priority
       />
       <div className="instagram-overlay">
