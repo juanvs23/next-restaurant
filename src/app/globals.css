@@ -487,30 +487,39 @@ h6 {
 }
 
 /* ── Non-working days (Sundays) ── */
-.react-calendar__tile--disabled {
+.react-calendar__tile:disabled {
   cursor: not-allowed !important;
   background: rgba(255, 0, 0, 0.04) !important;
   opacity: 1 !important;
 }
 
-.react-calendar__tile--disabled abbr {
+.react-calendar__tile:disabled abbr {
   color: rgba(255, 255, 255, 0.15) !important;
   text-decoration: line-through;
 }
 
 /* ── Past dates ── */
-.react-calendar__tile--disabled:not(.no-tables) abbr {
+.react-calendar__tile:disabled:not(.no-tables) abbr {
   opacity: 0.25;
 }
 
 /* ── Days with NO tables ── */
-.react-calendar__tile--disabled.no-tables {
+.react-calendar__tile:disabled.no-tables {
   background: rgba(220, 202, 135, 0.04) !important;
 }
 
-.react-calendar__tile--disabled.no-tables abbr {
+.react-calendar__tile:disabled.no-tables abbr {
   color: rgba(220, 202, 135, 0.25) !important;
   text-decoration: none;
+}
+
+.react-calendar__tile:disabled.no-tables::after {
+  content: "✕";
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  font-size: 7px;
+  color: rgba(220, 202, 135, 0.3);
 }
 
 .react-calendar__month-view__days__day--weekend {
