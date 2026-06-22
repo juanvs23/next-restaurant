@@ -6,33 +6,32 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const date = searchParams.get("date");
-  const turnTime = searchParams.get("turnTime");
+  const turnTime = searchParams.get("turnTime"); // optional
   const persons = parseInt(searchParams.get("persons") || "2");
 
-  if (!date || !turnTime) {
-    return NextResponse.json(
-      { error: "date and turnTime are required" },
-      { status: 400 }
-    );
+  if (!date) {
+    return NextResponse.json({ error: "date is required" }, { status: 400 });
   }
 
   await connectDB();
 
-  // Find tables that fit the party size
+  const start = new Date(`${date}T00:00:00`);
+  const end = new Date(`${date}T23:59:59.999`);
+
+  // All tables that fit the party
   const candidateTables = await TableModel.find({
     capacity: { $gte: persons },
     status: { $ne: "maintenance" },
   });
 
-  // Match the full day in local time (stored as UTC)
-  const start = new Date(`${date}T00:00:00`);
-  const end = new Date(`${date}T23:59:59.999`);
-
-  const bookings = await Booking.find({
+  // Bookings for that day
+  const match: any = {
     dateTime: { $gte: start, $lte: end },
-    turnTime,
     status: { $in: ["pending", "confirmed"] },
-  });
+  };
+  if (turnTime) match.turnTime = turnTime;
+
+  const bookings = await Booking.find(match);
 
   const bookedTableIds = bookings
     .filter((b: any) => b.tableId)
@@ -42,5 +41,10 @@ export async function GET(req: NextRequest) {
     (t: any) => !bookedTableIds.includes(t._id.toString())
   );
 
-  return NextResponse.json({ available, total: candidateTables.length });
+  return NextResponse.json({
+    available,
+    total: candidateTables.length,
+    date,
+    turnTime: turnTime || "all",
+  });
 }
