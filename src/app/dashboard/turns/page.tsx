@@ -33,10 +33,10 @@ export default function TurnsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ ...emptyForm });
 
-  const fetch = () => fetch("/api/turns").then(r => r.json()).then(d => { setItems(d); setLoading(false); });
-  useEffect(fetch, []);
+  const loadTurns = () => fetch("/api/turns").then(r => r.json()).then(d => { setItems(d); setLoading(false); });
+  useEffect(loadTurns, []);
 
-  const openCreate = () => { setForm({ ...emptyForm }); setEditingId(null); setOpen(true); fetch("/api/turns").then(r=>r.json()).then(d=>setItems(d)); };
+  const openCreate = () => { setForm({ ...emptyForm }); setEditingId(null); setOpen(true); };
   const openEdit = (t: TurnItem) => { setForm(t); setEditingId(t._id); setOpen(true); };
 
   const handleSave = async () => {
@@ -46,12 +46,12 @@ export default function TurnsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
-    setOpen(false); fetch();
+    setOpen(false); loadTurns();
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this turn?")) return;
-    await fetch(`/api/turns/${id}`, { method: "DELETE" }); fetch();
+    await fetch(`/api/turns/${id}`, { method: "DELETE" }); loadTurns();
   };
 
   if (loading) return <p className="text-muted-foreground">Loading...</p>;
