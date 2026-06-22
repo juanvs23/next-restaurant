@@ -8,8 +8,10 @@ import {
   Users,
   ClipboardList,
   ImageIcon,
+  Table2,
   Moon,
   Sun,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "./theme-provider";
@@ -22,6 +24,7 @@ const navItems = [
   { label: "Categories", path: "/dashboard/categories", icon: Tags },
   { label: "Bookings", path: "/dashboard/bookings", icon: CalendarDays },
   { label: "Users", path: "/dashboard/users", icon: Users },
+  { label: "Tables", path: "/dashboard/tables", icon: Table2 },
   { label: "Orders", path: "/dashboard/orders", icon: ClipboardList },
   { label: "Media", path: "/dashboard/media", icon: ImageIcon },
 ];
