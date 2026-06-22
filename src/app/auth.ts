@@ -31,6 +31,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             name: user.name,
             email: user.email,
             googleId: account.providerAccountId,
+            provider: account.provider,
             image: user.image,
             role: userCount === 0 ? "admin" : "staff",
           });

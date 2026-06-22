@@ -22,6 +22,7 @@ interface User {
   email: string;
   role: string;
   active: boolean;
+  provider?: string;
 }
 
 const emptyCreate = { name: "", email: "", role: "staff" as string };
@@ -121,6 +122,7 @@ export default function UsersPage() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
+                <TableHead>Provider</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -131,6 +133,11 @@ export default function UsersPage() {
                 <TableRow key={u._id} className={!u.active ? "opacity-50" : ""}>
                   <TableCell className="font-medium">{u.name}</TableCell>
                   <TableCell className="text-muted-foreground">{u.email}</TableCell>
+                  <TableCell>
+                    <span className="text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground capitalize">
+                      {u.provider || "—"}
+                    </span>
+                  </TableCell>
                   <TableCell><Badge variant="outline" className={roleBadge(u.role)}>{u.role}</Badge></TableCell>
                   <TableCell>
                     <span className={`text-xs px-2 py-0.5 rounded ${
