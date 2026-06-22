@@ -413,6 +413,88 @@ h6 {
   margin-bottom: 4px;
 }
 
+/* --- */
+
+/* react-calendar theme overrides */
+.react-calendar {
+  border: 1px solid rgba(220, 202, 135, 0.3) !important;
+  border-radius: 8px;
+  background: rgba(12, 11, 8, 0.95) !important;
+  font-family: "Open Sans", sans-serif;
+  width: 100% !important;
+  padding: 8px;
+}
+
+.react-calendar__navigation button {
+  color: var(--golden) !important;
+  font-family: "Cormorant Upright", serif;
+  font-size: 1.1rem;
+  background: none !important;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background: rgba(220, 202, 135, 0.1) !important;
+  border-radius: 4px;
+}
+
+.react-calendar__month-view__weekdays {
+  color: var(--golden2) !important;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.react-calendar__month-view__weekdays abbr {
+  text-decoration: none;
+}
+
+.react-calendar__tile {
+  color: var(--white) !important;
+  background: transparent !important;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  padding: 10px 6px;
+  transition: background 0.2s;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background: rgba(220, 202, 135, 0.15) !important;
+  color: var(--golden) !important;
+}
+
+.react-calendar__tile--active {
+  background: var(--golden) !important;
+  color: var(--black2) !important;
+  font-weight: 700;
+}
+
+.react-calendar__tile--active:enabled:hover,
+.react-calendar__tile--active:enabled:focus {
+  background: var(--golden) !important;
+  color: var(--black2) !important;
+}
+
+.react-calendar__tile--now {
+  background: rgba(220, 202, 135, 0.08) !important;
+  border: 1px solid rgba(220, 202, 135, 0.4) !important;
+}
+
+.react-calendar__tile--disabled {
+  color: rgba(255, 255, 255, 0.15) !important;
+  cursor: not-allowed;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: var(--white) !important;
+}
+
+.react-calendar__navigation__label__labelText {
+  color: var(--golden) !important;
+  font-weight: 600;
+}
+
 .form-control {
   background-color: rgba(12, 11, 8, 0.8);
   color: var(--white);
