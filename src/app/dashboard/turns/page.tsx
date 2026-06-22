@@ -33,7 +33,7 @@ export default function TurnsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ ...emptyForm });
 
-  const loadTurns = () => fetch("/api/turns").then(r => r.json()).then(d => { setItems(d); setLoading(false); });
+  const loadTurns = () => { fetch("/api/turns").then(r => r.json()).then(d => { setItems(d); setLoading(false); }); };
   useEffect(loadTurns, []);
 
   const openCreate = () => { setForm({ ...emptyForm }); setEditingId(null); setOpen(true); };
