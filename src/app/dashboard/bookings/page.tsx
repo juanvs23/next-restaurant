@@ -50,6 +50,8 @@ export default function BookingsPage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ ...emptyForm });
+  const [searchName, setSearchName] = useState("");
+  const [filterTable, setFilterTable] = useState("");
 
   const fetchBookings = () => {
     fetch("/api/bookings")
@@ -96,6 +98,21 @@ export default function BookingsPage() {
     fetchBookings();
   };
 
+  // Compute unique table names/IDs from bookings
+  const tableOptions = [...new Set(bookings.map((b) => {
+    const t = b.tableId;
+    return t?.name || t?.tableId || (typeof t === "string" ? t : "");
+  }).filter(Boolean))];
+
+  // Filter bookings
+  const filtered = bookings.filter((b) => {
+    const fullName = `${b.firstName} ${b.lastName}`.toLowerCase();
+    const matchesName = !searchName || fullName.includes(searchName.toLowerCase());
+    const tableLabel = b.tableId?.name || b.tableId?.tableId || "";
+    const matchesTable = !filterTable || tableLabel === filterTable;
+    return matchesName && matchesTable;
+  });
+
   if (loading) return <p className="text-muted-foreground">Loading...</p>;
 
   return (
@@ -105,8 +122,38 @@ export default function BookingsPage() {
         <Button onClick={openCreate} className="gap-2"><ImPlus /> Add Booking</Button>
       </div>
 
+      {/* Filters */}
+      <div className="flex gap-4 items-end">
+        <div className="w-64">
+          <Label className="text-xs text-muted-foreground">Search by name</Label>
+          <Input
+            placeholder="Search..."
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+          />
+        </div>
+        <div className="w-48">
+          <Label className="text-xs text-muted-foreground">Filter by table</Label>
+          <select
+            value={filterTable}
+            onChange={(e) => setFilterTable(e.target.value)}
+            className="w-full bg-background border border-input rounded-md px-3 py-2 text-sm"
+          >
+            <option value="">All tables</option>
+            {tableOptions.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        </div>
+        {(searchName || filterTable) && (
+          <Button variant="ghost" size="sm" onClick={() => { setSearchName(""); setFilterTable(""); }}>
+            Clear filters
+          </Button>
+        )}
+      </div>
+
       <div className="grid gap-4">
-        {bookings.map((b) => (
+        {filtered.map((b) => (
           <Card key={b._id}>
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">
