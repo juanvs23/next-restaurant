@@ -56,6 +56,13 @@ export default function Inputs({
         </select>
       )}
       {type === "date" && <CalendarInput func={getValue} />}
+      {type === "time" && (
+        <input
+          type="time"
+          className={classes}
+          onChange={(e) => getValue(e.target.value)}
+        />
+      )}
       {error && error != "" && (
         <>
           <p className="text-red-500">{error}</p>{" "}
