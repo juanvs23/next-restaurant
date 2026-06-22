@@ -449,6 +449,7 @@ h6 {
   text-decoration: none;
 }
 
+/* ── Normal day ── */
 .react-calendar__tile {
   color: var(--white) !important;
   background: transparent !important;
@@ -456,6 +457,7 @@ h6 {
   font-size: 0.85rem;
   padding: 10px 6px;
   transition: background 0.2s;
+  position: relative;
 }
 
 .react-calendar__tile:enabled:hover,
@@ -476,6 +478,7 @@ h6 {
   color: var(--black2) !important;
 }
 
+/* ── Today ── */
 .react-calendar__tile--now {
   background: rgba(220, 202, 135, 0.12) !important;
   border: 1px solid var(--golden) !important;
@@ -483,44 +486,31 @@ h6 {
   font-weight: 700;
 }
 
+/* ── Non-working days (Sundays) ── */
 .react-calendar__tile--disabled {
-  color: rgba(255, 255, 255, 0.15) !important;
   cursor: not-allowed !important;
-  opacity: 0.3 !important;
-  position: relative;
+  background: rgba(255, 0, 0, 0.04) !important;
+  opacity: 1 !important;
 }
 
 .react-calendar__tile--disabled abbr {
-  text-decoration: line-through;
-  text-decoration-color: rgba(255, 255, 255, 0.2);
-}
-
-.react-calendar__tile--disabled:hover {
-  background: transparent !important;
   color: rgba(255, 255, 255, 0.15) !important;
+  text-decoration: line-through;
 }
 
-/* Days with NO tables available (not Sundays) */
+/* ── Past dates ── */
+.react-calendar__tile--disabled:not(.no-tables) abbr {
+  opacity: 0.25;
+}
+
+/* ── Days with NO tables ── */
 .react-calendar__tile--disabled.no-tables {
-  opacity: 0.5 !important;
+  background: rgba(220, 202, 135, 0.04) !important;
 }
 
 .react-calendar__tile--disabled.no-tables abbr {
+  color: rgba(220, 202, 135, 0.25) !important;
   text-decoration: none;
-  color: rgba(220, 202, 135, 0.3) !important;
-}
-
-.react-calendar__tile--disabled.no-tables::after {
-  content: "✕";
-  position: absolute;
-  top: 2px;
-  right: 4px;
-  font-size: 8px;
-  color: rgba(220, 202, 135, 0.3);
-}
-
-.react-calendar__tile--disabled.no-tables:hover {
-  background: rgba(220, 202, 135, 0.05) !important;
 }
 
 .react-calendar__month-view__days__day--weekend {
