@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "./theme-provider";
+import { signOut } from "next-auth/react";
+import { LogOut } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
@@ -63,6 +65,16 @@ export function Sidebar() {
       >
         {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         {theme === "dark" ? "Light" : "Dark"} Mode
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className="gap-2 text-muted-foreground hover:text-destructive justify-start"
+        onClick={() => signOut({ callbackUrl: "/" })}
+      >
+        <LogOut className="w-4 h-4" />
+        Logout
       </Button>
     </aside>
   );
