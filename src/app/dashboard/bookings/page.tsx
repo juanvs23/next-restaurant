@@ -33,7 +33,7 @@ interface Booking {
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-500/10 text-yellow-500",
   confirmed: "bg-green-500/10 text-green-500",
-  reprogrammed: "bg-purple-500/10 text-purple-500",
+  rescheduled: "bg-purple-500/10 text-purple-500",
   cancelled: "bg-red-500/10 text-red-500",
   completed: "bg-blue-500/10 text-blue-500",
 };
@@ -124,7 +124,7 @@ export default function BookingsPage() {
                   >
                     <option value="pending">pending</option>
                     <option value="confirmed">confirmed</option>
-                    <option value="reprogrammed">reprogrammed</option>
+                    <option value="rescheduled">rescheduled</option>
                     <option value="completed">completed</option>
                     <option value="cancelled">cancelled</option>
                   </select>
@@ -214,7 +214,7 @@ export default function BookingsPage() {
                   <SelectContent>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="confirmed">Confirmed</SelectItem>
-                    <SelectItem value="reprogrammed">Reprogrammed</SelectItem>
+                    <SelectItem value="rescheduled">Rescheduled</SelectItem>
                     <SelectItem value="completed">Completed</SelectItem>
                     <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>

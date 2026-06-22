@@ -5,6 +5,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
   await connectDB();
+
+  // Auto-cancel bookings that are >20 min past their time
+  const now = new Date();
+  const twentyMinAgo = new Date(now.getTime() - 20 * 60 * 1000);
+  await Booking.updateMany(
+    { dateTime: { $lte: twentyMinAgo }, status: { $in: ["pending", "confirmed"] } },
+    { status: "cancelled" },
+  );
+
   const bookings = await Booking.find()
     .populate("tableId")
     .sort({ dateTime: -1 });

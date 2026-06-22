@@ -15,9 +15,30 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const { id } = await params;
   const body = await req.json();
   await connectDB();
-  const updated = await Booking.findByIdAndUpdate(id, body, { new: true });
-  if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json(updated);
+
+  const booking = await Booking.findById(id);
+  if (!booking) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const now = new Date();
+  const bookingDate = new Date(booking.dateTime);
+
+  // Rule: Reschedule requires 30 min advance notice
+  if (body.status === "rescheduled") {
+    const diffMs = bookingDate.getTime() - now.getTime();
+    const diffMin = Math.floor(diffMs / 60000);
+    if (diffMin < 30) {
+      return NextResponse.json(
+        { error: "Rescheduling requires at least 30 minutes advance notice" },
+        { status: 400 },
+      );
+    }
+  }
+
+  // Apply status change
+  booking.status = body.status;
+  await booking.save();
+
+  return NextResponse.json(booking);
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
