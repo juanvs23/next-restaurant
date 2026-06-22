@@ -100,6 +100,7 @@ src/
 | **Fase 2 — Backoffice** | ✅ | CRUD productos/categorías, admin UI, roles, menú migrado a DB |
 | **Fase 3 — Reservas** | ✅ | APIs disponibilidad/booking, formulario conectado, PDF ticket, verificación QR |
 | **Fase 4 — Comandas** | ⏳ | Pendiente |
+| **Fase 5 — Configuración** | ⏳ | Días no laborables desde backoffice, horarios por turno configurables, ajustes generales del restaurante |
 
 ## Known Issues
 
@@ -110,8 +111,9 @@ src/
 ## Pending Tasks
 
 1. **Custom credentials provider** — Añadir login con email/contraseña vía Auth.js CredentialsProvider, además de Google OAuth.
-2. **Redirect post-login** — Al iniciar sesión, redirigir siempre al dashboard (`/dashboard`), no al home. Configurar `pages` en Auth.js o callback por defecto.
-3. **Separar backoffice del frontend** — El backoffice debe tener su propio diseño y layout independiente del frontend, permitiendo modificar uno sin afectar el otro. Migrar a shadcn/ui para componentes del admin, manteniendo el frontend con Tailwind puro.
+2. **Redirect post-login** — Al iniciar sesión, redirigir siempre al dashboard (`/dashboard`), no al home.
+3. **Días no laborables desde backoffice** — CRUD para configurar días de cierre semanal (domingos, feriados) y excepciones.
+4. **Separar backoffice del frontend** — El backoffice debe tener su propio diseño y layout independiente del frontend.
 
 ## Environment Variables
 
