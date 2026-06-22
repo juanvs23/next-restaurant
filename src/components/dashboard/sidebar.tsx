@@ -9,6 +9,7 @@ import {
   ClipboardList,
   ImageIcon,
   Table2,
+  Clock,
   Moon,
   Sun,
   LogOut,
@@ -24,6 +25,7 @@ const navItems = [
   { label: "Bookings", path: "/dashboard/bookings", icon: CalendarDays },
   { label: "Users", path: "/dashboard/users", icon: Users },
   { label: "Tables", path: "/dashboard/tables", icon: Table2 },
+  { label: "Turns", path: "/dashboard/turns", icon: Clock },
   { label: "Orders", path: "/dashboard/orders", icon: ClipboardList },
   { label: "Media", path: "/dashboard/media", icon: ImageIcon },
 ];

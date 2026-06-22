@@ -6,3 +6,5 @@ import "./table";
 import "./product";
 import "./category";
 import "./media";
+import "./order";
+import "./turn";

@@ -20,6 +20,7 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
     type: { type: String, enum: ["drink", "food", "dessert"], default: "food" },
+    turnIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Turn" }],
     images: [{ type: String }],
     ingredients: [{ type: String }],
     sizes: [sizePriceSchema],

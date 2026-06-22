@@ -63,11 +63,13 @@ const emptyForm = {
   images: [""] as string[],
   SKU: "",
   available: true,
+  turnIds: [] as string[],
 };
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [turns, setTurns] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -84,12 +86,17 @@ export default function ProductsPage() {
     });
   };
 
+  const openDialog = () => {
+    fetch("/api/turns").then(r => r.json()).then(setTurns);
+  };
+
   useEffect(fetchData, []);
 
   const openCreate = () => {
     setForm({ ...emptyForm });
     setEditingId(null);
     setOpen(true);
+    openDialog();
   };
 
   const openEdit = (p: Product) => {
@@ -103,9 +110,11 @@ export default function ProductsPage() {
       images: p.images?.length ? p.images : [""],
       SKU: p.SKU || "",
       available: p.available,
+      turnIds: (p as any).turnIds?.map((t: any) => typeof t === "string" ? t : t._id) || [],
     });
     setEditingId(p._id);
     setOpen(true);
+    openDialog();
   };
 
   const handleSave = async () => {
@@ -119,6 +128,7 @@ export default function ProductsPage() {
       images: form.images.filter(Boolean),
       SKU: form.SKU,
       available: form.available,
+      turnIds: form.turnIds,
     };
 
     await fetch(editingId ? `/api/products/${editingId}` : "/api/products", {
@@ -266,6 +276,37 @@ export default function ProductsPage() {
             <div className="grid gap-2">
               <Label>Ingredients (comma separated)</Label>
               <Input value={form.ingredients} onChange={(e) => setForm({ ...form, ingredients: e.target.value })} />
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Available Turns</Label>
+              <div className="flex flex-wrap gap-2">
+                {turns.map((t) => {
+                  const selected = form.turnIds.includes(t._id);
+                  return (
+                    <button
+                      key={t._id}
+                      type="button"
+                      onClick={() => {
+                        setForm({
+                          ...form,
+                          turnIds: selected
+                            ? form.turnIds.filter((id: string) => id !== t._id)
+                            : [...form.turnIds, t._id],
+                        });
+                      }}
+                      className="px-3 py-1.5 rounded-full text-sm border transition-all"
+                      style={{
+                        backgroundColor: selected ? t.color : "transparent",
+                        borderColor: t.color,
+                        color: selected ? "#000" : t.color,
+                      }}
+                    >
+                      {t.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="grid gap-2">
