@@ -10,23 +10,25 @@ export default function DatingInfo() {
   const [turnTime, setTurnTime] = useState(bookingDate.turnTime);
   const [arrivalTime, setArrivalTime] = useState(bookingDate.arrivalTime || "");
   const [departureTime, setDepartureTime] = useState(bookingDate.departureTime || "");
-  const [availability, setAvailability] = useState<Record<string, number>>({});
+  const [availability, setAvailability] = useState<{ available: any[], total: number } | null>(null);
   const [loadingAvail, setLoadingAvail] = useState(false);
 
-  // Fetch availability when date changes
+  // Fetch availability when date + arrival + departure are set
   useEffect(() => {
-    if (!dateTime) return;
+    if (!dateTime || !arrivalTime || !departureTime) {
+      setAvailability(null);
+      return;
+    }
     setLoadingAvail(true);
-    fetch(`/api/availability?date=${dateTime}`)
+    setAvailability(null);
+    fetch(`/api/availability?date=${dateTime}&arrival=${arrivalTime}&departure=${departureTime}`)
       .then((r) => r.json())
       .then((data) => {
-        const map: Record<string, number> = {};
-        map["all"] = data.available?.length || 0;
-        setAvailability(map);
+        setAvailability({ available: data.available || [], total: data.total || 0 });
         setLoadingAvail(false);
       })
       .catch(() => setLoadingAvail(false));
-  }, [dateTime]);
+  }, [dateTime, arrivalTime, departureTime]);
 
   useEffect(() => {
     dispatch(
@@ -36,18 +38,18 @@ export default function DatingInfo() {
         turnTime,
         arrivalTime: dateTime ? arrivalTime : "",
         departureTime: dateTime ? departureTime : "",
-        completed: dateTime !== "",
+        completed: dateTime !== "" && arrivalTime !== "" && departureTime !== "",
       }),
     );
   }, [dateTime, turnTime, arrivalTime, departureTime]);
 
   const [placeholderDate] = useState(() => `${Date.now()}`);
-
-  const tablesAvailable = availability["all"] ?? 0;
-  const noTables = dateTime && !loadingAvail && tablesAvailable === 0;
+  const tablesAvailable = availability?.available?.length ?? 0;
+  const totalTables = availability?.total ?? 0;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
+      {/* Date + Turn */}
       <div className="flex flex-col gap-2 md:flex-row">
         <div className="w-full md:w-6/12">
           <Inputs
@@ -58,7 +60,7 @@ export default function DatingInfo() {
             type="date"
           />
         </div>
-        <div className="w-full md:w-6/12 space-y-2">
+        <div className="w-full md:w-6/12">
           <Inputs
             getValue={(value: string) => setTurnTime(value as any)}
             name="turnTime"
@@ -70,70 +72,69 @@ export default function DatingInfo() {
               { value: "evening", label: "Evening" },
             ]}
           />
+        </div>
+      </div>
 
-          {/* Availability feedback */}
-          {dateTime && (
-            <div className={`border rounded-lg p-3 transition-all ${
-              loadingAvail
-                ? "border-golden/20"
-                : noTables
-                ? "border-red-500/40 bg-red-500/5"
-                : tablesAvailable > 0
-                ? "border-golden/40 bg-golden/5"
-                : "border-golden/20"
-            }`}>
-              {loadingAvail ? (
-                <div className="flex items-center gap-2">
-                  <div className="animate-spin w-3 h-3 border-2 border-golden border-t-transparent rounded-full flex-shrink-0" />
-                  <span className="text-golden text-xs">Checking...</span>
-                </div>
-              ) : noTables ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-3 h-3 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </div>
-                  <p className="text-red-400 text-xs">No tables available</p>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded-full bg-golden/20 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-3 h-3 text-golden" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <p className="text-golden text-xs">
-                    {tablesAvailable} table{tablesAvailable !== 1 ? "s" : ""} available
-                  </p>
-                </div>
-              )}
+      {/* Arrival + Departure */}
+      <div className="flex flex-col gap-2 md:flex-row">
+        <div className="w-full md:w-6/12">
+          <Inputs
+            getValue={(value: string) => setArrivalTime(value)}
+            name="arrivalTime"
+            title="Arrival time"
+            type="time"
+          />
+        </div>
+        <div className="w-full md:w-6/12">
+          <Inputs
+            getValue={(value: string) => setDepartureTime(value)}
+            name="departureTime"
+            title="Departure time"
+            type="time"
+          />
+        </div>
+      </div>
+
+      {/* Availability */}
+      {loadingAvail && (
+        <div className="border border-golden/20 rounded-lg p-3 flex items-center gap-2">
+          <div className="animate-spin w-4 h-4 border-2 border-golden border-t-transparent rounded-full" />
+          <span className="text-golden text-sm font-serif">Checking availability...</span>
+        </div>
+      )}
+
+      {availability && !loadingAvail && (
+        <div className={`border rounded-lg p-4 ${
+          tablesAvailable > 0
+            ? "border-golden/40 bg-golden/5"
+            : "border-red-500/40 bg-red-500/5"
+        }`}>
+          {tablesAvailable > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              <span className="text-golden text-sm font-serif w-full">
+                {tablesAvailable} of {totalTables} tables available
+              </span>
+              <div className="flex flex-wrap gap-1.5 mt-1">
+                {availability.available.map((t: any) => (
+                  <span key={t._id} className="px-2 py-1 text-xs rounded border border-golden/30 text-golden bg-black/30">
+                    {t.name || t.tableId} ({t.capacity} pax)
+                  </span>
+                ))}
+              </div>
             </div>
-          )}
-
-          {/* Arrival / Departure times */}
-          {dateTime && (
-            <div className="flex gap-2 pt-1">
-              <div className="w-1/2">
-                <Inputs
-                  getValue={(value: string) => setArrivalTime(value)}
-                  name="arrivalTime"
-                  title="Arrival"
-                  type="time"
-                />
-              </div>
-              <div className="w-1/2">
-                <Inputs
-                  getValue={(value: string) => setDepartureTime(value)}
-                  name="departureTime"
-                  title="Departure"
-                  type="time"
-                />
-              </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-red-400 text-sm font-serif">No tables available for this time range</span>
             </div>
           )}
         </div>
-      </div>
+      )}
+
+      {dateTime && !arrivalTime && !departureTime && (
+        <div className="border border-golden/20 rounded-lg p-3">
+          <p className="text-white2 text-xs text-center">Set arrival and departure time to check availability</p>
+        </div>
+      )}
     </div>
   );
 }
