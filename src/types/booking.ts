@@ -7,6 +7,8 @@ export interface BookingData {
   dateTime: string;
   turnTime: TurnTime;
   numberPersons: string;
+  arrivalTime?: string;
+  departureTime?: string;
   comments: string;
 }
 
@@ -46,6 +48,8 @@ export interface BookingForm {
   bookingInfo: {
     step: number;
     numberPersons: string;
+    arrivalTime?: string;
+    departureTime?: string;
     comments: string;
     completed: boolean;
   };

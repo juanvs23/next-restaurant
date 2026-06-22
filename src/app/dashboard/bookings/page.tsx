@@ -35,6 +35,10 @@ export default function BookingsPage() {
                 <p>{b.email}</p>
                 <p>{new Date(b.dateTime).toLocaleString()}</p>
                 <p>{b.numberPersons} guests</p>
+                <div className="flex gap-4 pt-1">
+                  {b.arrivalTime && <p><span className="text-foreground">Arrival:</span> {b.arrivalTime}</p>}
+                  {b.departureTime && <p><span className="text-foreground">Departure:</span> {b.departureTime}</p>}
+                </div>
               </CardContent>
             </Card>
           ))}

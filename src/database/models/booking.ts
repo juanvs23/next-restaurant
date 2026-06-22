@@ -13,6 +13,8 @@ const bookingSchema = new mongoose.Schema(
       required: true,
     },
     numberPersons: { type: Number, required: true },
+    arrivalTime: { type: String },
+    departureTime: { type: String },
     comments: { type: String },
     tableId: {
       type: mongoose.Schema.Types.ObjectId,
