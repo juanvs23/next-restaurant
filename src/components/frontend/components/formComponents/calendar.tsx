@@ -61,12 +61,14 @@ export default function CalendarInput({
   const tileDisabled = ({ date }: { date: Date }) => {
     if (closedDays.includes(date.getDay())) return true;
     if (date < new Date(new Date().toDateString())) return true;
+    const dateStr = date.toISOString().split("T")[0];
+    if (unavailableDates.has(dateStr)) return true;
     return false;
   };
 
   const tileClassName = ({ date }: { date: Date }) => {
     const dateStr = date.toISOString().split("T")[0];
-    if (unavailableDates.has(dateStr) && !tileDisabled({ date })) {
+    if (unavailableDates.has(dateStr) && !closedDays.includes(date.getDay())) {
       return "no-tables";
     }
     return null;
