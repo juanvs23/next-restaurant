@@ -57,8 +57,15 @@ export default function DatingInfo() {
             placeHolder={placeholderDate}
             type="date"
           />
+          {!dateTime && (
+            <div className="border border-golden/20 rounded-lg p-3 mt-2">
+              <p className="text-white2 text-xs text-center font-serif">
+                Select a date to check availability
+              </p>
+            </div>
+          )}
         </div>
-        <div className="w-full form-group md:w-6/12">
+        <div className="w-full md:w-6/12 space-y-2">
           <Inputs
             getValue={(value: string) => setTurnTime(value as any)}
             name="turnTime"
@@ -70,84 +77,70 @@ export default function DatingInfo() {
               { value: "evening", label: "Evening" },
             ]}
           />
-        </div>
-      </div>
 
-      {/* Availability feedback — below reservation time */}
-      {dateTime && (
-        <div className={`border rounded-lg p-4 transition-all ${
-          loadingAvail
-            ? "border-golden/20"
-            : noTables
-            ? "border-red-500/40 bg-red-500/5"
-            : tablesAvailable > 0
-            ? "border-golden/40 bg-golden/5"
-            : "border-golden/20"
-        }`}>
-          {loadingAvail ? (
-            <div className="flex items-center gap-3">
-              <div className="animate-spin w-4 h-4 border-2 border-golden border-t-transparent rounded-full" />
-              <span className="text-golden font-serif text-sm">Checking table availability...</span>
+          {/* Availability feedback */}
+          {dateTime && (
+            <div className={`border rounded-lg p-3 transition-all ${
+              loadingAvail
+                ? "border-golden/20"
+                : noTables
+                ? "border-red-500/40 bg-red-500/5"
+                : tablesAvailable > 0
+                ? "border-golden/40 bg-golden/5"
+                : "border-golden/20"
+            }`}>
+              {loadingAvail ? (
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin w-3 h-3 border-2 border-golden border-t-transparent rounded-full flex-shrink-0" />
+                  <span className="text-golden text-xs">Checking...</span>
+                </div>
+              ) : noTables ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-3 h-3 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </div>
+                  <p className="text-red-400 text-xs">No tables available</p>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-golden/20 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-3 h-3 text-golden" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <p className="text-golden text-xs">
+                    {tablesAvailable} table{tablesAvailable !== 1 ? "s" : ""} available
+                  </p>
+                </div>
+              )}
             </div>
-          ) : noTables ? (
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-4 h-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+          )}
+
+          {/* Arrival / Departure times */}
+          {dateTime && (
+            <div className="flex gap-2 pt-1">
+              <div className="w-1/2">
+                <Inputs
+                  getValue={(value: string) => setArrivalTime(value)}
+                  name="arrivalTime"
+                  title="Arrival"
+                  type="time"
+                />
               </div>
-              <div>
-                <p className="text-red-400 font-serif text-sm">No tables available</p>
-                <p className="text-white2 text-xs mt-0.5">Please select another date</p>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-golden/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-4 h-4 text-golden" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-golden font-serif text-sm">
-                  {tablesAvailable} table{tablesAvailable !== 1 ? "s" : ""} available
-                </p>
-                <p className="text-white2 text-xs mt-0.5">Select your preferred time to continue</p>
+              <div className="w-1/2">
+                <Inputs
+                  getValue={(value: string) => setDepartureTime(value)}
+                  name="departureTime"
+                  title="Departure"
+                  type="time"
+                />
               </div>
             </div>
           )}
         </div>
-      )}
-
-      {!dateTime && (
-        <div className="border border-golden/20 rounded-lg p-4">
-          <p className="text-white2 text-sm text-center font-serif">
-            Select a date to check table availability
-          </p>
-        </div>
-      )}
-
-      {/* Arrival / Departure times — below availability */}
-      {dateTime && (
-        <div className="flex flex-col gap-2 md:flex-row">
-          <div className="w-full md:w-6/12">
-            <Inputs
-              getValue={(value: string) => setArrivalTime(value)}
-              name="arrivalTime"
-              title="Arrival time"
-              type="time"
-            />
-          </div>
-          <div className="w-full md:w-6/12">
-            <Inputs
-              getValue={(value: string) => setDepartureTime(value)}
-              name="departureTime"
-              title="Departure time"
-              type="time"
-            />
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
