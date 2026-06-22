@@ -39,17 +39,20 @@ export default function useSuscript(url: string) {
         setModal({
           modalTitle: "Thank you",
           modalContent: (
-            <div
-              className="min-h-30 flex justify-center flex-col items-center min-w-60 gap-2"
-              dangerouslySetInnerHTML={{
-                __html: response.data.data.message || "",
-              }}
-            ></div>
+            <div className="flex flex-col items-center gap-4 py-6 text-center">
+              <div className="w-16 h-16 rounded-full bg-golden/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-golden" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-golden text-xl font-serif">Successfully subscribed!</h3>
+              <p className="text-white2">Thank you for subscribing to our newsletter. You&apos;ll be the first to know about our latest updates and exclusive offers.</p>
+            </div>
           ),
           ModalFooter: (
-            <div className="min-h-10 min-w-60 flex justify-center">
+            <div className="flex justify-center pt-2">
               <button className="button" onClick={handlerClose}>
-                close
+                Close
               </button>
             </div>
           ),
