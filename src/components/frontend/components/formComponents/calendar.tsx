@@ -6,6 +6,9 @@ import "react-calendar/dist/Calendar.css";
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
+// Non-working days: 0=Sunday (can add more)
+const closedDays = [0];
+
 export default function CalendarInput({
   func,
 }: {
@@ -22,5 +25,19 @@ export default function CalendarInput({
     }
   };
 
-  return <Calendar onChange={handleChange} value={value} />;
+  const tileDisabled = ({ date }: { date: Date }) => {
+    // Disable non-working days
+    if (closedDays.includes(date.getDay())) return true;
+    // Disable past dates
+    if (date < new Date(new Date().toDateString())) return true;
+    return false;
+  };
+
+  return (
+    <Calendar
+      onChange={handleChange}
+      value={value}
+      tileDisabled={tileDisabled}
+    />
+  );
 }
