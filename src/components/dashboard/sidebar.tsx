@@ -16,7 +16,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTheme } from "./theme-provider";
 import { signOut } from "next-auth/react";
-import { LogOut } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
