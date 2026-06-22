@@ -102,24 +102,15 @@ export default function DatingInfo() {
           )}
 
           {availability && !loadingAvail && (
-            <div className={`border rounded-lg p-3 mt-2 ${
+            <div className={`border rounded-lg p-3 mt-2 text-center ${
               tablesAvailable > 0
                 ? "border-golden/40 bg-golden/5"
                 : "border-red-500/40 bg-red-500/5"
             }`}>
               {tablesAvailable > 0 ? (
-                <div>
-                  <p className="text-golden text-xs font-serif mb-1">
-                    {tablesAvailable} of {totalTables} tables available
-                  </p>
-                  <div className="flex flex-wrap gap-1">
-                    {availability.available.map((t: any) => (
-                      <span key={t._id} className="px-1.5 py-0.5 text-[10px] rounded border border-golden/30 text-golden bg-black/30">
-                        {t.name || t.tableId}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                <p className="text-golden text-sm font-serif">
+                  {tablesAvailable} table{tablesAvailable !== 1 ? "s" : ""} available
+                </p>
               ) : (
                 <p className="text-red-400 text-xs">No tables available for this time range</p>
               )}
