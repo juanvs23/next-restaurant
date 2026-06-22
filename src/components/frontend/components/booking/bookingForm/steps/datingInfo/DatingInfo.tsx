@@ -72,69 +72,67 @@ export default function DatingInfo() {
               { value: "evening", label: "Evening" },
             ]}
           />
-        </div>
-      </div>
 
-      {/* Arrival + Departure */}
-      <div className="flex flex-col gap-2 md:flex-row">
-        <div className="w-full md:w-6/12">
-          <Inputs
-            getValue={(value: string) => setArrivalTime(value)}
-            name="arrivalTime"
-            title="Arrival time"
-            type="time"
-          />
-        </div>
-        <div className="w-full md:w-6/12">
-          <Inputs
-            getValue={(value: string) => setDepartureTime(value)}
-            name="departureTime"
-            title="Departure time"
-            type="time"
-          />
-        </div>
-      </div>
-
-      {/* Availability */}
-      {loadingAvail && (
-        <div className="border border-golden/20 rounded-lg p-3 flex items-center gap-2">
-          <div className="animate-spin w-4 h-4 border-2 border-golden border-t-transparent rounded-full" />
-          <span className="text-golden text-sm font-serif">Checking availability...</span>
-        </div>
-      )}
-
-      {availability && !loadingAvail && (
-        <div className={`border rounded-lg p-4 ${
-          tablesAvailable > 0
-            ? "border-golden/40 bg-golden/5"
-            : "border-red-500/40 bg-red-500/5"
-        }`}>
-          {tablesAvailable > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              <span className="text-golden text-sm font-serif w-full">
-                {tablesAvailable} of {totalTables} tables available
-              </span>
-              <div className="flex flex-wrap gap-1.5 mt-1">
-                {availability.available.map((t: any) => (
-                  <span key={t._id} className="px-2 py-1 text-xs rounded border border-golden/30 text-golden bg-black/30">
-                    {t.name || t.tableId} ({t.capacity} pax)
-                  </span>
-                ))}
-              </div>
+          {/* Arrival + Departure — inside same column as turnTime */}
+          <div className="flex gap-2 mt-2">
+            <div className="w-1/2">
+              <Inputs
+                getValue={(value: string) => setArrivalTime(value)}
+                name="arrivalTime"
+                title="Arrival"
+                type="time"
+              />
             </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span className="text-red-400 text-sm font-serif">No tables available for this time range</span>
+            <div className="w-1/2">
+              <Inputs
+                getValue={(value: string) => setDepartureTime(value)}
+                name="departureTime"
+                title="Departure"
+                type="time"
+              />
+            </div>
+          </div>
+
+          {/* Availability — inside same column */}
+          {loadingAvail && (
+            <div className="border border-golden/20 rounded-lg p-3 flex items-center gap-2 mt-2">
+              <div className="animate-spin w-4 h-4 border-2 border-golden border-t-transparent rounded-full" />
+              <span className="text-golden text-sm font-serif">Checking availability...</span>
+            </div>
+          )}
+
+          {availability && !loadingAvail && (
+            <div className={`border rounded-lg p-3 mt-2 ${
+              tablesAvailable > 0
+                ? "border-golden/40 bg-golden/5"
+                : "border-red-500/40 bg-red-500/5"
+            }`}>
+              {tablesAvailable > 0 ? (
+                <div>
+                  <p className="text-golden text-xs font-serif mb-1">
+                    {tablesAvailable} of {totalTables} tables available
+                  </p>
+                  <div className="flex flex-wrap gap-1">
+                    {availability.available.map((t: any) => (
+                      <span key={t._id} className="px-1.5 py-0.5 text-[10px] rounded border border-golden/30 text-golden bg-black/30">
+                        {t.name || t.tableId}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-red-400 text-xs">No tables available for this time range</p>
+              )}
+            </div>
+          )}
+
+          {dateTime && !arrivalTime && !departureTime && !loadingAvail && (
+            <div className="border border-golden/20 rounded-lg p-3 mt-2">
+              <p className="text-white2 text-xs text-center">Set arrival and departure time</p>
             </div>
           )}
         </div>
-      )}
-
-      {dateTime && !arrivalTime && !departureTime && (
-        <div className="border border-golden/20 rounded-lg p-3">
-          <p className="text-white2 text-xs text-center">Set arrival and departure time to check availability</p>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
