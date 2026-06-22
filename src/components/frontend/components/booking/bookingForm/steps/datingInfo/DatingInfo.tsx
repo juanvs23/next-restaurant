@@ -73,29 +73,7 @@ export default function DatingInfo() {
         </div>
       </div>
 
-      {/* Arrival / Departure times */}
-      {dateTime && (
-        <div className="flex flex-col gap-2 md:flex-row">
-          <div className="w-full md:w-6/12">
-            <Inputs
-              getValue={(value: string) => setArrivalTime(value)}
-              name="arrivalTime"
-              title="Arrival time"
-              type="time"
-            />
-          </div>
-          <div className="w-full md:w-6/12">
-            <Inputs
-              getValue={(value: string) => setDepartureTime(value)}
-              name="departureTime"
-              title="Departure time"
-              type="time"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Availability feedback */}
+      {/* Availability feedback — below reservation time */}
       {dateTime && (
         <div className={`border rounded-lg p-4 transition-all ${
           loadingAvail
@@ -146,6 +124,28 @@ export default function DatingInfo() {
           <p className="text-white2 text-sm text-center font-serif">
             Select a date to check table availability
           </p>
+        </div>
+      )}
+
+      {/* Arrival / Departure times — below availability */}
+      {dateTime && (
+        <div className="flex flex-col gap-2 md:flex-row">
+          <div className="w-full md:w-6/12">
+            <Inputs
+              getValue={(value: string) => setArrivalTime(value)}
+              name="arrivalTime"
+              title="Arrival time"
+              type="time"
+            />
+          </div>
+          <div className="w-full md:w-6/12">
+            <Inputs
+              getValue={(value: string) => setDepartureTime(value)}
+              name="departureTime"
+              title="Departure time"
+              type="time"
+            />
+          </div>
         </div>
       )}
     </div>
