@@ -182,8 +182,13 @@ export default function BookingsPage() {
               </div>
             </CardHeader>
             <CardContent className="space-y-1 text-sm text-muted-foreground">
-              <p>{new Date(b.dateTime).toLocaleString()} · {b.numberPersons} guests</p>
-              {(b.arrivalTime || b.departureTime) && (
+                <p>{new Date(b.dateTime).toLocaleString()} · {b.numberPersons} guests</p>
+                {b.tableId && (
+                  <p className="text-foreground">
+                    Table: {b.tableId?.name || b.tableId?.tableId || "—"}
+                  </p>
+                )}
+                {(b.arrivalTime || b.departureTime) && (
                 <p>
                   {b.arrivalTime && <><span className="text-foreground">Arrival:</span> {b.arrivalTime} </>}
                   {b.departureTime && <><span className="text-foreground">Departure:</span> {b.departureTime}</>}
