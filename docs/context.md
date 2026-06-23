@@ -93,14 +93,7 @@ src/
 
 ## Roadmap
 
-| Phase | Status | Description |
-|-------|--------|-------------|
-| **Fase 0 — Upgrade** | ✅ | Next 16 + React 19 + ESLint flat config + Auth.js v5 |
-| **Fase 1 — Foundation** | ✅ | Estilos consolidados, modelos DB, fixes connection/AbortController/JWT |
-| **Fase 2 — Backoffice** | ✅ | CRUD productos/categorías, admin UI, roles, menú migrado a DB |
-| **Fase 3 — Reservas** | ✅ | APIs disponibilidad/booking, formulario conectado, PDF ticket, verificación QR |
-| **Fase 4 — Comandas** | ⏳ | Pendiente |
-| **Fase 5 — Configuración** | ⏳ | Días no laborables desde backoffice, horarios por turno configurables, ajustes generales del restaurante |
+El roadmap completo con fases, prioridades y traducciones (ES/EN/PT) se encuentra en **[`docs/roadmap.md`](./roadmap.md)**.
 
 ## Known Issues
 
@@ -108,12 +101,13 @@ src/
 2. **API sin auth** — Las rutas /api/products, /api/categories no tienen protección (solo dashboard UI)
 3. **Sin MSW** — Tests no tienen mock de API
 
-## Pending Tasks
+## Architecture — Comandas / Pedidos / Factura
 
-1. **Custom credentials provider** ✅ — Login con email/contraseña + Google OAuth.
-2. **Redirect post-login** ✅ — Login y registro redirigen al dashboard.
-3. **Días no laborables desde backoffice** — CRUD para configurar días de cierre semanal (domingos, feriados) y excepciones.
-4. **Separar backoffice del frontend** — El backoffice debe tener su propio diseño y layout independiente del frontend.
+**Comanda** → Sesión de mesa/barra (abierta, cerrada, rechazada). Contiene cliente, mesa, delivery flag.
+**Pedido** → Ronda de productos enviada a cocina. Pertenece a una comanda. Estado: pending→preparing→ready→served.
+**Factura (Order)** → Cuenta final. Consolida items de todos los pedidos. Calcula subtotal, serviceCharge (10% mesa), deliveryCost. Asociada a una comanda.
+
+Flujo: Mesero crea Comanda → agrega Pedidos (rondas) → cocina recibe → cuando cliente paga, se genera Factura desde la comanda → comanda se cierra.
 
 ## Environment Variables
 
