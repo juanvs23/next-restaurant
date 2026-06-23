@@ -29,10 +29,10 @@ const configSchema = new mongoose.Schema(
       default: [0], // 0 = Sunday
     },
 
-    // Holidays (specific dates)
+    // Holidays (MM-DD for yearly, YYYY-MM-DD for specific dates)
     holidays: {
       type: [String],
-      default: [], // "2026-01-01", "2026-12-25"
+      default: [], // "12-25" (Christmas yearly), "2026-06-15" (one-time)
     },
 
     // Default language

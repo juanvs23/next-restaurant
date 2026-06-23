@@ -58,8 +58,9 @@ export default function CalendarInput({ func }: { func: (value: string) => void 
   };
 
   const tileDisabled = ({ date }: { date: Date }) => {
-    const dateStr = date.toISOString().split("T")[0];
-    if (holidays.includes(dateStr)) return true;
+    const dateStr = date.toISOString().split("T")[0]; // "2026-06-22"
+    const mmdd = dateStr.slice(5); // "06-22"
+    const isHoliday = holidays.includes(dateStr) || holidays.includes(mmdd);
     if (closedDays.includes(date.getDay())) return true;
     if (date < new Date(new Date().toDateString())) return true;
     if (unavailableDates.has(dateStr)) return true;
@@ -68,10 +69,11 @@ export default function CalendarInput({ func }: { func: (value: string) => void 
 
   const tileClassName = ({ date }: { date: Date }) => {
     const dateStr = date.toISOString().split("T")[0];
+    const mmdd = dateStr.slice(5);
+    const isHoliday = holidays.includes(dateStr) || holidays.includes(mmdd);
     const today = new Date(new Date().toDateString());
     const isPast = date < today;
     const isSunday = closedDays.includes(date.getDay());
-    const isHoliday = holidays.includes(dateStr);
 
     if (isPast) return "past";
     if (isSunday || isHoliday) return "sunday";
