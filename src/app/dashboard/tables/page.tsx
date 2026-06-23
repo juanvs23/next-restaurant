@@ -32,6 +32,16 @@ export default function TablesPage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ ...emptyForm });
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const perPage = 10;
+
+  const filtered = tables.filter((t) =>
+    t.tableId.toLowerCase().includes(search.toLowerCase()) ||
+    (t.name || "").toLowerCase().includes(search.toLowerCase()),
+  );
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   const fetchTables = () => {
     fetch("/api/tables")
@@ -86,6 +96,13 @@ export default function TablesPage() {
         <Button onClick={openCreate} className="gap-2"><ImPlus /> Add Table</Button>
       </div>
 
+      <Input
+        placeholder="Search tables..."
+        value={search}
+        onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+        className="max-w-xs"
+      />
+
       <Card>
         <CardHeader><CardTitle>All Tables</CardTitle></CardHeader>
         <CardContent>
@@ -101,7 +118,7 @@ export default function TablesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {tables.map((t) => (
+              {paginated.map((t) => (
                 <TableRow key={t._id}>
                   <TableCell className="font-mono text-sm">{t.tableId}</TableCell>
                   <TableCell>{t.name || "—"}</TableCell>
@@ -128,6 +145,19 @@ export default function TablesPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+          {totalPages > 1 && ` · Page ${page} of ${totalPages}`}
+        </p>
+        {totalPages > 1 && (
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+          </div>
+        )}
+      </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="bg-popover">

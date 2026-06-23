@@ -68,9 +68,13 @@ export default function CalendarInput({
 
   const tileClassName = ({ date }: { date: Date }) => {
     const dateStr = date.toISOString().split("T")[0];
-    if (unavailableDates.has(dateStr) && !closedDays.includes(date.getDay())) {
-      return "no-tables";
-    }
+    const today = new Date(new Date().toDateString());
+    const isPast = date < today;
+    const isSunday = closedDays.includes(date.getDay());
+
+    if (isPast) return "past";
+    if (isSunday) return "sunday";
+    if (unavailableDates.has(dateStr)) return "no-tables";
     return null;
   };
 

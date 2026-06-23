@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import Inputs from "@/components/frontend/components/formComponents/inputs";
 import { useAppDispatch, useAppSelector } from "@/libs/store/hooks";
@@ -7,7 +8,6 @@ export default function DatingInfo() {
   const dispatch = useAppDispatch();
   const { bookingDate } = useAppSelector((state) => state.booking.form!);
   const [dateTime, setDateTime] = useState(bookingDate.dateTime);
-  const [turnTime, setTurnTime] = useState(bookingDate.turnTime);
   const [arrivalTime, setArrivalTime] = useState(bookingDate.arrivalTime || "");
   const [departureTime, setDepartureTime] = useState(bookingDate.departureTime || "");
   const [availability, setAvailability] = useState<{ available: any[], total: number } | null>(null);
@@ -35,21 +35,19 @@ export default function DatingInfo() {
       getBookingDate({
         ...bookingDate,
         dateTime,
-        turnTime,
+        turnTime: bookingDate.turnTime,
         arrivalTime: dateTime ? arrivalTime : "",
         departureTime: dateTime ? departureTime : "",
         completed: dateTime !== "" && arrivalTime !== "" && departureTime !== "",
       }),
     );
-  }, [dateTime, turnTime, arrivalTime, departureTime]);
+  }, [dateTime, arrivalTime, departureTime]);
 
   const [placeholderDate] = useState(() => `${Date.now()}`);
   const tablesAvailable = availability?.available?.length ?? 0;
-  const totalTables = availability?.total ?? 0;
 
   return (
     <div className="space-y-4">
-      {/* Date + Turn */}
       <div className="flex flex-col gap-2 md:flex-row">
         <div className="w-full md:w-6/12">
           <Inputs
@@ -60,21 +58,9 @@ export default function DatingInfo() {
             type="date"
           />
         </div>
-        <div className="w-full md:w-6/12">
-          <Inputs
-            getValue={(value: string) => setTurnTime(value as any)}
-            name="turnTime"
-            title="Reservation time"
-            type="select"
-            options={[
-              { value: "morning", label: "Morning" },
-              { value: "afternoon", label: "Afternoon" },
-              { value: "evening", label: "Evening" },
-            ]}
-          />
-
-          {/* Arrival + Departure — inside same column as turnTime */}
-          <div className="flex gap-2 mt-2">
+        <div className="w-full md:w-6/12 space-y-2">
+          {/* Arrival + Departure */}
+          <div className="flex gap-2">
             <div className="w-1/2">
               <Inputs
                 getValue={(value: string) => setArrivalTime(value)}
@@ -93,16 +79,16 @@ export default function DatingInfo() {
             </div>
           </div>
 
-          {/* Availability — inside same column */}
+          {/* Availability */}
           {loadingAvail && (
-            <div className="border border-golden/20 rounded-lg p-3 flex items-center gap-2 mt-2">
+            <div className="border border-golden/20 rounded-lg p-3 flex items-center gap-2">
               <div className="animate-spin w-4 h-4 border-2 border-golden border-t-transparent rounded-full" />
               <span className="text-golden text-sm font-serif">Checking availability...</span>
             </div>
           )}
 
           {availability && !loadingAvail && (
-            <div className={`border rounded-lg p-3 mt-2 text-center ${
+            <div className={`border rounded-lg p-3 text-center ${
               tablesAvailable > 0
                 ? "border-golden/40 bg-golden/5"
                 : "border-red-500/40 bg-red-500/5"
@@ -118,7 +104,7 @@ export default function DatingInfo() {
           )}
 
           {dateTime && !arrivalTime && !departureTime && !loadingAvail && (
-            <div className="border border-golden/20 rounded-lg p-3 mt-2">
+            <div className="border border-golden/20 rounded-lg p-3">
               <p className="text-white2 text-xs text-center">Set arrival and departure time</p>
             </div>
           )}

@@ -47,6 +47,16 @@ export default function UsersPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTarget, setConfirmTarget] = useState<{ id: string; name: string; active: boolean } | null>(null);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const perPage = 10;
+
+  const filtered = users.filter((u) =>
+    u.name.toLowerCase().includes(search.toLowerCase()) ||
+    u.email.toLowerCase().includes(search.toLowerCase()),
+  );
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   const fetchUsers = () => {
     fetch("/api/users")
@@ -114,6 +124,13 @@ export default function UsersPage() {
         <Button onClick={openCreate} className="gap-2"><ImPlus /> Add User</Button>
       </div>
 
+      <Input
+        placeholder="Search by name or email..."
+        value={search}
+        onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+        className="max-w-xs"
+      />
+
       <Card>
         <CardHeader><CardTitle>All Users</CardTitle></CardHeader>
         <CardContent>
@@ -129,7 +146,7 @@ export default function UsersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((u) => (
+              {paginated.map((u) => (
                 <TableRow key={u._id} className={!u.active ? "opacity-50" : ""}>
                   <TableCell className="font-medium">{u.name}</TableCell>
                   <TableCell className="text-muted-foreground">{u.email}</TableCell>
@@ -179,6 +196,19 @@ export default function UsersPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+          {totalPages > 1 && ` · Page ${page} of ${totalPages}`}
+        </p>
+        {totalPages > 1 && (
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+          </div>
+        )}
+      </div>
 
       {/* Create User Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>

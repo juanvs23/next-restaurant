@@ -29,6 +29,15 @@ export default function CategoriesPage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ ...emptyForm });
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const perPage = 10;
+
+  const filtered = categories.filter((c) =>
+    c.name.toLowerCase().includes(search.toLowerCase()),
+  );
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   const fetchCategories = () => {
     fetch("/api/categories")
@@ -70,6 +79,13 @@ export default function CategoriesPage() {
         <Button onClick={openCreate} className="gap-2"><ImPlus /> Add Category</Button>
       </div>
 
+      <Input
+        placeholder="Search categories..."
+        value={search}
+        onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+        className="max-w-xs"
+      />
+
       <Card>
         <CardHeader><CardTitle>All Categories</CardTitle></CardHeader>
         <CardContent>
@@ -84,7 +100,7 @@ export default function CategoriesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {categories.map((c) => (
+              {paginated.map((c) => (
                 <TableRow key={c._id}>
                   <TableCell>
                     {c.image ? (
@@ -112,6 +128,19 @@ export default function CategoriesPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+          {totalPages > 1 && ` · Page ${page} of ${totalPages}`}
+        </p>
+        {totalPages > 1 && (
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+          </div>
+        )}
+      </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="bg-popover">

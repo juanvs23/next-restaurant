@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card, CardContent, CardHeader, CardTitle,
 } from "@/components/ui/card";
@@ -32,6 +33,16 @@ const nextStatus: Record<string, string> = {
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const perPage = 10;
+
+  const filtered = orders.filter((o) =>
+    (o.tableLabel || "").toLowerCase().includes(search.toLowerCase()) ||
+    o.status.toLowerCase().includes(search.toLowerCase()),
+  );
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   const fetchOrders = () => {
     fetch("/api/orders")
@@ -61,11 +72,18 @@ export default function OrdersPage() {
     <div className="space-y-6">
       <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Orders</h1>
 
-      {orders.length === 0 ? (
+      <Input
+        placeholder="Search by table or status..."
+        value={search}
+        onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+        className="max-w-xs"
+      />
+
+      {filtered.length === 0 ? (
         <p className="text-muted-foreground">No orders yet.</p>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {orders.map((o) => (
+          {paginated.map((o) => (
             <Card key={o._id} className={o.status === "cancelled" ? "opacity-60" : ""}>
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
@@ -113,6 +131,19 @@ export default function OrdersPage() {
           ))}
         </div>
       )}
+
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+          {totalPages > 1 && ` · Page ${page} of ${totalPages}`}
+        </p>
+        {totalPages > 1 && (
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

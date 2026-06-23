@@ -35,6 +35,16 @@ export default function MediaPage() {
   const [urlInput, setUrlInput] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const perPage = 12;
+
+  const filtered = items.filter((item) =>
+    item.filename.toLowerCase().includes(search.toLowerCase()) ||
+    item.alt?.toLowerCase().includes(search.toLowerCase()),
+  );
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   const fetchMedia = () => {
     fetch("/api/media")
@@ -99,6 +109,13 @@ export default function MediaPage() {
         </div>
       </div>
 
+      <Input
+        placeholder="Search media..."
+        value={search}
+        onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+        className="max-w-xs"
+      />
+
       {/* Upload Dialog */}
       <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
         <DialogContent className="bg-popover">
@@ -161,7 +178,7 @@ export default function MediaPage() {
       {/* Grid View */}
       {view === "grid" ? (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {items.map((item) => (
+          {paginated.map((item) => (
             <Card key={item._id} className="group overflow-hidden">
               <div className="relative aspect-square">
                 <img src={item.url} alt={item.alt || item.filename}
@@ -186,9 +203,9 @@ export default function MediaPage() {
               </CardContent>
             </Card>
           ))}
-          {items.length === 0 && (
+          {filtered.length === 0 && (
             <p className="col-span-full text-center text-muted-foreground py-12">
-              No images yet. Upload your first image.
+              {search ? "No images match your search" : "No images yet. Upload your first image."}
             </p>
           )}
         </div>
@@ -206,7 +223,7 @@ export default function MediaPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {items.map((item) => (
+              {paginated.map((item) => (
                 <TableRow key={item._id}>
                   <TableCell>
                     <img src={item.url} alt="" className="w-12 h-12 object-cover rounded border" />
@@ -238,6 +255,19 @@ export default function MediaPage() {
           </Table>
         </Card>
       )}
+
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+          {totalPages > 1 && ` · Page ${page} of ${totalPages}`}
+        </p>
+        {totalPages > 1 && (
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

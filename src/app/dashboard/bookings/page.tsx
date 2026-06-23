@@ -54,6 +54,8 @@ export default function BookingsPage() {
   const [form, setForm] = useState({ ...emptyForm });
   const [searchName, setSearchName] = useState("");
   const [filterTable, setFilterTable] = useState("");
+  const [page, setPage] = useState(1);
+  const perPage = 10;
 
   const fetchBookings = () => {
     fetch("/api/bookings")
@@ -116,6 +118,8 @@ export default function BookingsPage() {
     const matchesTable = !filterTable || tableLabel === filterTable;
     return matchesName && matchesTable;
   });
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   if (loading) return <p className="text-muted-foreground">Loading...</p>;
 
@@ -133,7 +137,7 @@ export default function BookingsPage() {
           <Input
             placeholder="Search..."
             value={searchName}
-            onChange={(e) => setSearchName(e.target.value)}
+            onChange={(e) => { setSearchName(e.target.value); setPage(1); }}
           />
         </div>
         <div className="w-48">
@@ -157,7 +161,7 @@ export default function BookingsPage() {
       </div>
 
       <div className="grid gap-4">
-        {filtered.map((b) => (
+        {paginated.map((b) => (
           <Card key={b._id}>
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">
@@ -202,6 +206,19 @@ export default function BookingsPage() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+          {totalPages > 1 && ` · Page ${page} of ${totalPages}`}
+        </p>
+        {totalPages > 1 && (
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+          </div>
+        )}
       </div>
 
       {/* Create / Edit Dialog */}

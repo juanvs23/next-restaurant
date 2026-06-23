@@ -32,6 +32,16 @@ export default function TurnsPage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ ...emptyForm });
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const perPage = 10;
+
+  const filtered = items.filter((t) =>
+    t.name.toLowerCase().includes(search.toLowerCase()) ||
+    t.label.toLowerCase().includes(search.toLowerCase()),
+  );
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   const loadTurns = () => { fetch("/api/turns").then(r => r.json()).then(d => { setItems(d); setLoading(false); }); };
   useEffect(loadTurns, []);
@@ -62,6 +72,14 @@ export default function TurnsPage() {
         <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Turns</h1>
         <Button onClick={openCreate} className="gap-2"><ImPlus /> Add Turn</Button>
       </div>
+
+      <Input
+        placeholder="Search turns..."
+        value={search}
+        onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+        className="max-w-xs"
+      />
+
       <Card>
         <CardHeader><CardTitle>Service Hours</CardTitle></CardHeader>
         <CardContent>
@@ -78,7 +96,7 @@ export default function TurnsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {items.map((t) => (
+              {paginated.map((t) => (
                 <TableRow key={t._id} className={!t.active ? "opacity-50" : ""}>
                   <TableCell>
                     <div className="w-6 h-6 rounded border" style={{ backgroundColor: t.color }} />
@@ -100,6 +118,19 @@ export default function TurnsPage() {
           </Table>
         </CardContent>
       </Card>
+
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+          {totalPages > 1 && ` · Page ${page} of ${totalPages}`}
+        </p>
+        {totalPages > 1 && (
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+          </div>
+        )}
+      </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="bg-popover">

@@ -7,7 +7,7 @@ export default auth((req) => {
   // Dashboard requires authentication
   if (pathname.startsWith("/dashboard")) {
     if (!req.auth?.accessToken) {
-      const signInUrl = new URL("/api/auth/signin", req.url);
+      const signInUrl = new URL("/login", req.url);
       signInUrl.searchParams.set("callbackUrl", req.url);
       const response = NextResponse.redirect(signInUrl);
       // Set the callback URL cookie that Auth.js reads
