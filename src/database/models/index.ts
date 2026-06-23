@@ -9,3 +9,5 @@ import "./media";
 import "./order";
 import "./turn";
 import "./payment";
+import "./comanda";
+import "./pedido";

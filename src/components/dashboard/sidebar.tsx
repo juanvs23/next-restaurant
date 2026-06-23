@@ -28,7 +28,7 @@ const navItems = [
   { label: "Tables", path: "/dashboard/tables", icon: Table2 },
   { label: "Turns", path: "/dashboard/turns", icon: Clock },
   { label: "Comanda", path: "/dashboard/comanda", icon: UtensilsCrossed },
-  { label: "Orders", path: "/dashboard/orders", icon: ClipboardList },
+  { label: "Billing", path: "/dashboard/orders", icon: ClipboardList },
   { label: "Media", path: "/dashboard/media", icon: ImageIcon },
 ];
 

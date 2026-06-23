@@ -2,44 +2,54 @@ import mongoose from "mongoose";
 
 const orderItemSchema = new mongoose.Schema(
   {
-    productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+    productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
     name: { type: String },
     price: { type: Number },
     quantity: { type: Number, default: 1 },
-    notes: { type: String },
   },
   { _id: false }
 );
 
 const orderSchema = new mongoose.Schema(
   {
-    tableId: { type: mongoose.Schema.Types.ObjectId, ref: "Table" },
+    // Related comanda and pedidos
+    comandaId: { type: mongoose.Schema.Types.ObjectId, ref: "Comanda" },
+    pedidoIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Pedido" }],
+
+    // Table / delivery info (snapshot from comanda)
     tableLabel: { type: String },
+    isDelivery: { type: Boolean, default: false },
+
+    // Items consolidated from pedidos
     items: [orderItemSchema],
+
+    // Charges
+    serviceCharge: { type: Number, default: 0 },   // 10% if mesa
+    deliveryCost: { type: Number, default: 0 },     // variable if delivery
+    subtotal: { type: Number, default: 0 },
+    total: { type: Number, default: 0 },
+
+    // Billing
     status: {
       type: String,
-      enum: ["pending", "preparing", "ready", "served", "cancelled"],
+      enum: ["pending", "paid", "cancelled"],
       default: "pending",
     },
-    notes: { type: String },
-    observations: { type: String },
     paymentMethod: {
       type: String,
-      enum: ["cash", "card", "transfer", "other"],
-      default: "cash",
+      enum: ["cash", "card", "transfer", "invoice"],
     },
     customer: {
       name: { type: String },
       email: { type: String },
       phone: { type: String },
-      userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     },
-    createdBy: { type: String },
+    notes: { type: String },
   },
   { timestamps: true }
 );
 
-orderSchema.index({ status: 1, createdAt: -1 });
+orderSchema.index({ createdAt: -1 });
 
 export const Order =
   (mongoose.models?.Order as any) || mongoose.model("Order", orderSchema);

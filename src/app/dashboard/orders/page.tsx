@@ -1,11 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { ImPlus, ImPencil, ImCheckmark, ImCross } from "react-icons/im";
+import { ImPlus, ImCheckmark, ImCross } from "react-icons/im";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -15,445 +13,200 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-
-interface Payment {
-  _id: string;
-  method: string;
-  amount: number;
-  status: string;
-  reference?: string;
-  cardLast4?: string;
-  notes?: string;
-  paidAt: string;
-}
-
-interface Order {
-  _id: string;
-  tableLabel: string;
-  items: { name: string; quantity: number; price: number }[];
-  status: string;
-  notes: string;
-  observations?: string;
-  paymentMethod?: string;
-  customer?: { name?: string; email?: string; phone?: string };
-  createdAt: string;
-}
-
-const statusColors: Record<string, string> = {
-  pending: "bg-yellow-500/10 text-yellow-500",
-  preparing: "bg-blue-500/10 text-blue-500",
-  ready: "bg-green-500/10 text-green-500",
-  served: "bg-muted text-muted-foreground",
-  cancelled: "bg-red-500/10 text-red-500",
-};
-
-const nextStatus: Record<string, string> = {
-  pending: "preparing",
-  preparing: "ready",
-  ready: "served",
-};
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [payments, setPayments] = useState<Record<string, Payment[]>>({});
+  const [orders, setOrders] = useState<any[]>([]);
+  const [comandas, setComandas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [editOpen, setEditOpen] = useState(false);
-  const [payOpen, setPayOpen] = useState(false);
-  const [createOpen, setCreateOpen] = useState(false);
-  const [payOrderId, setPayOrderId] = useState<string | null>(null);
-  const [editingOrder, setEditingOrder] = useState<Order | null>(null);
-  const [editForm, setEditForm] = useState<any>({});
-  const [payForm, setPayForm] = useState({ method: "cash", amount: 0, reference: "", notes: "", cardLast4: "" });
-  const [products, setProducts] = useState<any[]>([]);
-  const [tables, setTables] = useState<any[]>([]);
-  const [createForm, setCreateForm] = useState({
-    tableId: "", tableLabel: "", observations: "",
-    paymentMethod: "cash",
-    customerName: "", customerEmail: "", customerPhone: "",
-    items: [] as { productId: string; name: string; price: number; quantity: number }[],
-  });
-  const [productSearch, setProductSearch] = useState("");
   const perPage = 10;
-  const { data: session } = useSession();
-  const isAdmin = session?.role === "admin";
-
-  const fetchPayments = async (orderId: string) => {
-    const res = await fetch(`/api/payments?orderId=${orderId}`);
-    const data = await res.json();
-    setPayments((prev) => ({ ...prev, [orderId]: data }));
-  };
+  const [form, setForm] = useState({
+    comandaId: "", customerName: "", customerEmail: "", customerPhone: "",
+    paymentMethod: "cash", serviceCharge: 0, deliveryCost: 0,
+  });
+  const [pedidos, setPedidos] = useState<any[]>([]);
+  const [preview, setPreview] = useState<any[]>([]);
 
   const fetchOrders = () => {
-    fetch("/api/orders")
-      .then((r) => r.json())
-      .then((d) => {
-        setOrders(d);
-        d.forEach((o: Order) => fetchPayments(o._id));
-        setLoading(false);
+    fetch("/api/orders").then((r) => r.json()).then((d) => { setOrders(d); setLoading(false); });
+  };
+
+  const openCreate = () => {
+    fetch("/api/comandas").then((r) => r.json()).then((cs) => {
+      const openCs = cs.filter((c: any) => c.status === "open");
+      setComandas(openCs);
+      setForm({ comandaId: "", customerName: "", customerEmail: "", customerPhone: "", paymentMethod: "cash", serviceCharge: 0, deliveryCost: 0 });
+      setPedidos([]);
+      setPreview([]);
+      setOpen(true);
+    });
+  };
+
+  const loadComanda = async (comandaId: string) => {
+    if (!comandaId) { setPedidos([]); setPreview([]); setForm({ ...form, comandaId: "", serviceCharge: 0, deliveryCost: 0 }); return; }
+    const comanda = comandas.find((c) => c._id === comandaId);
+    const res = await fetch(`/api/pedidos?comandaId=${comandaId}`);
+    const ps = await res.json();
+    setPedidos(ps);
+
+    const items: any[] = [];
+    const itemMap = new Map<string, any>();
+    for (const p of ps) {
+      for (const it of p.items) {
+        const key = it.name;
+        if (itemMap.has(key)) itemMap.get(key).quantity += it.quantity;
+        else itemMap.set(key, { name: it.name, price: it.price, quantity: it.quantity });
+      }
+    }
+    const consolidated = Array.from(itemMap.values());
+    setPreview(consolidated);
+
+    const subtotal = consolidated.reduce((s: number, i: any) => s + i.price * i.quantity, 0);
+    const sc = comanda?.tableId && !comanda?.isDelivery ? Math.round(subtotal * 0.1 * 100) / 100 : 0;
+    setForm({ ...form, comandaId, customerName: comanda?.customerName || "", serviceCharge: sc, deliveryCost: comanda?.isDelivery ? 5 : 0 });
+  };
+
+  const handleCreate = async () => {
+    const subtotal = preview.reduce((s: number, i: any) => s + i.price * i.quantity, 0);
+    await fetch("/api/orders", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        comandaId: form.comandaId || undefined,
+        pedidoIds: pedidos.map((p) => p._id),
+        items: preview,
+        tableLabel: comandas.find((c) => c._id === form.comandaId)?.tableLabel,
+        isDelivery: comandas.find((c) => c._id === form.comandaId)?.isDelivery || false,
+        serviceCharge: form.serviceCharge,
+        deliveryCost: form.deliveryCost,
+        subtotal,
+        paymentMethod: form.paymentMethod,
+        customer: { name: form.customerName, email: form.customerEmail, phone: form.customerPhone },
+        status: "paid",
+      }),
+    });
+    // Close comanda
+    if (form.comandaId) {
+      await fetch(`/api/comandas/${form.comandaId}`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "closed" }),
       });
+    }
+    setOpen(false);
+    fetchOrders();
   };
 
   useEffect(fetchOrders, []);
 
-  const totalPaid = (orderId: string) =>
-    (payments[orderId] || [])
-      .filter((p) => p.status === "paid")
-      .reduce((s, p) => s + p.amount, 0);
-
-  const orderTotal = (items: { price: number; quantity: number }[]) =>
-    items.reduce((s, i) => s + (i.price || 0) * (i.quantity || 1), 0);
-
   const filtered = orders.filter((o) =>
-    (o.tableLabel || "").toLowerCase().includes(search.toLowerCase()) ||
-    o.status.toLowerCase().includes(search.toLowerCase()),
+    (o.customer?.name || "").toLowerCase().includes(search.toLowerCase()) ||
+    (o.paymentMethod || "").toLowerCase().includes(search.toLowerCase()),
   );
   const totalPages = Math.ceil(filtered.length / perPage);
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
-
-  const updateStatus = async (id: string, status: string) => {
-    await fetch(`/api/orders/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) });
-    fetchOrders();
-  };
-
-  const openEdit = (o: Order) => {
-    setEditingOrder(o);
-    setEditForm({ notes: o.notes || "", observations: o.observations || "", customerName: o.customer?.name || "", customerEmail: o.customer?.email || "", customerPhone: o.customer?.phone || "" });
-    setEditOpen(true);
-  };
-
-  const handleSaveEdit = async () => {
-    if (!editingOrder) return;
-    await fetch(`/api/orders/${editingOrder._id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
-      notes: editForm.notes, observations: editForm.observations,
-      customer: { name: editForm.customerName, email: editForm.customerEmail, phone: editForm.customerPhone },
-    }) });
-    setEditOpen(false);
-    fetchOrders();
-  };
-
-  const openPay = (orderId: string, total: number) => {
-    setPayOrderId(orderId);
-    setPayForm({ method: "cash", amount: total, reference: "", notes: "", cardLast4: "" });
-    setPayOpen(true);
-  };
-
-  const handlePay = async () => {
-    if (!payOrderId) return;
-    await fetch("/api/payments", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ orderId: payOrderId, ...payForm, status: "paid", paidAt: new Date() }),
-    });
-    setPayOpen(false);
-    fetchPayments(payOrderId);
-  };
-
-  const openCreate = () => {
-    Promise.all([
-      fetch("/api/products").then(r => r.json()),
-      fetch("/api/tables").then(r => r.json()),
-    ]).then(([prods, tbls]) => {
-      setProducts(prods);
-      setTables(tbls);
-      setCreateForm({ tableId: "", tableLabel: "", observations: "", paymentMethod: "cash", customerName: "", customerEmail: "", customerPhone: "", items: [] });
-      setProductSearch("");
-      setCreateOpen(true);
-    });
-  };
-
-  const addItem = (p: any) => {
-    setCreateForm((prev) => ({
-      ...prev,
-      items: [...prev.items, { productId: p._id, name: p.name, price: p.price, quantity: 1 }],
-    }));
-  };
-
-  const updateItemQty = (idx: number, qty: number) => {
-    setCreateForm((prev) => {
-      const items = [...prev.items];
-      if (qty <= 0) { items.splice(idx, 1); return { ...prev, items }; }
-      items[idx] = { ...items[idx], quantity: qty };
-      return { ...prev, items };
-    });
-  };
-
-  const handleCreate = async () => {
-    const table = tables.find(t => t._id === createForm.tableId);
-    await fetch("/api/orders", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        tableId: createForm.tableId,
-        tableLabel: table?.name || table?.tableId || createForm.tableLabel,
-        items: createForm.items,
-        status: "pending",
-        observations: createForm.observations,
-        paymentMethod: createForm.paymentMethod,
-        customer: {
-          name: createForm.customerName,
-          email: createForm.customerEmail,
-          phone: createForm.customerPhone,
-        },
-        createdBy: "Staff",
-      }),
-    });
-    setCreateOpen(false);
-    fetchOrders();
-  };
 
   if (loading) return <p className="text-muted-foreground">Loading...</p>;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Orders</h1>
-        <Button onClick={openCreate} className="gap-2"><ImPlus /> New Order</Button>
+        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Billing</h1>
+        <Button onClick={openCreate} className="gap-2"><ImPlus /> New Bill</Button>
       </div>
 
-      <Input placeholder="Search by table or status..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="max-w-xs" />
+      <Input placeholder="Search by customer..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="max-w-xs" />
 
-      {filtered.length === 0 ? (
-        <p className="text-muted-foreground">No orders yet.</p>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {paginated.map((o) => {
-            const total = orderTotal(o.items);
-            const paid = totalPaid(o._id);
-            const balance = total - paid;
+      <div className="grid gap-4 md:grid-cols-2">
+        {paginated.map((o) => (
+          <Card key={o._id}>
+            <CardHeader className="pb-2">
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle>{o.customer?.name || "Walk-in"}</CardTitle>
+                  <p className="text-xs text-muted-foreground">{new Date(o.createdAt).toLocaleDateString()}</p>
+                </div>
+                <span className={`text-xs px-2 py-0.5 rounded ${
+                  o.status === "paid" ? "bg-green-500/10 text-green-500" : "bg-yellow-500/10 text-yellow-500"
+                }`}>{o.status}</span>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-1 text-sm">
+              <p className="text-muted-foreground">{o.items?.length || 0} items · {o.paymentMethod}</p>
+              {o.isDelivery && <p className="text-xs text-muted-foreground">Delivery</p>}
+              <div className="border-t pt-2 space-y-0.5 font-medium">
+                {o.serviceCharge > 0 && <div className="flex justify-between text-xs text-muted-foreground"><span>Service (10%)</span><span>${o.serviceCharge.toFixed(2)}</span></div>}
+                {o.deliveryCost > 0 && <div className="flex justify-between text-xs text-muted-foreground"><span>Delivery</span><span>${o.deliveryCost.toFixed(2)}</span></div>}
+                <div className="flex justify-between text-golden"><span>Total</span><span>${o.total?.toFixed(2)}</span></div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-            return (
-              <Card key={o._id} className={o.status === "cancelled" ? "opacity-60" : ""}>
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">{o.tableLabel || "Table"}</CardTitle>
-                      <p className="text-xs text-muted-foreground">{new Date(o.createdAt).toLocaleString()}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <select value={o.status} onChange={(e) => updateStatus(o._id, e.target.value)}
-                        className={`text-xs px-2 py-1 rounded border-none cursor-pointer font-medium ${statusColors[o.status] || "bg-muted text-muted-foreground"}`}>
-                        <option value="pending">pending</option><option value="preparing">preparing</option>
-                        <option value="ready">ready</option><option value="served">served</option><option value="cancelled">cancelled</option>
-                      </select>
-                      {isAdmin && (
-                        <Button variant="ghost" size="icon" onClick={() => openEdit(o)}><ImPencil className="w-4 h-4" /></Button>
-                      )}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <ul className="space-y-1 text-sm">
-                    {o.items.map((item, i) => (
-                      <li key={i} className="flex justify-between text-muted-foreground">
-                        <span>{item.quantity}x {item.name}</span>
-                        <span>${(item.price * item.quantity).toFixed(2)}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="border-t pt-2 space-y-1 text-sm">
-                    <div className="flex justify-between font-medium">
-                      <span>Total</span>
-                      <span>${total.toFixed(2)}</span>
-                    </div>
-                    {paid > 0 && (
-                      <div className="flex justify-between text-green-500">
-                        <span>Paid</span>
-                        <span>-${paid.toFixed(2)}</span>
-                      </div>
-                    )}
-                    {balance > 0 && (
-                      <div className="flex justify-between text-muted-foreground">
-                        <span>Balance</span>
-                        <span>${balance.toFixed(2)}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {o.observations && <p className="text-xs text-muted-foreground italic">Obs: {o.observations}</p>}
-                  {o.customer?.name && <p className="text-xs text-muted-foreground">Customer: {o.customer.name}</p>}
-
-                  <div className="flex gap-2 pt-1 flex-wrap">
-                    {nextStatus[o.status] && (
-                      <Button size="sm" onClick={() => updateStatus(o._id, nextStatus[o.status])}>
-                        {o.status === "pending" ? "Accept" : "Mark as " + nextStatus[o.status]}
-                      </Button>
-                    )}
-                    {o.status !== "cancelled" && o.status !== "served" && isAdmin && (
-                      <Button size="sm" variant="outline" onClick={() => updateStatus(o._id, "cancelled")}>Reject</Button>
-                    )}
-                    {balance > 0 && (
-                      <Button size="sm" variant="secondary" onClick={() => openPay(o._id, balance)} className="gap-1">
-                        <ImPlus className="w-3 h-3" /> Pay ${balance.toFixed(2)}
-                      </Button>
-                    )}
-                  </div>
-
-                  {/* Payments list */}
-                  {(payments[o._id] || []).length > 0 && (
-                    <div className="border-t pt-2 space-y-1">
-                      <p className="text-xs font-medium text-muted-foreground">Payments</p>
-                      {(payments[o._id] || []).map((p) => (
-                        <div key={p._id} className="flex justify-between text-xs text-muted-foreground">
-                          <span className="capitalize">{p.method}{p.cardLast4 ? ` · ****${p.cardLast4}` : ""}{p.reference ? ` · ${p.reference}` : ""}</span>
-                          <span className={p.status === "refunded" ? "text-red-500" : "text-green-500"}>
-                            {p.status === "refunded" ? "-" : ""}${p.amount.toFixed(2)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      )}
-
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          {filtered.length} result{filtered.length !== 1 ? "s" : ""}
-          {totalPages > 1 && ` · Page ${page} of ${totalPages}`}
-        </p>
-        {totalPages > 1 && (
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">{filtered.length} bills · Page {page} of {totalPages}</p>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
             <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* Edit Dialog */}
-      <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="bg-popover sm:max-w-md">
-          <DialogHeader><DialogTitle>Edit Order</DialogTitle></DialogHeader>
-          {editingOrder && (
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2"><Label>Observations</Label><Textarea value={editForm.observations} onChange={(e) => setEditForm({ ...editForm, observations: e.target.value })} rows={2} /></div>
-              <div className="grid gap-2"><Label>Waiter Notes</Label><Textarea value={editForm.notes} onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })} rows={2} /></div>
-              <div className="border-t pt-3">
-                <p className="text-sm font-medium mb-2">Customer</p>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="col-span-2 grid gap-1"><Label className="text-xs">Name</Label><Input value={editForm.customerName} onChange={(e) => setEditForm({ ...editForm, customerName: e.target.value })} /></div>
-                  <div className="grid gap-1"><Label className="text-xs">Email</Label><Input value={editForm.customerEmail} onChange={(e) => setEditForm({ ...editForm, customerEmail: e.target.value })} /></div>
-                  <div className="grid gap-1"><Label className="text-xs">Phone</Label><Input value={editForm.customerPhone} onChange={(e) => setEditForm({ ...editForm, customerPhone: e.target.value })} /></div>
-                </div>
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
-            <Button onClick={handleSaveEdit} className="gap-2"><ImCheckmark /> Save</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Payment Dialog */}
-      <Dialog open={payOpen} onOpenChange={setPayOpen}>
-        <DialogContent className="bg-popover sm:max-w-sm">
-          <DialogHeader><DialogTitle>Record Payment</DialogTitle></DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label>Method</Label>
-              <Select value={payForm.method} onValueChange={(v) => setPayForm({ ...payForm, method: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cash">Cash</SelectItem>
-                  <SelectItem value="card">Card</SelectItem>
-                  <SelectItem value="transfer">Transfer</SelectItem>
-                  <SelectItem value="invoice">Invoice</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid gap-2">
-              <Label>Amount ($)</Label>
-              <Input type="number" value={payForm.amount} onChange={(e) => setPayForm({ ...payForm, amount: Number(e.target.value) })} />
-            </div>
-            {payForm.method === "card" && (
-              <div className="grid gap-2">
-                <Label>Card (last 4 digits)</Label>
-                <Input placeholder="1234" onChange={(e) => setPayForm({ ...payForm, cardLast4: e.target.value })} />
-              </div>
-            )}
-            <div className="grid gap-2">
-              <Label>Reference (optional)</Label>
-              <Input placeholder="Transaction ID / Voucher #" value={payForm.reference} onChange={(e) => setPayForm({ ...payForm, reference: e.target.value })} />
-            </div>
-            <div className="grid gap-2">
-              <Label>Notes</Label>
-              <Input value={payForm.notes} onChange={(e) => setPayForm({ ...payForm, notes: e.target.value })} />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setPayOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
-            <Button onClick={handlePay} className="gap-2"><ImCheckmark /> Record Payment</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Create Order Dialog */}
-      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+      {/* New Bill Dialog */}
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="bg-popover sm:max-w-lg max-h-[85vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>New Order</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>New Bill</DialogTitle></DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label>Comanda</Label>
-              <Select value={createForm.tableId} onValueChange={(v) => setCreateForm({ ...createForm, tableId: v })}>
-                <SelectTrigger><SelectValue placeholder="Sin comanda..." /></SelectTrigger>
+              <Select value={form.comandaId} onValueChange={loadComanda}>
+                <SelectTrigger><SelectValue placeholder="Select comanda..." /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Sin comanda</SelectItem>
-                  {tables.map((t) => (
-                    <SelectItem key={t._id} value={t._id}>{t.name || t.tableId} ({t.capacity} pax)</SelectItem>
+                  {comandas.map((c) => (
+                    <SelectItem key={c._id} value={c._id}>
+                      {c.tableLabel || "Bar"} — {c.customerName || "Walk-in"}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="grid gap-2">
-              <Label>Items</Label>
-              <Input
-                placeholder="Search products..."
-                value={productSearch}
-                onChange={(e) => setProductSearch(e.target.value)}
-              />
-              <div className="max-h-48 overflow-y-auto border rounded-lg p-2 space-y-1">
-                {products
-                  .filter((p) => p.name.toLowerCase().includes(productSearch.toLowerCase()))
-                  .map((p) => (
-                  <div key={p._id} className="flex justify-between items-center text-sm py-1 px-2 hover:bg-accent/50 rounded cursor-pointer"
-                    onClick={() => addItem(p)}>
-                    <span>{p.name}</span>
-                    <span className="text-muted-foreground">${p.price}</span>
+            {preview.length > 0 && (
+              <div className="border rounded-lg p-3 space-y-1 text-sm">
+                <Label>Items</Label>
+                {preview.map((item, i) => (
+                  <div key={i} className="flex justify-between text-muted-foreground">
+                    <span>{item.quantity}x {item.name}</span>
+                    <span>${(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
-              </div>
-            </div>
-
-            {createForm.items.length > 0 && (
-              <div className="grid gap-2 border rounded-lg p-3">
-                <Label>Selected Items</Label>
-                {createForm.items.map((item, idx) => (
-                  <div key={idx} className="flex justify-between items-center text-sm">
-                    <span>{item.name}</span>
-                    <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" className="h-6 w-6 p-0" onClick={() => updateItemQty(idx, item.quantity - 1)}>-</Button>
-                      <span className="w-6 text-center">{item.quantity}</span>
-                      <Button variant="outline" size="sm" className="h-6 w-6 p-0" onClick={() => updateItemQty(idx, item.quantity + 1)}>+</Button>
-                      <span className="w-16 text-right">${(item.price * item.quantity).toFixed(2)}</span>
-                    </div>
-                  </div>
-                ))}
-                <div className="flex justify-between font-medium pt-2 border-t">
+                <div className="flex justify-between font-medium border-t pt-2">
+                  <span>Subtotal</span>
+                  <span>${preview.reduce((s: number, i: any) => s + i.price * i.quantity, 0).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Service (10%)</span>
+                  <span>${form.serviceCharge.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Delivery</span>
+                  <Input type="number" className="w-20 h-7 text-xs" value={form.deliveryCost}
+                    onChange={(e) => setForm({ ...form, deliveryCost: Number(e.target.value) })} />
+                </div>
+                <div className="flex justify-between font-bold text-golden border-t pt-2">
                   <span>Total</span>
-                  <span>${createForm.items.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2)}</span>
+                  <span>
+                    ${(preview.reduce((s: number, i: any) => s + i.price * i.quantity, 0) + form.serviceCharge + form.deliveryCost).toFixed(2)}
+                  </span>
                 </div>
               </div>
             )}
 
             <div className="grid gap-2">
               <Label>Payment Method</Label>
-              <Select value={createForm.paymentMethod} onValueChange={(v) => setCreateForm({ ...createForm, paymentMethod: v })}>
+              <Select value={form.paymentMethod} onValueChange={(v) => setForm({ ...form, paymentMethod: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="cash">Cash</SelectItem>
@@ -469,29 +222,22 @@ export default function OrdersPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2 grid gap-1">
                   <Label className="text-xs">Name</Label>
-                  <Input value={createForm.customerName} onChange={(e) => setCreateForm({ ...createForm, customerName: e.target.value })} />
+                  <Input value={form.customerName} onChange={(e) => setForm({ ...form, customerName: e.target.value })} />
                 </div>
                 <div className="grid gap-1">
                   <Label className="text-xs">Email</Label>
-                  <Input value={createForm.customerEmail} onChange={(e) => setCreateForm({ ...createForm, customerEmail: e.target.value })} />
+                  <Input value={form.customerEmail} onChange={(e) => setForm({ ...form, customerEmail: e.target.value })} />
                 </div>
                 <div className="grid gap-1">
                   <Label className="text-xs">Phone</Label>
-                  <Input value={createForm.customerPhone} onChange={(e) => setCreateForm({ ...createForm, customerPhone: e.target.value })} />
+                  <Input value={form.customerPhone} onChange={(e) => setForm({ ...form, customerPhone: e.target.value })} />
                 </div>
               </div>
             </div>
-
-            <div className="grid gap-2">
-              <Label>Observations</Label>
-              <Textarea value={createForm.observations} onChange={(e) => setCreateForm({ ...createForm, observations: e.target.value })} rows={2} />
-            </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
-            <Button onClick={handleCreate} disabled={createForm.items.length === 0} className="gap-2">
-              <ImCheckmark /> Create Order
-            </Button>
+            <Button variant="outline" onClick={() => setOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
+            <Button onClick={handleCreate} disabled={preview.length === 0} className="gap-2"><ImCheckmark /> Finalize Bill</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
