@@ -30,6 +30,7 @@ export default function ComandaPage() {
   const [comandas, setComandas] = useState<any[]>([]);
   const [pedidos, setPedidos] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTable, setSelectedTable] = useState<any>(null);
 
@@ -43,23 +44,40 @@ export default function ComandaPage() {
   const [pedidoSearch, setPedidoSearch] = useState("");
   const [pedidoItems, setPedidoItems] = useState<PedidoItem[]>([]);
   const [pedidoNotes, setPedidoNotes] = useState("");
+  const [filterDate, setFilterDate] = useState(new Date().toISOString().split("T")[0]);
+  const [statusFilter, setStatusFilter] = useState("open");
+  const [searchName, setSearchName] = useState("");
+  const [page, setPage] = useState(1);
+  const perPage = 30;
 
-  const fetchAll = () => {
+  const fetchAll = (date?: string) => {
+    const query = date ? `?date=${date}` : "";
     Promise.all([
       fetch("/api/tables").then(r => r.json()),
-      fetch("/api/comandas").then(r => r.json()),
+      fetch(`/api/comandas${query}`).then(r => r.json()),
       fetch("/api/products").then(r => r.json()),
-    ]).then(([t, c, p]) => { setTables(t); setComandas(c); setProducts(p); setLoading(false); });
+      fetch("/api/orders").then(r => r.json()),
+    ]).then(([t, c, p, o]) => { setTables(t); setComandas(c); setProducts(p); setOrders(o); setLoading(false); });
   };
+
+  const refresh = () => fetchAll(filterDate);
 
   const fetchPedidos = (comandaId: string) => {
     fetch(`/api/pedidos?comandaId=${comandaId}`).then(r => r.json()).then(setPedidos);
   };
 
-  useEffect(fetchAll, []);
+  useEffect(() => { refresh(); }, []);
   useEffect(() => { if (selectedTable) fetchPedidos(selectedTable._id); }, [selectedTable]);
 
-  const activeComandas = comandas.filter((c) => c.status === "open");
+  const filteredComandas = comandas
+    .filter((c) => statusFilter === "all" ? true : c.status === statusFilter)
+    .filter((c) => !searchName || (c.customerName || "").toLowerCase().includes(searchName.toLowerCase()));
+  const totalPages = Math.ceil(filteredComandas.length / perPage);
+  const paginated = filteredComandas.slice((page - 1) * perPage, page * perPage);
+
+  const paidComandaIds = new Set(
+    orders.filter((o: any) => o.status === "paid").map((o: any) => o.comandaId?.toString()).filter(Boolean),
+  );
 
   const createComanda = async () => {
     const table = tables.find((t) => t._id === comandaForm.tableId);
@@ -117,6 +135,16 @@ export default function ComandaPage() {
     if (selectedTable) fetchPedidos(selectedTable._id);
   };
 
+  const updateComandaStatus = async (status: string) => {
+    if (!selectedTable) return;
+    await fetch(`/api/comandas/${selectedTable._id}`, {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    setSelectedTable({ ...selectedTable, status });
+    fetchAll(filterDate);
+  };
+
   if (loading) return <p className="text-muted-foreground">Loading...</p>;
 
   return (
@@ -126,9 +154,23 @@ export default function ComandaPage() {
         <Button onClick={() => setOpenComanda(true)} className="gap-2"><ImPlus /> New Comanda</Button>
       </div>
 
-      {/* Active comandas */}
+      <div className="flex items-center gap-4">
+        <Input type="date" value={filterDate} onChange={(e) => { setFilterDate(e.target.value); fetchAll(e.target.value); }} className="w-fit" />
+        <Input placeholder="Search by name..." value={searchName} onChange={(e) => { setSearchName(e.target.value); setPage(1); }} className="max-w-xs" />
+        <div className="flex gap-1 bg-muted rounded-lg p-1">
+          {["all", "open", "closed", "rejected"].map((s) => (
+            <button key={s} onClick={() => setStatusFilter(s)}
+              className={`px-3 py-1 text-xs rounded-md transition-colors ${statusFilter === s ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
+              {s.charAt(0).toUpperCase() + s.slice(1)}
+            </button>
+          ))}
+        </div>
+        <span className="text-sm text-muted-foreground">{filteredComandas.length} comandas</span>
+      </div>
+
+      
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {activeComandas.map((c) => (
+        {paginated.map((c) => (
           <button
             key={c._id}
             onClick={() => { setSelectedTable(c); fetchPedidos(c._id); }}
@@ -138,18 +180,71 @@ export default function ComandaPage() {
           >
             <p className="text-lg font-bold">{c.tableLabel || "Bar"}</p>
             <p className="text-xs text-muted-foreground">{c.customerName || "—"}</p>
+            {paidComandaIds.has(c._id) && (
+              <p className="text-xs text-green-500 font-medium mt-1">✓ Paid</p>
+            )}
           </button>
         ))}
       </div>
 
-      {/* Selected comanda detail */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {filteredComandas.length} comanda{filteredComandas.length !== 1 ? "s" : ""}
+          {totalPages > 1 && ` · Page ${page} of ${totalPages}`}
+        </p>
+        {totalPages > 1 && (
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+          </div>
+        )}
+      </div>
+
+      
       {selectedTable && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-serif text-golden">
               {selectedTable.tableLabel || "Bar"} — {selectedTable.customerName || "Walk-in"}
             </h2>
-            <Button size="sm" onClick={() => openPedido(selectedTable._id)} className="gap-2"><ImPlus /> New Round</Button>
+            <div className="flex items-center gap-3">
+              {(() => {
+                const today = new Date().toISOString().split("T")[0];
+                const created = new Date(selectedTable.createdAt).toISOString().split("T")[0];
+                const isToday = today === created;
+                const isPaid = paidComandaIds.has(selectedTable._id);
+                const canEdit = !isPaid && (selectedTable.status === "open" || (selectedTable.status === "rejected" && isToday));
+
+                if (canEdit) {
+                  return (
+                    <select value={selectedTable.status} onChange={(e) => {
+                      const newStatus = e.target.value;
+                      if (selectedTable.status !== "open" && newStatus === "open") {
+                        if (selectedTable.status !== "rejected") { alert("Only rejected comandas can be reopened."); return; }
+                        if (!confirm("Reopen this comanda?")) return;
+                      }
+                      updateComandaStatus(newStatus);
+                    }}
+                      className="text-sm bg-background border border-input rounded px-2 py-1 capitalize">
+                      <option value="open">Open</option>
+                      <option value="closed">Closed</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
+                  );
+                }
+                return (
+                  <span className="text-sm text-muted-foreground capitalize px-2 py-1 border border-transparent">
+                    {selectedTable.status}
+                  </span>
+                );
+              })()}
+              {selectedTable.status === "open" && (
+              <Button size="sm" onClick={() => openPedido(selectedTable._id)} className="gap-2"><ImPlus /> New Round</Button>
+            )}
+            {(selectedTable.status === "closed" || selectedTable.status === "rejected") && (
+              <span className="text-xs text-muted-foreground italic">Comanda {selectedTable.status} — no more rounds</span>
+            )}
+          </div>
           </div>
 
           {pedidos.length === 0 && <p className="text-muted-foreground">No pedidos yet.</p>}
@@ -159,14 +254,18 @@ export default function ComandaPage() {
               <div key={p._id} className="border rounded-lg p-4 space-y-2">
                 <div className="flex justify-between items-center">
                   <span className={`text-xs font-medium px-2 py-0.5 rounded ${statusColors[p.status]}`}>{p.status}</span>
-                  <select value={p.status} onChange={(e) => updatePedidoStatus(p._id, e.target.value)}
-                    className="text-xs bg-background border border-input rounded px-2 py-1">
-                    <option value="pending">pending</option>
-                    <option value="preparing">preparing</option>
-                    <option value="ready">ready</option>
-                    <option value="served">served</option>
-                    <option value="cancelled">cancelled</option>
-                  </select>
+                  {selectedTable.status === "open" ? (
+                    <select value={p.status} onChange={(e) => updatePedidoStatus(p._id, e.target.value)}
+                      className="text-xs bg-background border border-input rounded px-2 py-1">
+                      <option value="pending">pending</option>
+                      <option value="preparing">preparing</option>
+                      <option value="ready">ready</option>
+                      <option value="served">served</option>
+                      <option value="cancelled">cancelled</option>
+                    </select>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">—</span>
+                  )}
                 </div>
                 <ul className="text-sm space-y-1">
                   {p.items.map((item: any, i: number) => (
@@ -194,12 +293,10 @@ export default function ComandaPage() {
         </div>
       )}
 
-      {/* No selection */}
       {!selectedTable && (
         <p className="text-muted-foreground text-center py-12">Select or create a comanda to start</p>
       )}
 
-      {/* New Comanda Dialog */}
       <Dialog open={openComanda} onOpenChange={setOpenComanda}>
         <DialogContent className="bg-popover">
           <DialogHeader><DialogTitle>New Comanda</DialogTitle></DialogHeader>
@@ -233,7 +330,7 @@ export default function ComandaPage() {
         </DialogContent>
       </Dialog>
 
-      {/* New Pedido Dialog */}
+      
       <Dialog open={pedidoOpen} onOpenChange={setPedidoOpen}>
         <DialogContent className="bg-popover sm:max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader><DialogTitle>New Round</DialogTitle></DialogHeader>

@@ -8,7 +8,7 @@ const comandaSchema = new mongoose.Schema(
     customerName: { type: String },
     status: {
       type: String,
-      enum: ["open", "closed"],
+      enum: ["open", "closed", "rejected"],
       default: "open",
     },
   },

@@ -1,10 +1,13 @@
 import { connectDB } from "@/database/connection";
 import { Comanda } from "@/database/models/comanda";
-import { Pedido } from "@/database/models/pedido";
+import { Order } from "@/database/models/order";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   await connectDB();
+
+  const { searchParams } = new URL(req.url);
+  const dateParam = searchParams.get("date");
 
   // Auto-close comandas from previous days
   const today = new Date();
@@ -15,9 +18,25 @@ export async function GET() {
     { status: "closed" },
   );
 
-  // Return today's comandas (both open and closed for reference)
+  // Auto-close open comandas that have been paid (safety check)
+  const paidOrders = await Order.find({ status: "paid", comandaId: { $ne: null } });
+  const paidComandaIds = [...new Set(paidOrders.map((o: any) => o.comandaId?.toString()).filter(Boolean))];
+  if (paidComandaIds.length > 0) {
+    await Comanda.updateMany(
+      { _id: { $in: paidComandaIds }, status: "open" },
+      { status: "closed" },
+    );
+  }
+
+  const startDate = dateParam
+    ? new Date(`${dateParam}T00:00:00`)
+    : today;
+
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 1);
+
   const comandas = await Comanda.find({
-    createdAt: { $gte: today },
+    createdAt: { $gte: startDate, $lt: endDate },
   }).sort({ createdAt: -1 });
 
   return NextResponse.json(comandas);
