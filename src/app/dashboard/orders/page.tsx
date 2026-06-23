@@ -28,6 +28,9 @@ export default function OrdersPage() {
   });
   const [pedidos, setPedidos] = useState<any[]>([]);
   const [preview, setPreview] = useState<any[]>([]);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingBill, setEditingBill] = useState<any>(null);
+  const [editForm, setEditForm] = useState<any>({});
 
   const fetchOrders = () => {
     fetch("/api/orders").then((r) => r.json()).then((d) => { setOrders(d); setLoading(false); });
@@ -81,23 +84,59 @@ export default function OrdersPage() {
         serviceCharge: form.serviceCharge,
         deliveryCost: form.deliveryCost,
         subtotal,
+        total: subtotal + form.serviceCharge + form.deliveryCost,
         paymentMethod: form.paymentMethod,
         customer: { name: form.customerName, email: form.customerEmail, phone: form.customerPhone },
-        status: "paid",
+        status: "pending",
       }),
     });
-    // Close comanda
-    if (form.comandaId) {
-      await fetch(`/api/comandas/${form.comandaId}`, {
-        method: "PATCH", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "closed" }),
-      });
-    }
     setOpen(false);
     fetchOrders();
   };
 
   useEffect(fetchOrders, []);
+
+  const confirmPayment = async (bill: any) => {
+    const total = (bill.subtotal || 0) + (bill.serviceCharge || 0) + (bill.deliveryCost || 0);
+    await fetch(`/api/orders/${bill._id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "paid", total }),
+    });
+    // Close comanda
+    if (bill.comandaId) {
+      await fetch(`/api/comandas/${bill.comandaId}`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "closed" }),
+      });
+    }
+    fetchOrders();
+  };
+
+  const openEdit = (bill: any) => {
+    setEditingBill(bill);
+    setEditForm({
+      customerName: bill.customer?.name || "",
+      customerEmail: bill.customer?.email || "",
+      customerPhone: bill.customer?.phone || "",
+      paymentMethod: bill.paymentMethod || "cash",
+    });
+    setEditOpen(true);
+  };
+
+  const handleEditSave = async () => {
+    if (!editingBill) return;
+    await fetch(`/api/orders/${editingBill._id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customer: { name: editForm.customerName, email: editForm.customerEmail, phone: editForm.customerPhone },
+        paymentMethod: editForm.paymentMethod,
+      }),
+    });
+    setEditOpen(false);
+    fetchOrders();
+  };
 
   const filtered = orders.filter((o) =>
     (o.customer?.name || "").toLowerCase().includes(search.toLowerCase()) ||
@@ -139,6 +178,12 @@ export default function OrdersPage() {
                 {o.deliveryCost > 0 && <div className="flex justify-between text-xs text-muted-foreground"><span>Delivery</span><span>${o.deliveryCost.toFixed(2)}</span></div>}
                 <div className="flex justify-between text-golden"><span>Total</span><span>${o.total?.toFixed(2)}</span></div>
               </div>
+              {o.status === "pending" && (
+                <div className="flex gap-2 pt-2">
+                  <Button size="sm" onClick={() => confirmPayment(o)} className="gap-1"><ImCheckmark className="w-3 h-3" /> Confirm Payment</Button>
+                  <Button size="sm" variant="outline" onClick={() => openEdit(o)}>Edit</Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
@@ -238,6 +283,39 @@ export default function OrdersPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
             <Button onClick={handleCreate} disabled={preview.length === 0} className="gap-2"><ImCheckmark /> Finalize Bill</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Bill Dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="bg-popover sm:max-w-sm">
+          <DialogHeader><DialogTitle>Edit Bill</DialogTitle></DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label>Payment Method</Label>
+              <Select value={editForm.paymentMethod} onValueChange={(v) => setEditForm({ ...editForm, paymentMethod: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">Cash</SelectItem>
+                  <SelectItem value="card">Card</SelectItem>
+                  <SelectItem value="transfer">Transfer</SelectItem>
+                  <SelectItem value="invoice">Invoice</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="border-t pt-3">
+              <p className="text-sm font-medium mb-2">Customer</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-2 grid gap-1"><Label className="text-xs">Name</Label><Input value={editForm.customerName} onChange={(e) => setEditForm({ ...editForm, customerName: e.target.value })} /></div>
+                <div className="grid gap-1"><Label className="text-xs">Email</Label><Input value={editForm.customerEmail} onChange={(e) => setEditForm({ ...editForm, customerEmail: e.target.value })} /></div>
+                <div className="grid gap-1"><Label className="text-xs">Phone</Label><Input value={editForm.customerPhone} onChange={(e) => setEditForm({ ...editForm, customerPhone: e.target.value })} /></div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
+            <Button onClick={handleEditSave} className="gap-2"><ImCheckmark /> Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
