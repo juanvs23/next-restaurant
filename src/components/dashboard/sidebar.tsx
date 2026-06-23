@@ -11,6 +11,7 @@ import {
   Table2,
   Clock,
   UtensilsCrossed,
+  Settings,
   Moon,
   Sun,
   LogOut,
@@ -30,6 +31,7 @@ const navItems = [
   { label: "Comanda", path: "/dashboard/comanda", icon: UtensilsCrossed },
   { label: "Billing", path: "/dashboard/orders", icon: ClipboardList },
   { label: "Media", path: "/dashboard/media", icon: ImageIcon },
+  { label: "Settings", path: "/dashboard/config", icon: Settings },
 ];
 
 export function Sidebar() {

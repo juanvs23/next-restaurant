@@ -11,3 +11,4 @@ import "./turn";
 import "./payment";
 import "./comanda";
 import "./pedido";
+import "./config";
