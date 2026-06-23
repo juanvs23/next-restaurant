@@ -177,15 +177,7 @@ export default function TablesPage() {
             </div>
             <div className="grid gap-2">
               <Label>Location</Label>
-              <Select value={form.location} onValueChange={(v) => setForm({ ...form, location: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="main">Main</SelectItem>
-                  <SelectItem value="terrace">Terrace</SelectItem>
-                  <SelectItem value="vip">VIP</SelectItem>
-                  <SelectItem value="bar">Bar</SelectItem>
-                </SelectContent>
-              </Select>
+              <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="main, terrace, bar..." />
             </div>
             <div className="col-span-2 grid gap-2">
               <Label>Status</Label>

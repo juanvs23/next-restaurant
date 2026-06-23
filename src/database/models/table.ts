@@ -5,11 +5,7 @@ const tableSchema = new mongoose.Schema(
     tableId: { type: String, required: true, unique: true },
     name: { type: String },
     capacity: { type: Number, required: true },
-    location: {
-      type: String,
-      enum: ["main", "terrace", "vip", "bar"],
-      default: "main",
-    },
+    location: { type: String, default: "main" },
     status: {
       type: String,
       enum: ["available", "occupied", "reserved", "maintenance"],
