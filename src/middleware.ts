@@ -11,41 +11,21 @@ const adminOnly = [
   "/dashboard/media",
 ];
 
-const staffAndUp = [
-  "/dashboard",
-  "/dashboard/comanda",
-  "/dashboard/bookings",
-  "/dashboard/orders",
-];
-
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const role = req.auth?.role;
   const isAuth = !!req.auth?.accessToken;
 
-  // Block non-authenticated users from all dashboard routes
-  if (staffAndUp.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
-    if (!isAuth) {
-      return redirectToLogin(req);
-    }
-  }
+  // All dashboard routes require authentication
+  if (!pathname.startsWith("/dashboard")) return;
+
+  if (!isAuth) return redirectToLogin(req);
 
   // Admin-only routes
   if (adminOnly.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
-    if (!isAuth) return redirectToLogin(req);
     if (role !== "admin") {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
-  }
-
-  // Allow staff to access orders/comanda/bookings
-  if (
-    (pathname.startsWith("/dashboard/orders") ||
-     pathname.startsWith("/dashboard/comanda") ||
-     pathname.startsWith("/dashboard/bookings")) &&
-    !isAuth
-  ) {
-    return redirectToLogin(req);
   }
 });
 
@@ -61,8 +41,5 @@ function redirectToLogin(req: any) {
 }
 
 export const config = {
-  matcher: [
-    "/dashboard/:path*",
-    "/dashboard",
-  ],
+  matcher: ["/dashboard/:path*", "/dashboard"],
 };
