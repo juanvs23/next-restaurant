@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const tabs = ["General", "Tax", "Charges", "Payments"];
+const tabs = ["General", "Tax", "Charges", "Payments", "Hours"];
 
 export default function ConfigPage() {
   const [config, setConfig] = useState<any>(null);
@@ -31,6 +31,9 @@ export default function ConfigPage() {
           serviceChargeRate: d.serviceChargeRate ?? 0.1,
           defaultDeliveryCost: d.defaultDeliveryCost ?? 5,
           paymentMethods: d.paymentMethods ?? ["cash", "card"],
+          nonWorkingDays: d.nonWorkingDays ?? [0],
+          holidays: d.holidays ?? [],
+          defaultLanguage: d.defaultLanguage ?? "es",
           nextInvoiceNumber: d.nextInvoiceNumber ?? 1,
         });
       });
@@ -102,6 +105,15 @@ export default function ConfigPage() {
                 <Label>Email (fiscal)</Label>
                 <Input value={form.businessEmail} onChange={(e) => setForm({ ...form, businessEmail: e.target.value })} />
               </div>
+              <div className="grid gap-1">
+                <Label>Default Language</Label>
+                <select value={form.defaultLanguage} onChange={(e) => setForm({ ...form, defaultLanguage: e.target.value })}
+                  className="bg-background border border-input rounded px-3 py-2 text-sm">
+                  <option value="es">Español</option>
+                  <option value="en">English</option>
+                  <option value="pt">Português</option>
+                </select>
+              </div>
             </div>
           )}
 
@@ -154,6 +166,44 @@ export default function ConfigPage() {
                   <Label htmlFor={m} className="capitalize">{m}</Label>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Hours */}
+          {tab === 4 && (
+            <div className="space-y-4">
+              <div>
+                <Label>Non-working days of the week</Label>
+                <div className="grid grid-cols-7 gap-2 mt-2">
+                  {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day, i) => (
+                    <button key={day} type="button" onClick={() => {
+                      const days = form.nonWorkingDays || [];
+                      setForm({
+                        ...form,
+                        nonWorkingDays: days.includes(i)
+                          ? days.filter((d: number) => d !== i)
+                          : [...days, i].sort(),
+                      });
+                    }}
+                      className={`py-2 px-3 rounded-lg text-sm border transition-all ${
+                        (form.nonWorkingDays || []).includes(i)
+                          ? "bg-red-500/10 border-red-500/40 text-red-500"
+                          : "bg-background border-border text-foreground hover:border-golden/30"
+                      }`}>
+                      {day}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <Label>Holidays (one per line, YYYY-MM-DD)</Label>
+                <textarea
+                  value={(form.holidays || []).join("\n")}
+                  onChange={(e) => setForm({ ...form, holidays: e.target.value.split("\n").map((s: string) => s.trim()).filter(Boolean) })}
+                  className="bg-background border border-input rounded px-3 py-2 text-sm min-h-[100px]"
+                  placeholder="2026-01-01&#10;2026-12-25"
+                />
+              </div>
             </div>
           )}
         </CardContent>

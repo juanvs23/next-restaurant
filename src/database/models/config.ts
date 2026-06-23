@@ -23,6 +23,25 @@ const configSchema = new mongoose.Schema(
       default: ["cash", "card", "transfer", "invoice"],
     },
 
+    // Business hours
+    nonWorkingDays: {
+      type: [Number],
+      default: [0], // 0 = Sunday
+    },
+
+    // Holidays (specific dates)
+    holidays: {
+      type: [String],
+      default: [], // "2026-01-01", "2026-12-25"
+    },
+
+    // Default language
+    defaultLanguage: {
+      type: String,
+      enum: ["es", "en", "pt"],
+      default: "es",
+    },
+
     // Invoicing
     nextInvoiceNumber: { type: Number, default: 1 },
   },
