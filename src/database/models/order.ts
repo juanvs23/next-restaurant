@@ -22,7 +22,19 @@ const orderSchema = new mongoose.Schema(
       default: "pending",
     },
     notes: { type: String },
-    createdBy: { type: String }, // waiter name or user ID
+    observations: { type: String },
+    paymentMethod: {
+      type: String,
+      enum: ["cash", "card", "transfer", "other"],
+      default: "cash",
+    },
+    customer: {
+      name: { type: String },
+      email: { type: String },
+      phone: { type: String },
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    },
+    createdBy: { type: String },
   },
   { timestamps: true }
 );

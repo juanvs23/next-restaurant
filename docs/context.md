@@ -110,8 +110,8 @@ src/
 
 ## Pending Tasks
 
-1. **Custom credentials provider** — Añadir login con email/contraseña vía Auth.js CredentialsProvider, además de Google OAuth.
-2. **Redirect post-login** — Al iniciar sesión, redirigir siempre al dashboard (`/dashboard`), no al home.
+1. **Custom credentials provider** ✅ — Login con email/contraseña + Google OAuth.
+2. **Redirect post-login** ✅ — Login y registro redirigen al dashboard.
 3. **Días no laborables desde backoffice** — CRUD para configurar días de cierre semanal (domingos, feriados) y excepciones.
 4. **Separar backoffice del frontend** — El backoffice debe tener su propio diseño y layout independiente del frontend.
 
