@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ImCheckmark } from "react-icons/im";
+import { ImPlus, ImBin, ImCheckmark } from "react-icons/im";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,6 +47,20 @@ export default function ConfigPage() {
         ? methods.filter((m: string) => m !== method)
         : [...methods, method],
     });
+  };
+
+  const addHoliday = () => {
+    setForm({ ...form, holidays: [...(form.holidays || []), ""] });
+  };
+
+  const removeHoliday = (idx: number) => {
+    setForm({ ...form, holidays: (form.holidays || []).filter((_: any, i: number) => i !== idx) });
+  };
+
+  const updateHoliday = (idx: number, val: string) => {
+    const items = [...(form.holidays || [])];
+    items[idx] = val;
+    setForm({ ...form, holidays: items });
   };
 
   const handleSave = async () => {
@@ -196,13 +210,21 @@ export default function ConfigPage() {
                 </div>
               </div>
               <div className="grid gap-2">
-                <Label>Holidays (one per line, YYYY-MM-DD)</Label>
-                <textarea
-                  value={(form.holidays || []).join("\n")}
-                  onChange={(e) => setForm({ ...form, holidays: e.target.value.split("\n").map((s: string) => s.trim()).filter(Boolean) })}
-                  className="bg-background border border-input rounded px-3 py-2 text-sm min-h-[120px] resize-y whitespace-pre-wrap"
-                  placeholder={`12-25 (Navidad, todos los a\u00f1os)\n2026-06-15 (cierre \u00fanico)`}
-                />
+                <Label>Holidays</Label>
+                <p className="text-xs text-muted-foreground">Use MM-DD for yearly (12-25) or YYYY-MM-DD for one-time</p>
+                <div className="space-y-2">
+                  {(form.holidays || []).map((h: string, i: number) => (
+                    <div key={i} className="flex gap-2">
+                      <Input value={h} onChange={(e) => updateHoliday(i, e.target.value)} placeholder="12-25" />
+                      <Button variant="ghost" size="icon" onClick={() => removeHoliday(i)}>
+                        <ImBin className="w-4 h-4 text-destructive" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+                <Button variant="outline" size="sm" className="w-fit gap-2" onClick={addHoliday}>
+                  <ImPlus className="w-3 h-3" /> Add Holiday
+                </Button>
               </div>
             </div>
           )}
