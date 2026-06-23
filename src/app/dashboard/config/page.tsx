@@ -200,8 +200,8 @@ export default function ConfigPage() {
                 <textarea
                   value={(form.holidays || []).join("\n")}
                   onChange={(e) => setForm({ ...form, holidays: e.target.value.split("\n").map((s: string) => s.trim()).filter(Boolean) })}
-                  className="bg-background border border-input rounded px-3 py-2 text-sm min-h-[100px]"
-                  placeholder="2026-01-01&#10;2026-12-25"
+                  className="bg-background border border-input rounded px-3 py-2 text-sm min-h-[120px] resize-y whitespace-pre-wrap"
+                  placeholder={`12-25 (Navidad, todos los a\u00f1os)\n2026-06-15 (cierre \u00fanico)`}
                 />
               </div>
             </div>
