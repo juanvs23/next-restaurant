@@ -62,10 +62,20 @@ export default function OrdersPage() {
   const [page, setPage] = useState(1);
   const [editOpen, setEditOpen] = useState(false);
   const [payOpen, setPayOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
   const [payOrderId, setPayOrderId] = useState<string | null>(null);
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [editForm, setEditForm] = useState<any>({});
   const [payForm, setPayForm] = useState({ method: "cash", amount: 0, reference: "", notes: "", cardLast4: "" });
+  const [products, setProducts] = useState<any[]>([]);
+  const [tables, setTables] = useState<any[]>([]);
+  const [createForm, setCreateForm] = useState({
+    tableId: "", tableLabel: "", observations: "",
+    paymentMethod: "cash",
+    customerName: "", customerEmail: "", customerPhone: "",
+    items: [] as { productId: string; name: string; price: number; quantity: number }[],
+  });
+  const [productSearch, setProductSearch] = useState("");
   const perPage = 10;
   const { data: session } = useSession();
   const isAdmin = session?.role === "admin";
@@ -140,11 +150,66 @@ export default function OrdersPage() {
     fetchPayments(payOrderId);
   };
 
+  const openCreate = () => {
+    Promise.all([
+      fetch("/api/products").then(r => r.json()),
+      fetch("/api/tables").then(r => r.json()),
+    ]).then(([prods, tbls]) => {
+      setProducts(prods);
+      setTables(tbls);
+      setCreateForm({ tableId: "", tableLabel: "", observations: "", paymentMethod: "cash", customerName: "", customerEmail: "", customerPhone: "", items: [] });
+      setProductSearch("");
+      setCreateOpen(true);
+    });
+  };
+
+  const addItem = (p: any) => {
+    setCreateForm((prev) => ({
+      ...prev,
+      items: [...prev.items, { productId: p._id, name: p.name, price: p.price, quantity: 1 }],
+    }));
+  };
+
+  const updateItemQty = (idx: number, qty: number) => {
+    setCreateForm((prev) => {
+      const items = [...prev.items];
+      if (qty <= 0) { items.splice(idx, 1); return { ...prev, items }; }
+      items[idx] = { ...items[idx], quantity: qty };
+      return { ...prev, items };
+    });
+  };
+
+  const handleCreate = async () => {
+    const table = tables.find(t => t._id === createForm.tableId);
+    await fetch("/api/orders", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tableId: createForm.tableId,
+        tableLabel: table?.name || table?.tableId || createForm.tableLabel,
+        items: createForm.items,
+        status: "pending",
+        observations: createForm.observations,
+        paymentMethod: createForm.paymentMethod,
+        customer: {
+          name: createForm.customerName,
+          email: createForm.customerEmail,
+          phone: createForm.customerPhone,
+        },
+        createdBy: "Staff",
+      }),
+    });
+    setCreateOpen(false);
+    fetchOrders();
+  };
+
   if (loading) return <p className="text-muted-foreground">Loading...</p>;
 
   return (
     <div className="space-y-6">
-      <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Orders</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Orders</h1>
+        <Button onClick={openCreate} className="gap-2"><ImPlus /> New Order</Button>
+      </div>
 
       <Input placeholder="Search by table or status..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="max-w-xs" />
 
@@ -323,6 +388,110 @@ export default function OrdersPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setPayOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
             <Button onClick={handlePay} className="gap-2"><ImCheckmark /> Record Payment</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Order Dialog */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="bg-popover sm:max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>New Order</DialogTitle></DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label>Comanda</Label>
+              <Select value={createForm.tableId} onValueChange={(v) => setCreateForm({ ...createForm, tableId: v })}>
+                <SelectTrigger><SelectValue placeholder="Sin comanda..." /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Sin comanda</SelectItem>
+                  {tables.map((t) => (
+                    <SelectItem key={t._id} value={t._id}>{t.name || t.tableId} ({t.capacity} pax)</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Items</Label>
+              <Input
+                placeholder="Search products..."
+                value={productSearch}
+                onChange={(e) => setProductSearch(e.target.value)}
+              />
+              <div className="max-h-48 overflow-y-auto border rounded-lg p-2 space-y-1">
+                {products
+                  .filter((p) => p.name.toLowerCase().includes(productSearch.toLowerCase()))
+                  .map((p) => (
+                  <div key={p._id} className="flex justify-between items-center text-sm py-1 px-2 hover:bg-accent/50 rounded cursor-pointer"
+                    onClick={() => addItem(p)}>
+                    <span>{p.name}</span>
+                    <span className="text-muted-foreground">${p.price}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {createForm.items.length > 0 && (
+              <div className="grid gap-2 border rounded-lg p-3">
+                <Label>Selected Items</Label>
+                {createForm.items.map((item, idx) => (
+                  <div key={idx} className="flex justify-between items-center text-sm">
+                    <span>{item.name}</span>
+                    <div className="flex items-center gap-2">
+                      <Button variant="outline" size="sm" className="h-6 w-6 p-0" onClick={() => updateItemQty(idx, item.quantity - 1)}>-</Button>
+                      <span className="w-6 text-center">{item.quantity}</span>
+                      <Button variant="outline" size="sm" className="h-6 w-6 p-0" onClick={() => updateItemQty(idx, item.quantity + 1)}>+</Button>
+                      <span className="w-16 text-right">${(item.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                  </div>
+                ))}
+                <div className="flex justify-between font-medium pt-2 border-t">
+                  <span>Total</span>
+                  <span>${createForm.items.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2)}</span>
+                </div>
+              </div>
+            )}
+
+            <div className="grid gap-2">
+              <Label>Payment Method</Label>
+              <Select value={createForm.paymentMethod} onValueChange={(v) => setCreateForm({ ...createForm, paymentMethod: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">Cash</SelectItem>
+                  <SelectItem value="card">Card</SelectItem>
+                  <SelectItem value="transfer">Transfer</SelectItem>
+                  <SelectItem value="invoice">Invoice</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="border-t pt-3">
+              <p className="text-sm font-medium mb-2">Customer</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-2 grid gap-1">
+                  <Label className="text-xs">Name</Label>
+                  <Input value={createForm.customerName} onChange={(e) => setCreateForm({ ...createForm, customerName: e.target.value })} />
+                </div>
+                <div className="grid gap-1">
+                  <Label className="text-xs">Email</Label>
+                  <Input value={createForm.customerEmail} onChange={(e) => setCreateForm({ ...createForm, customerEmail: e.target.value })} />
+                </div>
+                <div className="grid gap-1">
+                  <Label className="text-xs">Phone</Label>
+                  <Input value={createForm.customerPhone} onChange={(e) => setCreateForm({ ...createForm, customerPhone: e.target.value })} />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Observations</Label>
+              <Textarea value={createForm.observations} onChange={(e) => setCreateForm({ ...createForm, observations: e.target.value })} rows={2} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCreateOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
+            <Button onClick={handleCreate} disabled={createForm.items.length === 0} className="gap-2">
+              <ImCheckmark /> Create Order
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
