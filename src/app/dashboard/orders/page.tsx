@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { ImPlus, ImPencil, ImCheckmark, ImCross } from "react-icons/im";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -64,8 +65,10 @@ export default function OrdersPage() {
   const [payOrderId, setPayOrderId] = useState<string | null>(null);
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [editForm, setEditForm] = useState<any>({});
-  const [payForm, setPayForm] = useState({ method: "cash", amount: 0, reference: "", notes: "" });
+  const [payForm, setPayForm] = useState({ method: "cash", amount: 0, reference: "", notes: "", cardLast4: "" });
   const perPage = 10;
+  const { data: session } = useSession();
+  const isAdmin = session?.role === "admin";
 
   const fetchPayments = async (orderId: string) => {
     const res = await fetch(`/api/payments?orderId=${orderId}`);
@@ -123,7 +126,7 @@ export default function OrdersPage() {
 
   const openPay = (orderId: string, total: number) => {
     setPayOrderId(orderId);
-    setPayForm({ method: "cash", amount: total, reference: "", notes: "" });
+    setPayForm({ method: "cash", amount: total, reference: "", notes: "", cardLast4: "" });
     setPayOpen(true);
   };
 
@@ -168,7 +171,9 @@ export default function OrdersPage() {
                         <option value="pending">pending</option><option value="preparing">preparing</option>
                         <option value="ready">ready</option><option value="served">served</option><option value="cancelled">cancelled</option>
                       </select>
-                      <Button variant="ghost" size="icon" onClick={() => openEdit(o)}><ImPencil className="w-4 h-4" /></Button>
+                      {isAdmin && (
+                        <Button variant="ghost" size="icon" onClick={() => openEdit(o)}><ImPencil className="w-4 h-4" /></Button>
+                      )}
                     </div>
                   </div>
                 </CardHeader>
@@ -210,7 +215,7 @@ export default function OrdersPage() {
                         {o.status === "pending" ? "Accept" : "Mark as " + nextStatus[o.status]}
                       </Button>
                     )}
-                    {o.status !== "cancelled" && o.status !== "served" && (
+                    {o.status !== "cancelled" && o.status !== "served" && isAdmin && (
                       <Button size="sm" variant="outline" onClick={() => updateStatus(o._id, "cancelled")}>Reject</Button>
                     )}
                     {balance > 0 && (
@@ -303,7 +308,7 @@ export default function OrdersPage() {
             {payForm.method === "card" && (
               <div className="grid gap-2">
                 <Label>Card (last 4 digits)</Label>
-                <Input maxLength={4} placeholder="1234" onChange={(e) => setPayForm({ ...payForm, cardLast4: e.target.value })} />
+                <Input placeholder="1234" onChange={(e) => setPayForm({ ...payForm, cardLast4: e.target.value })} />
               </div>
             )}
             <div className="grid gap-2">
