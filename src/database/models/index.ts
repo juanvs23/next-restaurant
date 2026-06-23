@@ -8,3 +8,4 @@ import "./category";
 import "./media";
 import "./order";
 import "./turn";
+import "./payment";
