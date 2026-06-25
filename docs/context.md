@@ -133,6 +133,29 @@ Full-stack restaurant POS/web application for **GERÍCHT**, a fine dining restau
 4. **Pendiente**: Separar backoffice del frontend
 5. **Pendiente**: Proteger API routes con auth
 
+## Storage (Media Upload)
+
+### Arquitectura Híbrida
+- **Provider local** (default): guarda en `public/uploads/`, servido como static por Next.js
+- **Provider S3**: configurable desde Settings → Storage
+
+### Cómo funciona
+- `POST /api/media` acepta multipart/form-data + JSON legacy
+- Lee `Config.storageProvider` para decidir provider
+- `src/libs/services/storage-service.ts`: factory pattern con `LocalProvider` y `S3Provider`
+- `DELETE /api/media/[id]` también borra del storage activo
+- `public/uploads/` en `.gitignore`
+- Provider S3 requiere bucket, region, accessKeyId, secretAccessKey, endpoint opcional
+
+### Archivos clave
+| Archivo | Rol |
+|---------|-----|
+| `src/libs/services/storage-service.ts` | Abstract factory + providers |
+| `src/database/models/config.ts` | `storageProvider` + `s3Config` |
+| `src/components/dashboard/settings/StorageTab.tsx` | UI de configuración |
+| `src/app/api/media/route.ts` | POST con multipart |
+| `src/app/api/media/[id]/route.ts` | DELETE con cleanup
+
 ## Environment Variables
 
 | Variable | Description |

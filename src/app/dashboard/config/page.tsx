@@ -12,8 +12,9 @@ import { ChargesTab } from "@/components/dashboard/settings/ChargesTab";
 import { PaymentsTab } from "@/components/dashboard/settings/PaymentsTab";
 import { HoursTab } from "@/components/dashboard/settings/HoursTab";
 import { ShiftsTab } from "@/components/dashboard/settings/ShiftsTab";
+import { StorageTab } from "@/components/dashboard/settings/StorageTab";
 
-const tabs = ["general", "tax", "charges", "payments", "hours", "shifts"];
+const tabs = ["general", "tax", "charges", "payments", "hours", "shifts", "storage"];
 
 export default function ConfigPage() {
   const { t, setLocale } = useT();
@@ -45,6 +46,14 @@ export default function ConfigPage() {
           nextInvoiceNumber: d.nextInvoiceNumber ?? 1,
           nextCreditNoteNumber: d.nextCreditNoteNumber ?? 1,
           timezone: d.timezone || "-04:00",
+          storageProvider: d.storageProvider || "local",
+          s3Config: {
+            accessKeyId: d.s3Config?.accessKeyId || "",
+            secretAccessKey: d.s3Config?.secretAccessKey || "",
+            region: d.s3Config?.region || "",
+            bucket: d.s3Config?.bucket || "",
+            endpoint: d.s3Config?.endpoint || "",
+          },
         });
       });
   }, []);
@@ -89,6 +98,7 @@ export default function ConfigPage() {
           {tab === 3 && <PaymentsTab />}
           {tab === 4 && <HoursTab form={form} setForm={setForm} />}
           {tab === 5 && <ShiftsTab />}
+          {tab === 6 && <StorageTab form={form} setForm={setForm} />}
         </CardContent>
       </Card>
 

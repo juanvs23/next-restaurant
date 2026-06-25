@@ -342,7 +342,19 @@
     "pmPagoMovil": "Pago Móvil",
     "pmInvoice": "Invoice",
     "pmOther": "Other",
-    "cashRegisterHint": "Manage point-of-sale registers"
+    "cashRegisterHint": "Manage point-of-sale registers",
+    "storage": "Storage",
+    "storageHint": "Choose where to store uploaded images. Local saves to the server's filesystem. S3-compatible (DigitalOcean Spaces, AWS S3, MinIO) works when configured.",
+    "storageLocal": "Local",
+    "storageLocalDesc": "Save to server filesystem",
+    "s3Desc": "S3-compatible (AWS, DO Spaces, MinIO)",
+    "s3Config": "S3 Configuration",
+    "s3Bucket": "Bucket",
+    "s3Region": "Region",
+    "s3AccessKey": "Access Key ID",
+    "s3SecretKey": "Secret Access Key",
+    "s3Endpoint": "Endpoint",
+    "s3EndpointHint": "Required for S3-compatible providers (DigitalOcean Spaces, MinIO). Leave empty for AWS S3."
   },
   "tables": {
     "title": "Tables",

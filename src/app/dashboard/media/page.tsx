@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, DragEvent } from "react";
 import { ImPlus, ImBin, ImCross, ImCheckmark, ImCopy, ImImage } from "react-icons/im";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +37,7 @@ export default function MediaPage() {
   const [urlInput, setUrlInput] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [dragging, setDragging] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 12;
@@ -123,12 +124,42 @@ export default function MediaPage() {
         <DialogContent className="bg-popover">
           <DialogHeader><DialogTitle>Upload Image</DialogTitle></DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:bg-accent/50 cursor-pointer"
+            <div
+              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                dragging ? "border-primary bg-primary/5" : "border-border hover:bg-accent/50"
+              }`}
               onClick={() => fileInputRef.current?.click()}
+              onDragOver={(e: DragEvent) => { e.preventDefault(); setDragging(true); }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={async (e: DragEvent) => {
+                e.preventDefault();
+                setDragging(false);
+                const files = e.dataTransfer?.files;
+                if (!files?.length) return;
+                for (const file of Array.from(files)) {
+                  const formData = new FormData();
+                  formData.append("file", file);
+                  await fetch("/api/media", { method: "POST", body: formData });
+                }
+                setUploadOpen(false);
+                fetchMedia();
+              }}
             >
               <ImImage className="w-10 h-10 mx-auto text-muted-foreground mb-2" />
               <p className="text-sm text-muted-foreground">{t("media.dropFiles")}</p>
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" multiple />
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" multiple
+                onChange={async (e) => {
+                  const files = e.target.files;
+                  if (!files?.length) return;
+                  for (const file of Array.from(files)) {
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    await fetch("/api/media", { method: "POST", body: formData });
+                  }
+                  setUploadOpen(false);
+                  fetchMedia();
+                }}
+              />
             </div>
 
             <div className="relative">

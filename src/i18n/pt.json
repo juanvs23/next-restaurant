@@ -342,7 +342,19 @@
     "pmPagoMovil": "Pago Móvil",
     "pmInvoice": "Fatura",
     "pmOther": "Outro",
-    "cashRegisterHint": "Gerencie os caixas registradores"
+    "cashRegisterHint": "Gerencie os caixas registradores",
+    "storage": "Armazenamento",
+    "storageHint": "Escolha onde armazenar as imagens enviadas. Local salva no filesystem do servidor. S3 compatível (DigitalOcean Spaces, AWS S3, MinIO) funciona quando configurado.",
+    "storageLocal": "Local",
+    "storageLocalDesc": "Salvar no servidor",
+    "s3Desc": "Compatível com S3 (AWS, DO Spaces, MinIO)",
+    "s3Config": "Configuração S3",
+    "s3Bucket": "Bucket",
+    "s3Region": "Região",
+    "s3AccessKey": "Access Key ID",
+    "s3SecretKey": "Secret Access Key",
+    "s3Endpoint": "Endpoint",
+    "s3EndpointHint": "Obrigatório para providers S3-compatíveis (DigitalOcean Spaces, MinIO). Deixe vazio para AWS S3."
   },
   "tables": {
     "title": "Mesas",

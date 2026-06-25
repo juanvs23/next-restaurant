@@ -48,6 +48,20 @@ const configSchema = new mongoose.Schema(
 
     // Timezone
     timezone: { type: String, default: "-04:00" }, // Venezuela UTC-4
+
+    // Storage
+    storageProvider: {
+      type: String,
+      enum: ["local", "s3"],
+      default: "local",
+    },
+    s3Config: {
+      accessKeyId: { type: String, default: "" },
+      secretAccessKey: { type: String, default: "" },
+      region: { type: String, default: "" },
+      bucket: { type: String, default: "" },
+      endpoint: { type: String, default: "" },
+    },
   },
   { timestamps: true }
 );

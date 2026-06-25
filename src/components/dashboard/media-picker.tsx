@@ -22,24 +22,16 @@ interface MediaPickerProps {
   label?: string;
 }
 
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-async function uploadToLibrary(base64: string, filename: string) {
+async function uploadFile(file: File): Promise<string | null> {
   try {
-    await fetch("/api/media", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ filename, url: base64, mimeType: "image/*" }),
-    });
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch("/api/media", { method: "POST", body: formData });
+    if (!res.ok) return null;
+    const media = await res.json();
+    return media.url;
   } catch {
-    // Silent fail — URL is set regardless
+    return null;
   }
 }
 
@@ -47,6 +39,7 @@ export function MediaPicker({ value, onChange, label = "Image" }: MediaPickerPro
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<MediaItem[]>([]);
   const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,9 +54,10 @@ export function MediaPicker({ value, onChange, label = "Image" }: MediaPickerPro
     const file = e.dataTransfer.files?.[0];
     if (!file || !file.type.startsWith("image/")) return;
 
-    const base64 = await fileToBase64(file);
-    onChange(base64);
-    uploadToLibrary(base64, file.name);
+    setUploading(true);
+    const url = await uploadFile(file);
+    if (url) onChange(url);
+    setUploading(false);
   };
 
   const handleDragOver = (e: DragEvent) => {
@@ -77,7 +71,6 @@ export function MediaPicker({ value, onChange, label = "Image" }: MediaPickerPro
     <div className="grid gap-2">
       <Label>{label}</Label>
 
-      {/* Drop zone */}
       <div
         ref={dropRef}
         onDrop={handleDrop}
@@ -93,8 +86,9 @@ export function MediaPicker({ value, onChange, label = "Image" }: MediaPickerPro
           <Input
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="Drop image, paste URL, or select from library"
+            placeholder={uploading ? "Uploading..." : "Drop image, paste URL, or select from library"}
             className="border-0 bg-transparent pl-2 pr-8 focus-visible:ring-0"
+            disabled={uploading}
           />
           {value && (
             <button
@@ -110,7 +104,6 @@ export function MediaPicker({ value, onChange, label = "Image" }: MediaPickerPro
         </Button>
       </div>
 
-      {/* Drag hint */}
       {!value && !dragging && (
         <p className="text-xs text-muted-foreground flex items-center gap-1">
           <ImUpload className="w-3 h-3" /> Drag & drop or paste URL
@@ -120,7 +113,6 @@ export function MediaPicker({ value, onChange, label = "Image" }: MediaPickerPro
         <p className="text-xs text-primary font-medium">Drop image here</p>
       )}
 
-      {/* Preview */}
       {value && (
         <div className="relative w-24 h-24 group">
           <img
@@ -137,7 +129,6 @@ export function MediaPicker({ value, onChange, label = "Image" }: MediaPickerPro
         </div>
       )}
 
-      {/* Media Library Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="bg-popover sm:max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Select Image</DialogTitle></DialogHeader>
