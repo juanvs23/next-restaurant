@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "./dashboard.css";
 import { DashboardProviders } from "@/components/dashboard/dashboard-providers";
 import { Sidebar } from "@/components/dashboard/sidebar";
 

@@ -34,3 +34,7 @@ NUNCA commitear ni pushear sin autorización explícita.
 ## 4. Testing antes de guardar (Regla 5)
 
 Antes de cualquier `git add .` se deben ejecutar las pruebas. Si alguna falla, notificar al desarrollador y no continuar hasta resolverlo.
+
+## 5. Cambios mayores (+5 archivos)
+
+Cuando se vayan a realizar cambios mayores en los que se toque **más de 5 archivos**, preguntar primero si se desea realizar un guardado (commit) antes de proceder. Mostrar `git status` y preguntar "¿commiteo antes de continuar?".
