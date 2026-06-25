@@ -127,11 +127,48 @@ Full-stack restaurant POS/web application for **GERÍCHT**, a fine dining restau
 
 ## Known Issues
 
-1. **No file upload real** — Media model listo, falta uploadthing/S3
+1. ~~No file upload real~~ **(Resuelto — Storage híbrido Local/S3)**
 2. **API sin auth** — Rutas /api/* sin protección (solo middleware protege dashboard UI)
 3. **Sin MSW** — Tests sin mock de API
 4. **Pendiente**: Separar backoffice del frontend
 5. **Pendiente**: Proteger API routes con auth
+6. **Pendiente**: Middleware check de auth usa `accessToken` (solo OAuth) — corregido con fallback a `userId`
+
+## E2E Testing
+
+### Stack
+- **Playwright** + test DB (`gericht_e2e`) + seed via `global-setup.ts`
+- Tests contra app real con MongoDB, Auth.js credentials login
+
+### Cómo correr
+```bash
+# 1. Asegurate que MongoDB esté corriendo
+# 2. Seed + start + test con un comando:
+MONGO_URI="mongodb://localhost:27017/gericht_e2e" DB_NAME="gericht_e2e" \
+AUTH_SECRET="e2e-test-secret" AUTH_URL="http://localhost:3000" \
+NEXT_PUBLIC_BASE_URL="http://localhost:3000" TZ="America/Caracas" \
+npx playwright test
+
+# O manual:
+npm run test:e2e:seed   # seed DB
+npm run dev              # arrancar server con vars e2e
+npm run test:e2e         # correr tests
+```
+
+### Tests existentes (10 tests, 3 suites)
+| Suite | Tests | Cubre |
+|-------|-------|-------|
+| `media.spec.ts` | 3 | Upload URL, file picker, delete |
+| `product-form.spec.ts` | 3 | Add images, URL en input, scroll con muchas imágenes |
+| `storage.spec.ts` | 4 | Tab visible, toggle S3, guardar config, volver a Local |
+
+### Archivos clave
+| Archivo | Rol |
+|---------|-----|
+| `playwright.config.ts` | Config de Playwright |
+| `e2e/global-setup.ts` | Seed DB con admin + config |
+| `e2e/global-teardown.ts` | Drop DB de test |
+| `e2e/tests/auth.setup.ts` | Helper loginAsAdmin |
 
 ## Storage (Media Upload)
 

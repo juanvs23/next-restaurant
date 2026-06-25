@@ -87,7 +87,7 @@ export function ProductFormDialog({
           <DialogTitle>{t(editingId ? "products.edit" : "products.new")}</DialogTitle>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 py-4 max-h-[65vh] overflow-y-auto pr-2">
           <div className="grid gap-2">
             <Label htmlFor="name">{t("common.name")}</Label>
             <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />

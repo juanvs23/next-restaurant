@@ -14,7 +14,7 @@ const adminOnly = [
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const role = req.auth?.role;
-  const isAuth = !!req.auth?.accessToken;
+  const isAuth = !!(req.auth?.accessToken || req.auth?.userId);
 
   // All dashboard routes require authentication
   if (!pathname.startsWith("/dashboard")) return;
