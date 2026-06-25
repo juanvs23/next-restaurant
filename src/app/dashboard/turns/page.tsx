@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { ImPlus, ImPencil, ImBin, ImCheckmark, ImCross } from "react-icons/im";
+import { useT } from "@/i18n/useT";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +36,7 @@ export default function TurnsPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 10;
+  const { t } = useT();
 
   const filtered = items.filter((t) =>
     t.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -60,17 +62,17 @@ export default function TurnsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this turn?")) return;
+    if (!confirm(t("common.confirmDelete"))) return;
     await fetch(`/api/turns/${id}`, { method: "DELETE" }); loadTurns();
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading...</p>;
+  if (loading) return <p className="text-muted-foreground">{t("common.loading")}</p>;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Turns</h1>
-        <Button onClick={openCreate} className="gap-2"><ImPlus /> Add Turn</Button>
+        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">{t("turns.title")}</h1>
+        <Button onClick={openCreate} className="gap-2"><ImPlus /> {t("turns.add")}</Button>
       </div>
 
       <Input
@@ -81,15 +83,15 @@ export default function TurnsPage() {
       />
 
       <Card>
-        <CardHeader><CardTitle>Service Hours</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{t("turns.allTurns")}</CardTitle></CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Color</TableHead>
+                <TableHead>{t("turns.color")}</TableHead>
                 <TableHead>Name</TableHead>
-                <TableHead>Label</TableHead>
-                <TableHead>Hours</TableHead>
+                <TableHead>{t("common.label")}</TableHead>
+                <TableHead>{t("turns.time")}</TableHead>
                 <TableHead>Order</TableHead>
                 <TableHead>Active</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -134,14 +136,14 @@ export default function TurnsPage() {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="bg-popover">
-          <DialogHeader><DialogTitle>{editingId ? "Edit" : "New"} Turn</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{editingId ? t("turns.edit") : "New Turn"}</DialogTitle></DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-4">
             <div className="grid gap-2">
-              <Label>Name</Label>
+              <Label>{t("common.name")}</Label>
               <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="morning" />
             </div>
             <div className="grid gap-2">
-              <Label>Label</Label>
+              <Label>{t("common.label")}</Label>
               <Input value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} placeholder="Breakfast" />
             </div>
             <div className="grid gap-2">
@@ -157,7 +159,7 @@ export default function TurnsPage() {
               <Input type="number" value={form.sortOrder} onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })} />
             </div>
             <div className="grid gap-2">
-              <Label>Color</Label>
+              <Label>{t("turns.color")}</Label>
               <div className="flex gap-2 items-center">
                 <input type="color" value={form.color} onChange={(e) => setForm({ ...form, color: e.target.value })} className="w-10 h-10 rounded cursor-pointer" />
                 <span className="text-xs text-muted-foreground font-mono">{form.color}</span>
@@ -169,8 +171,8 @@ export default function TurnsPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
-            <Button onClick={handleSave} className="gap-2"><ImCheckmark /> {editingId ? "Update" : "Create"}</Button>
+            <Button variant="outline" onClick={() => setOpen(false)} className="gap-2"><ImCross /> {t("common.cancel")}</Button>
+            <Button onClick={handleSave} className="gap-2"><ImCheckmark /> {editingId ? t("common.update") : t("common.create")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

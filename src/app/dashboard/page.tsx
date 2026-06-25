@@ -1,24 +1,34 @@
+"use client";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, CalendarDays, Users } from "lucide-react";
-import { auth } from "@/app/auth";
-import { redirect } from "next/navigation";
+import { useT } from "@/i18n/useT";
 
-const stats = [
-  { label: "Products", icon: Package, value: "10", href: "/dashboard/products" },
-  { label: "Bookings", icon: CalendarDays, value: "—", href: "/dashboard/bookings" },
-  { label: "Users", icon: Users, value: "—", href: "/dashboard/users" },
-];
+export default function DashboardHome() {
+  const { t } = useT();
+  const [userName, setUserName] = useState("");
 
-export default async function DashboardHome() {
-  const session = await auth();
-  if (!session) redirect("/api/auth/signin");
+  useEffect(() => {
+    fetch("/api/auth/session")
+      .then((r) => r.json())
+      .then((s) => {
+        if (s?.user?.name) setUserName(s.user.name);
+      })
+      .catch(() => {});
+  }, []);
+
+  const stats = [
+    { labelKey: "nav.products", icon: Package, value: "—", href: "/dashboard/products" },
+    { labelKey: "nav.bookings", icon: CalendarDays, value: "—", href: "/dashboard/bookings" },
+    { labelKey: "nav.users", icon: Users, value: "—", href: "/dashboard/users" },
+  ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Dashboard</h1>
+        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">{t("dashboard.title")}</h1>
         <p className="text-muted-foreground mt-1">
-          Welcome{session.user?.name ? `, ${session.user.name}` : ""}!
+          {t("dashboard.welcome")}{userName ? `, ${userName}` : ""}!
         </p>
       </div>
 
@@ -26,11 +36,11 @@ export default async function DashboardHome() {
         {stats.map((s) => {
           const Icon = s.icon;
           return (
-            <a key={s.label} href={s.href} className="block">
+            <a key={s.labelKey} href={s.href} className="block">
               <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
-                    {s.label}
+                    {t(s.labelKey)}
                   </CardTitle>
                   <Icon className="w-4 h-4 text-muted-foreground" />
                 </CardHeader>

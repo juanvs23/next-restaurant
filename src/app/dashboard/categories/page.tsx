@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { ImPlus, ImPencil, ImBin, ImCheckmark, ImCross } from "react-icons/im";
+import { useT } from "@/i18n/useT";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,6 +33,7 @@ export default function CategoriesPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 10;
+  const { t } = useT();
 
   const filtered = categories.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()),
@@ -65,18 +67,18 @@ export default function CategoriesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this category?")) return;
+    if (!confirm(t("common.confirmDelete"))) return;
     await fetch(`/api/categories/${id}`, { method: "DELETE" });
     fetchCategories();
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading...</p>;
+  if (loading) return <p className="text-muted-foreground">{t("common.loading")}</p>;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Categories</h1>
-        <Button onClick={openCreate} className="gap-2"><ImPlus /> Add Category</Button>
+        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">{t("categories.title")}</h1>
+        <Button onClick={openCreate} className="gap-2"><ImPlus /> {t("categories.add")}</Button>
       </div>
 
       <Input
@@ -87,14 +89,14 @@ export default function CategoriesPage() {
       />
 
       <Card>
-        <CardHeader><CardTitle>All Categories</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{t("categories.allCategories")}</CardTitle></CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Image</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Description</TableHead>
+                <TableHead>{t("common.name")}</TableHead>
+                <TableHead>{t("common.description")}</TableHead>
                 <TableHead>Products</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -145,15 +147,15 @@ export default function CategoriesPage() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="bg-popover">
           <DialogHeader>
-            <DialogTitle>{editingId ? "Edit" : "New"} Category</DialogTitle>
+            <DialogTitle>{editingId ? t("categories.edit") : t("categories.new")}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">{t("common.name")}</Label>
               <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="desc">Description</Label>
+              <Label htmlFor="desc">{t("common.description")}</Label>
               <Input id="desc" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
             </div>
             <div className="grid gap-2">
@@ -161,8 +163,8 @@ export default function CategoriesPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
-            <Button onClick={handleSave} className="gap-2"><ImCheckmark /> {editingId ? "Update" : "Create"}</Button>
+            <Button variant="outline" onClick={() => setOpen(false)} className="gap-2"><ImCross /> {t("common.cancel")}</Button>
+            <Button onClick={handleSave} className="gap-2"><ImCheckmark /> {editingId ? t("common.update") : t("common.create")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

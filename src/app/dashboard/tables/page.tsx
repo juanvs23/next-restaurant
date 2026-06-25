@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { ImPlus, ImPencil, ImBin, ImCheckmark, ImCross } from "react-icons/im";
+import { useT } from "@/i18n/useT";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +36,7 @@ export default function TablesPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 10;
+  const { t } = useT();
 
   const filtered = tables.filter((t) =>
     t.tableId.toLowerCase().includes(search.toLowerCase()) ||
@@ -72,7 +74,7 @@ export default function TablesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this table?")) return;
+    if (!confirm(t("common.confirmDelete"))) return;
     await fetch(`/api/tables/${id}`, { method: "DELETE" });
     fetchTables();
   };
@@ -87,34 +89,34 @@ export default function TablesPage() {
     return colors[s] || "bg-muted text-muted-foreground";
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading...</p>;
+  if (loading) return <p className="text-muted-foreground">{t("common.loading")}</p>;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Tables</h1>
-        <Button onClick={openCreate} className="gap-2"><ImPlus /> Add Table</Button>
+        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">{t("tables.title")}</h1>
+        <Button onClick={openCreate} className="gap-2"><ImPlus /> {t("tables.add")}</Button>
       </div>
 
       <Input
-        placeholder="Search tables..."
+        placeholder={t("common.search")}
         value={search}
         onChange={(e) => { setSearch(e.target.value); setPage(1); }}
         className="max-w-xs"
       />
 
       <Card>
-        <CardHeader><CardTitle>All Tables</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{t("tables.allTables")}</CardTitle></CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Table ID</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Capacity</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("common.name")}</TableHead>
+                <TableHead>{t("tables.capacity")}</TableHead>
+                <TableHead>{t("tables.location")}</TableHead>
+                <TableHead>{t("common.status")}</TableHead>
+                <TableHead className="text-right">{t("common.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -148,8 +150,8 @@ export default function TablesPage() {
 
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {filtered.length} result{filtered.length !== 1 ? "s" : ""}
-          {totalPages > 1 && ` · Page ${page} of ${totalPages}`}
+          {filtered.length} {t("products.results")}
+          {totalPages > 1 && ` · ${t("products.pageOf")} ${page} of ${totalPages}`}
         </p>
         {totalPages > 1 && (
           <div className="flex gap-2">
@@ -161,26 +163,26 @@ export default function TablesPage() {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="bg-popover">
-          <DialogHeader><DialogTitle>{editingId ? "Edit" : "New"} Table</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{editingId ? t("tables.edit") : "New Table"}</DialogTitle></DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-4">
             <div className="grid gap-2">
               <Label>Table ID</Label>
               <Input value={form.tableId} onChange={(e) => setForm({ ...form, tableId: e.target.value })} placeholder="T1" />
             </div>
             <div className="grid gap-2">
-              <Label>Name</Label>
+              <Label>{t("common.name")}</Label>
               <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Window 1" />
             </div>
             <div className="grid gap-2">
-              <Label>Capacity</Label>
+              <Label>{t("tables.capacity")}</Label>
               <Input type="number" min={1} value={form.capacity} onChange={(e) => setForm({ ...form, capacity: Number(e.target.value) })} />
             </div>
             <div className="grid gap-2">
-              <Label>Location</Label>
+              <Label>{t("tables.location")}</Label>
               <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="main, terrace, bar..." />
             </div>
             <div className="col-span-2 grid gap-2">
-              <Label>Status</Label>
+              <Label>{t("common.status")}</Label>
               <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -193,8 +195,8 @@ export default function TablesPage() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
-            <Button onClick={handleSave} className="gap-2"><ImCheckmark /> {editingId ? "Update" : "Create"}</Button>
+            <Button variant="outline" onClick={() => setOpen(false)} className="gap-2"><ImCross /> {t("common.cancel")}</Button>
+            <Button onClick={handleSave} className="gap-2"><ImCheckmark /> {editingId ? t("common.update") : t("common.create")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

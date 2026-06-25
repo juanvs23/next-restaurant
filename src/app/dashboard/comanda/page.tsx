@@ -13,6 +13,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { useT } from "@/i18n/useT";
 
 interface TableInfo { _id: string; tableId: string; name: string; capacity: number; location: string; status: string; }
 interface PedidoItem { productId?: string; name: string; price: number; quantity: number; notes?: string; }
@@ -49,6 +50,7 @@ export default function ComandaPage() {
   const [searchName, setSearchName] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 30;
+  const { t } = useT();
 
   const fetchAll = (date?: string) => {
     const query = date ? `?date=${date}` : "";
@@ -145,27 +147,35 @@ export default function ComandaPage() {
     fetchAll(filterDate);
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading...</p>;
+  if (loading) return <p className="text-muted-foreground">{t("common.loading")}</p>;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Comanda</h1>
-        <Button onClick={() => setOpenComanda(true)} className="gap-2"><ImPlus /> New Comanda</Button>
+        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">{t("comanda.title")}</h1>
+        <Button onClick={() => setOpenComanda(true)} className="gap-2"><ImPlus /> {t("comanda.newComanda")}</Button>
       </div>
 
       <div className="flex items-center gap-4">
         <Input type="date" value={filterDate} onChange={(e) => { setFilterDate(e.target.value); fetchAll(e.target.value); }} className="w-fit" />
-        <Input placeholder="Search by name..." value={searchName} onChange={(e) => { setSearchName(e.target.value); setPage(1); }} className="max-w-xs" />
+        <Input placeholder={t("comanda.searchByCustomer")} value={searchName} onChange={(e) => { setSearchName(e.target.value); setPage(1); }} className="max-w-xs" />
         <div className="flex gap-1 bg-muted rounded-lg p-1">
-          {["all", "open", "closed", "rejected"].map((s) => (
+          {["all", "open", "closed", "rejected"].map((s) => {
+            const labels: Record<string, string> = {
+              all: t("comanda.allComandas"),
+              open: t("comanda.openComandas"),
+              closed: t("common.closed"),
+              rejected: t("common.rejected"),
+            };
+            return (
             <button key={s} onClick={() => setStatusFilter(s)}
               className={`px-3 py-1 text-xs rounded-md transition-colors ${statusFilter === s ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>
-              {s.charAt(0).toUpperCase() + s.slice(1)}
+              {labels[s]}
             </button>
-          ))}
+            );
+          })}
         </div>
-        <span className="text-sm text-muted-foreground">{filteredComandas.length} comandas</span>
+        <span className="text-sm text-muted-foreground">{filteredComandas.length} {t("comanda.title")}</span>
       </div>
 
       
@@ -189,13 +199,13 @@ export default function ComandaPage() {
 
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {filteredComandas.length} comanda{filteredComandas.length !== 1 ? "s" : ""}
+          {filteredComandas.length} {filteredComandas.length === 1 ? t("comanda.title") : t("comanda.title") + "s"}
           {totalPages > 1 && ` · Page ${page} of ${totalPages}`}
         </p>
         {totalPages > 1 && (
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
-            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>{t("common.previous")}</Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>{t("common.next")}</Button>
           </div>
         )}
       </div>
@@ -217,7 +227,7 @@ export default function ComandaPage() {
 
                 if (canEdit) {
                   return (
-                    <select value={selectedTable.status} onChange={(e) => {
+                      <select value={selectedTable.status} onChange={(e) => {
                       const newStatus = e.target.value;
                       if (selectedTable.status !== "open" && newStatus === "open") {
                         if (selectedTable.status !== "rejected") { alert("Only rejected comandas can be reopened."); return; }
@@ -226,9 +236,9 @@ export default function ComandaPage() {
                       updateComandaStatus(newStatus);
                     }}
                       className="text-sm bg-background border border-input rounded px-2 py-1 capitalize">
-                      <option value="open">Open</option>
-                      <option value="closed">Closed</option>
-                      <option value="rejected">Rejected</option>
+                      <option value="open">{t("comanda.openComandas")}</option>
+                      <option value="closed">{t("common.closed")}</option>
+                      <option value="rejected">{t("common.rejected")}</option>
                     </select>
                   );
                 }
@@ -239,10 +249,10 @@ export default function ComandaPage() {
                 );
               })()}
               {selectedTable.status === "open" && (
-              <Button size="sm" onClick={() => openPedido(selectedTable._id)} className="gap-2"><ImPlus /> New Round</Button>
+              <Button size="sm" onClick={() => openPedido(selectedTable._id)} className="gap-2"><ImPlus /> {t("comanda.addOrder")}</Button>
             )}
             {(selectedTable.status === "closed" || selectedTable.status === "rejected") && (
-              <span className="text-xs text-muted-foreground italic">Comanda {selectedTable.status} — no more rounds</span>
+              <span className="text-xs text-muted-foreground italic">{t("comanda.title")} {selectedTable.status} — no more rounds</span>
             )}
           </div>
           </div>
@@ -257,10 +267,10 @@ export default function ComandaPage() {
                   {selectedTable.status === "open" ? (
                     <select value={p.status} onChange={(e) => updatePedidoStatus(p._id, e.target.value)}
                       className="text-xs bg-background border border-input rounded px-2 py-1">
-                      <option value="pending">pending</option>
-                      <option value="preparing">preparing</option>
-                      <option value="ready">ready</option>
-                      <option value="served">served</option>
+                      <option value="pending">{t("comanda.pending")}</option>
+                      <option value="preparing">{t("comanda.preparing")}</option>
+                      <option value="ready">{t("comanda.ready")}</option>
+                      <option value="served">{t("comanda.served")}</option>
                       <option value="cancelled">cancelled</option>
                     </select>
                   ) : (
@@ -277,7 +287,7 @@ export default function ComandaPage() {
                 </ul>
                 {p.notes && <p className="text-xs italic text-muted-foreground">{p.notes}</p>}
                 <div className="flex justify-between text-sm font-medium border-t pt-2">
-                  <span>Subtotal</span>
+                  <span>{t("common.subtotal")}</span>
                   <span>${p.items.reduce((s: number, i: any) => s + i.price * i.quantity, 0).toFixed(2)}</span>
                 </div>
               </div>
@@ -285,7 +295,7 @@ export default function ComandaPage() {
           </div>
 
           <div className="flex justify-between text-lg font-bold border-t-2 pt-4">
-            <span>Total</span>
+            <span>{t("common.total")}</span>
             <span className="text-golden">
               ${pedidos.reduce((s, p) => s + p.items.reduce((s2: number, i: any) => s2 + i.price * i.quantity, 0), 0).toFixed(2)}
             </span>
@@ -299,12 +309,12 @@ export default function ComandaPage() {
 
       <Dialog open={openComanda} onOpenChange={setOpenComanda}>
         <DialogContent className="bg-popover">
-          <DialogHeader><DialogTitle>New Comanda</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t("comanda.newComanda")}</DialogTitle></DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label>Table</Label>
+              <Label>{t("comanda.table")}</Label>
               <Select value={comandaForm.tableId} onValueChange={(v) => setComandaForm({ ...comandaForm, tableId: v })}>
-                <SelectTrigger><SelectValue placeholder="Bar / without table..." /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={t("comanda.selectTable")} /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">Bar / No table</SelectItem>
                   {tables.filter((t) => t.status !== "maintenance").map((t) => (
@@ -314,18 +324,18 @@ export default function ComandaPage() {
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label>Customer Name</Label>
+              <Label>{t("comanda.customerName")}</Label>
               <Input value={comandaForm.customerName} onChange={(e) => setComandaForm({ ...comandaForm, customerName: e.target.value })} />
             </div>
             <div className="flex items-center gap-2">
               <input type="checkbox" id="delivery" checked={comandaForm.isDelivery}
                 onChange={(e) => setComandaForm({ ...comandaForm, isDelivery: e.target.checked })} className="rounded" />
-              <Label htmlFor="delivery">Delivery</Label>
+              <Label htmlFor="delivery">{t("comanda.isDelivery")}</Label>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpenComanda(false)} className="gap-2"><ImCross /> Cancel</Button>
-            <Button onClick={createComanda} className="gap-2"><ImCheckmark /> Open Comanda</Button>
+            <Button variant="outline" onClick={() => setOpenComanda(false)} className="gap-2"><ImCross /> {t("common.cancel")}</Button>
+            <Button onClick={createComanda} className="gap-2"><ImCheckmark /> {t("common.create")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -333,7 +343,7 @@ export default function ComandaPage() {
       
       <Dialog open={pedidoOpen} onOpenChange={setPedidoOpen}>
         <DialogContent className="bg-popover sm:max-w-lg max-h-[85vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>New Round</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{t("comanda.addOrder")}</DialogTitle></DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label>Products</Label>
@@ -348,7 +358,7 @@ export default function ComandaPage() {
             </div>
             {pedidoItems.length > 0 && (
               <div className="border rounded-lg p-3 space-y-2">
-                <Label>Items</Label>
+                <Label>{t("comanda.items")}</Label>
                 {pedidoItems.map((item, idx) => (
                   <div key={idx} className="flex justify-between items-center text-sm">
                     <span>{item.name}</span>
@@ -363,13 +373,13 @@ export default function ComandaPage() {
               </div>
             )}
             <div className="grid gap-2">
-              <Label>Notes (kitchen)</Label>
+              <Label>{t("common.notes")}</Label>
               <Textarea value={pedidoNotes} onChange={(e) => setPedidoNotes(e.target.value)} rows={2} />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setPedidoOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
-            <Button onClick={savePedido} disabled={pedidoItems.length === 0} className="gap-2"><ImCheckmark /> Send to Kitchen</Button>
+            <Button variant="outline" onClick={() => setPedidoOpen(false)} className="gap-2"><ImCross /> {t("common.cancel")}</Button>
+            <Button onClick={savePedido} disabled={pedidoItems.length === 0} className="gap-2"><ImCheckmark /> {t("comanda.sendToKitchen")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

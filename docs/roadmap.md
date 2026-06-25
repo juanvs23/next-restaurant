@@ -8,34 +8,25 @@
 
 | Fase | Estado |
 |------|--------|
-| **0 — Upgrade** | ✅ |
-| **1 — Foundation** | ✅ |
-| **2 — Backoffice** | ✅ |
-| **3 — Reservas** | ✅ |
+| **0 — Upgrade** (Next 14→16, React 18→19, ESLint 9) | ✅ |
+| **1 — Foundation** (Modelos DB, auth, conexión) | ✅ |
+| **2 — Backoffice** (CRUDs productos/categorías/usuarios/mesas/turns/media) | ✅ |
+| **3 — Reservas** (Booking form, PDF ticket, QR verificación) | ✅ |
+| **4 — Comandas** (Comanda/Pedido/Order, billing, charges, taxes, payments) | ✅ |
+| **5 — Refactor** (DRY/KISS, <400 líneas por archivo, i18n) | ✅ |
 
-### Fase 4 — Comandas
+### Pendiente
 
-| Feature | Estado |
-|---------|--------|
-| Todo el módulo de comandas | 🟡 En progreso |
-| **Pendiente: Billing / Reportes + Cierre de día** | ⏳ |
-
----
-
-### 📋 Próximas tareas por orden de ejecución
-
-| # | Tarea | Prioridad | Bloquea | Tiempo estimado |
-|---|-------|-----------|---------|----------------|
-| 1 | **Días no laborables desde backoffice** | 🟡 Media | Nada | ~1 hr |
-| 2 | **Modelo Config** (RIF, IVA, datos fiscales, datos del restaurante) | 🔴 Alta | ✅ IVA y facturación legal | ~2-3 hr |
-| 3 | **IVA en productos + facturas** | 🔴 Alta | ✅ Facturación correcta | ~2 hr |
-| 4 | **Billing / Reportes + Cierre de día** | 🔴 Alta | ✅ Cierre del ciclo operativo | ~4 hr |
-| 5 | **N° de factura correlativo** | 🟡 Media | Nada | ~1 hr |
-| 6 | **Traducciones i18n** (ES/EN/PT en UI) | 🟡 Media | Nada | ~6-8 hr |
-| 7 | **Separar backoffice del frontend** | 🟢 Baja | Nada | — |
-| 8 | **File upload real** (uploadthing / S3) | 🟢 Baja | Nada | — |
-| 9 | **Proteger API routes** con auth | 🟢 Baja | Nada | — |
-| 10 | **MSW para tests** | 🟢 Baja | Nada | — |
+| Feature | Estado | Prioridad |
+|---------|--------|-----------|
+| Reportes mensuales + cierre de día | ✅ Completado | 🔴 Alta |
+| Traducciones i18n (ES/EN/PT en UI) | ✅ Completado | 🟡 Media |
+| Refactor <400 líneas por archivo | ✅ Completado | 🟡 Media |
+| Historial de facturación (pestañas Today/History) | 🟡 Pendiente ajustes | 🟡 Media |
+| Separar backoffice del frontend | ⏳ Pendiente | 🟢 Baja |
+| File upload real (uploadthing / S3) | ⏳ Pendiente | 🟢 Baja |
+| Proteger API routes con auth | ⏳ Pendiente | 🟢 Baja |
+| MSW para tests | ⏳ Pendiente | 🟢 Baja |
 
 ---
 
@@ -45,32 +36,25 @@
 
 | Phase | Status |
 |-------|--------|
-| **0 — Upgrade** | ✅ |
-| **1 — Foundation** | ✅ |
-| **2 — Backoffice** | ✅ |
-| **3 — Reservations** | ✅ |
+| **0 — Upgrade** (Next 14→16, React 18→19, ESLint 9) | ✅ |
+| **1 — Foundation** (DB models, auth, connection) | ✅ |
+| **2 — Backoffice** (CRUD products/categories/users/tables/turns/media) | ✅ |
+| **3 — Reservations** (Booking form, PDF ticket, QR verification) | ✅ |
+| **4 — Orders** (Comanda/Pedido/Order, billing, charges, taxes, payments) | ✅ |
+| **5 — Refactor** (DRY/KISS, <400 lines/file, i18n) | ✅ |
 
-### Phase 4 — Orders Management
+### Pending
 
-| Feature | Status |
-|---------|--------|
-| Full comandas module | 🟡 In progress |
-| **Pending: Billing / Reports + Day closing** | ⏳ |
-
-### Upcoming tasks by execution order
-
-| # | Task | Priority | Blocks | Est. time |
-|---|------|----------|--------|-----------|
-| 1 | **Non-working days from backoffice** | 🟡 Medium | Nothing | ~1 hr |
-| 2 | **Config model** (tax ID, VAT, business data) | 🔴 High | ✅ VAT & legal invoicing | ~2-3 hr |
-| 3 | **VAT on products + invoices** | 🔴 High | ✅ Correct invoicing | ~2 hr |
-| 4 | **Billing / Reports + Day closing** | 🔴 High | ✅ Operational cycle closure | ~4 hr |
-| 5 | **Sequential invoice numbering** | 🟡 Medium | Nothing | ~1 hr |
-| 6 | **i18n translations** (EN/ES/PT in UI) | 🟡 Medium | Nothing | ~6-8 hr |
-| 7 | **Backoffice/frontend separation** | 🟢 Low | Nothing | — |
-| 8 | **File upload** (uploadthing / S3) | 🟢 Low | Nothing | — |
-| 9 | **Protect API routes** with auth | 🟢 Low | Nothing | — |
-| 10 | **MSW for tests** | 🟢 Low | Nothing | — |
+| Feature | Status | Priority |
+|---------|--------|----------|
+| Monthly reports + day closing | ✅ Done | 🔴 High |
+| i18n translations (EN/ES/PT in UI) | ✅ Done | 🟡 Medium |
+| <400 lines per file refactor | ✅ Done | 🟡 Medium |
+| Billing history (Today/History tabs) | 🟡 Adjustments pending | 🟡 Medium |
+| Backoffice/frontend separation | ⏳ Pending | 🟢 Low |
+| File upload (uploadthing / S3) | ⏳ Pending | 🟢 Low |
+| Protect API routes with auth | ⏳ Pending | 🟢 Low |
+| MSW for tests | ⏳ Pending | 🟢 Low |
 
 ---
 
@@ -80,29 +64,22 @@
 
 | Fase | Status |
 |------|--------|
-| **0 — Upgrade** | ✅ |
-| **1 — Fundação** | ✅ |
-| **2 — Backoffice** | ✅ |
-| **3 — Reservas** | ✅ |
+| **0 — Upgrade** (Next 14→16, React 18→19, ESLint 9) | ✅ |
+| **1 — Fundação** (Modelos DB, auth, conexão) | ✅ |
+| **2 — Backoffice** (CRUD produtos/categorias/usuários/mesas/turns/media) | ✅ |
+| **3 — Reservas** (Formulário, PDF ticket, QR verificação) | ✅ |
+| **4 — Comandas** (Comanda/Pedido/Order, billing, charges, taxes, payments) | ✅ |
+| **5 — Refactor** (DRY/KISS, <400 linhas/arquivo, i18n) | ✅ |
 
-### Fase 4 — Comandas
+### Pendente
 
-| Funcionalidade | Status |
-|----------------|--------|
-| Módulo completo de comandas | 🟡 Em andamento |
-| **Pendente: Faturamento / Relatórios + Fechamento do dia** | ⏳ |
-
-### Próximas tarefas por ordem de execução
-
-| # | Tarefa | Prioridade | Bloqueia | Tempo estimado |
-|---|--------|------------|----------|----------------|
-| 1 | **Dias não úteis a partir do backoffice** | 🟡 Média | Nada | ~1 hr |
-| 2 | **Modelo Config** (CNPJ, impostos, dados fiscais) | 🔴 Alta | ✅ Impostos e faturamento legal | ~2-3 hr |
-| 3 | **Impostos em produtos + faturas** | 🔴 Alta | ✅ Faturamento correto | ~2 hr |
-| 4 | **Faturamento / Relatórios + Fechamento do dia** | 🔴 Alta | ✅ Fechamento do ciclo operacional | ~4 hr |
-| 5 | **Numeração sequencial de notas fiscais** | 🟡 Média | Nada | ~1 hr |
-| 6 | **Traduções i18n** (PT/ES/EN na UI) | 🟡 Média | Nada | ~6-8 hr |
-| 7 | **Separar backoffice do frontend** | 🟢 Baixa | Nada | — |
-| 8 | **Upload de arquivos** (uploadthing / S3) | 🟢 Baixa | Nada | — |
-| 9 | **Proteger rotas da API** com autenticação | 🟢 Baixa | Nada | — |
-| 10 | **MSW para testes** | 🟢 Baixa | Nada | — |
+| Funcionalidade | Status | Prioridade |
+|----------------|--------|------------|
+| Relatórios mensais + fechamento do dia | ✅ Concluído | 🔴 Alta |
+| Traduções i18n (PT/ES/EN na UI) | ✅ Concluído | 🟡 Média |
+| Refator <400 linhas por arquivo | ✅ Concluído | 🟡 Média |
+| Histórico de faturamento (abas Hoje/Histórico) | 🟡 Ajustes pendentes | 🟡 Média |
+| Separar backoffice do frontend | ⏳ Pendente | 🟢 Baixa |
+| Upload de arquivos (uploadthing / S3) | ⏳ Pendente | 🟢 Baixa |
+| Proteger rotas da API com auth | ⏳ Pendente | 🟢 Baixa |
+| MSW para testes | ⏳ Pendente | 🟢 Baixa |

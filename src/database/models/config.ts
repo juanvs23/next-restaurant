@@ -44,6 +44,10 @@ const configSchema = new mongoose.Schema(
 
     // Invoicing
     nextInvoiceNumber: { type: Number, default: 1 },
+    nextCreditNoteNumber: { type: Number, default: 1 },
+
+    // Timezone
+    timezone: { type: String, default: "-04:00" }, // Venezuela UTC-4
   },
   { timestamps: true }
 );

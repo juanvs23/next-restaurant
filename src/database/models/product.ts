@@ -25,6 +25,8 @@ const productSchema = new mongoose.Schema(
     ingredients: [{ type: String }],
     sizes: [sizePriceSchema],
     SKU: { type: String, unique: true },
+    taxRate: { type: Number, default: 0 }, // 0.16 = 16% IVA — fallback if taxIds is empty
+    taxIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tax" }],
     available: { type: Boolean, default: true },
   },
   { timestamps: true }

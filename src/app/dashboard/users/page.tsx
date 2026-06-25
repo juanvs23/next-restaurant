@@ -15,6 +15,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { useT } from "@/i18n/useT";
 
 interface User {
   _id: string;
@@ -39,6 +40,7 @@ const roleBadge = (role: string) => {
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useT();
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -115,33 +117,33 @@ export default function UsersPage() {
     fetchUsers();
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading...</p>;
+  if (loading) return <p className="text-muted-foreground">{t("common.loading")}</p>;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Users</h1>
+        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">{t("users.title")}</h1>
         <Button onClick={openCreate} className="gap-2"><ImPlus /> Add User</Button>
       </div>
 
       <Input
-        placeholder="Search by name or email..."
+        placeholder={t("users.searchByEmail")}
         value={search}
         onChange={(e) => { setSearch(e.target.value); setPage(1); }}
         className="max-w-xs"
       />
 
       <Card>
-        <CardHeader><CardTitle>All Users</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{t("users.allUsers")}</CardTitle></CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Provider</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>{t("common.name")}</TableHead>
+                <TableHead>{t("users.email")}</TableHead>
+                <TableHead>{t("users.provider")}</TableHead>
+                <TableHead>{t("users.role")}</TableHead>
+                <TableHead>{t("common.status")}</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -199,13 +201,13 @@ export default function UsersPage() {
 
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {filtered.length} result{filtered.length !== 1 ? "s" : ""}
-          {totalPages > 1 && ` · Page ${page} of ${totalPages}`}
+          {filtered.length} {t("users.results")}
+          {totalPages > 1 && ` · ${t("users.pageOf")} ${page} of ${totalPages}`}
         </p>
         {totalPages > 1 && (
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
-            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>{t("common.previous")}</Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>{t("common.next")}</Button>
           </div>
         )}
       </div>
@@ -216,21 +218,21 @@ export default function UsersPage() {
           <DialogHeader><DialogTitle>New User</DialogTitle></DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label>Name</Label>
+              <Label>{t("common.name")}</Label>
               <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </div>
             <div className="grid gap-2">
-              <Label>Email</Label>
+              <Label>{t("users.email")}</Label>
               <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             </div>
             <div className="grid gap-2">
-              <Label>Role</Label>
+              <Label>{t("users.role")}</Label>
               <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="user">User</SelectItem>
-                  <SelectItem value="staff">Staff</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="user">{t("users.user")}</SelectItem>
+                  <SelectItem value="staff">{t("users.staff")}</SelectItem>
+                  <SelectItem value="admin">{t("users.admin")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -248,21 +250,21 @@ export default function UsersPage() {
           <DialogHeader><DialogTitle>Edit User</DialogTitle></DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label>Name</Label>
+              <Label>{t("common.name")}</Label>
               <Input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
             </div>
             <div className="grid gap-2">
-              <Label>Email</Label>
+              <Label>{t("users.email")}</Label>
               <Input type="email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} />
             </div>
             <div className="grid gap-2">
-              <Label>Role</Label>
+              <Label>{t("users.role")}</Label>
               <Select value={editForm.role} onValueChange={(v) => setEditForm({ ...editForm, role: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="user">User</SelectItem>
-                  <SelectItem value="staff">Staff</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="user">{t("users.user")}</SelectItem>
+                  <SelectItem value="staff">{t("users.staff")}</SelectItem>
+                  <SelectItem value="admin">{t("users.admin")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

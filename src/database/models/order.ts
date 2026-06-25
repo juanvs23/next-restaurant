@@ -1,50 +1,81 @@
 import mongoose from "mongoose";
 
+const taxEntrySchema = new mongoose.Schema(
+  {
+    name: { type: String },
+    rate: { type: Number },
+    amount: { type: Number },
+  },
+  { _id: false }
+);
+
 const orderItemSchema = new mongoose.Schema(
   {
     productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
     name: { type: String },
     price: { type: Number },
     quantity: { type: Number, default: 1 },
+    taxRate: { type: Number, default: 0 },
+    taxBreakdown: [taxEntrySchema],
+  },
+  { _id: false }
+);
+
+const orderChargeSchema = new mongoose.Schema(
+  {
+    name: { type: String },
+    type: { type: String, enum: ["percentage", "fixed"] },
+    value: { type: Number },
+    amount: { type: Number },
   },
   { _id: false }
 );
 
 const orderSchema = new mongoose.Schema(
   {
-    // Related comanda and pedidos
     comandaId: { type: mongoose.Schema.Types.ObjectId, ref: "Comanda" },
     pedidoIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Pedido" }],
 
-    // Table / delivery info (snapshot from comanda)
     tableLabel: { type: String },
     isDelivery: { type: Boolean, default: false },
 
-    // Items consolidated from pedidos
     items: [orderItemSchema],
 
-    // Charges
-    serviceCharge: { type: Number, default: 0 },   // 10% if mesa
-    deliveryCost: { type: Number, default: 0 },     // variable if delivery
+    // Legacy — kept for backward compat
+    serviceCharge: { type: Number, default: 0 },
+    deliveryCost: { type: Number, default: 0 },
+
+    // Dynamic charges breakdown
+    orderCharges: [orderChargeSchema],
+    totalCharge: { type: Number, default: 0 },
+
     subtotal: { type: Number, default: 0 },
+    totalTax: { type: Number, default: 0 },
     total: { type: Number, default: 0 },
 
-    // Billing
+    // Breakdown of global-scope taxes
+    globalTaxBreakdown: [taxEntrySchema],
+
     status: {
       type: String,
       enum: ["pending", "paid", "cancelled"],
       default: "pending",
     },
-    paymentMethod: {
-      type: String,
-      enum: ["cash", "card", "transfer", "invoice"],
-    },
+    paymentMethod: { type: String }, // Snapshot label (e.g. "Cash", "Tarjeta")
+    paymentType: { type: String },   // Internal fixed type (cash|card|transfer|invoice|other)
+    paymentData: { type: Map, of: String }, // Dynamic fields key-value
+    invoiceNumber: { type: Number }, // Sequential invoice #
     customer: {
       name: { type: String },
       email: { type: String },
       phone: { type: String },
     },
     notes: { type: String },
+    // Audit
+    createdBy: { type: String },
+    confirmedBy: { type: String },
+    cashRegisterId: { type: mongoose.Schema.Types.ObjectId, ref: "CashRegister" },
+    cashRegisterName: { type: String },
   },
   { timestamps: true }
 );

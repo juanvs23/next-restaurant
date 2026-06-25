@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "@/components/dashboard/theme-provider";
+import { DashboardProviders } from "@/components/dashboard/dashboard-providers";
 import { Sidebar } from "@/components/dashboard/sidebar";
 
 export const metadata: Metadata = {
@@ -13,11 +13,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ThemeProvider>
-      <div className="min-h-screen flex bg-background text-foreground transition-colors">
-        <Sidebar />
-        <main className="flex-1 p-8 overflow-auto">{children}</main>
-      </div>
-    </ThemeProvider>
+    <DashboardProviders>
+      <Sidebar />
+      <main className="flex-1 p-8 overflow-auto">{children}</main>
+    </DashboardProviders>
   );
 }

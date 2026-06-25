@@ -1,17 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ImPlus, ImPencil, ImBin, ImCross, ImCheckmark } from "react-icons/im";
+import { ImPlus, ImPencil, ImBin } from "react-icons/im";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -26,14 +17,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { MediaPicker } from "@/components/dashboard/media-picker";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { useT } from "@/i18n/useT";
+import { ProductFormDialog } from "@/components/dashboard/products/ProductFormDialog";
 
 interface Product {
   _id: string;
@@ -46,11 +31,19 @@ interface Product {
   images: string[];
   SKU: string;
   available: boolean;
+  taxIds: string[];
 }
 
 interface Category {
   _id: string;
   name: string;
+}
+
+interface Tax {
+  _id: string;
+  name: string;
+  rate: number;
+  scope: "product" | "global";
 }
 
 const emptyForm = {
@@ -64,12 +57,14 @@ const emptyForm = {
   SKU: "",
   available: true,
   turnIds: [] as string[],
+  taxIds: [] as string[],
 };
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [turns, setTurns] = useState<any[]>([]);
+  const [taxes, setTaxes] = useState<Tax[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -77,6 +72,8 @@ export default function ProductsPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 10;
+
+  const { t } = useT();
 
   const filtered = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()),
@@ -95,8 +92,14 @@ export default function ProductsPage() {
     });
   };
 
-  const openDialog = () => {
-    fetch("/api/turns").then(r => r.json()).then(setTurns);
+  const fetchDialogData = () => {
+    Promise.all([
+      fetch("/api/turns").then(r => r.json()),
+      fetch("/api/taxes").then(r => r.json()),
+    ]).then(([turns, taxes]) => {
+      setTurns(turns);
+      setTaxes(taxes.filter((t: Tax) => t.scope === "product"));
+    });
   };
 
   useEffect(fetchData, []);
@@ -105,7 +108,7 @@ export default function ProductsPage() {
     setForm({ ...emptyForm });
     setEditingId(null);
     setOpen(true);
-    openDialog();
+    fetchDialogData();
   };
 
   const openEdit = (p: Product) => {
@@ -120,84 +123,52 @@ export default function ProductsPage() {
       SKU: p.SKU || "",
       available: p.available,
       turnIds: (p as any).turnIds?.map((t: any) => typeof t === "string" ? t : t._id) || [],
+      taxIds: (p as any).taxIds?.map((t: any) => typeof t === "string" ? t : t._id) || [],
     });
     setEditingId(p._id);
     setOpen(true);
-    openDialog();
-  };
-
-  const handleSave = async () => {
-    const payload = {
-      name: form.name,
-      description: form.description,
-      price: Number(form.price),
-      categoryId: form.categoryId,
-      type: form.type,
-      ingredients: form.ingredients.split(",").map((s) => s.trim()).filter(Boolean),
-      images: form.images.filter(Boolean),
-      SKU: form.SKU,
-      available: form.available,
-      turnIds: form.turnIds,
-    };
-
-    await fetch(editingId ? `/api/products/${editingId}` : "/api/products", {
-      method: editingId ? "PUT" : "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    setOpen(false);
-    fetchData();
+    fetchDialogData();
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this product?")) return;
+    if (!confirm(t("common.confirmDelete"))) return;
     await fetch(`/api/products/${id}`, { method: "DELETE" });
     fetchData();
   };
 
-  const addImageField = () => setForm({ ...form, images: [...form.images, ""] });
-  const removeImageField = (i: number) =>
-    setForm({ ...form, images: form.images.filter((_: any, idx: number) => idx !== i) });
-  const setImage = (i: number, v: string) => {
-    const imgs = [...form.images];
-    imgs[i] = v;
-    setForm({ ...form, images: imgs });
-  };
-
-  if (loading) return <p className="text-muted-foreground">Loading...</p>;
+  if (loading) return <p className="text-muted-foreground">{t("common.loading")}</p>;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Products</h1>
-        <Button onClick={openCreate} className="gap-2"><ImPlus /> Add Product</Button>
+        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">{t("products.title")}</h1>
+        <Button onClick={openCreate} className="gap-2"><ImPlus /> {t("products.add")}</Button>
       </div>
 
       <div className="flex items-center gap-4">
         <Input
-          placeholder="Search products..."
+          placeholder={t("common.search")}
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
           className="max-w-xs"
         />
-        <span className="text-sm text-muted-foreground">{filtered.length} products</span>
+        <span className="text-sm text-muted-foreground">{filtered.length} {t("products.results")}</span>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>All Products</CardTitle>
+          <CardTitle>{t("products.allProducts")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Images</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>{t("common.name")}</TableHead>
+                <TableHead>{t("products.category")}</TableHead>
+                <TableHead>{t("products.price")}</TableHead>
+                <TableHead>{t("common.type")}</TableHead>
+                <TableHead>{t("products.images")}</TableHead>
+                <TableHead className="text-right">{t("common.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -238,148 +209,28 @@ export default function ProductsPage() {
 
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {filtered.length} result{filtered.length !== 1 ? "s" : ""}
-          {totalPages > 1 && ` · Page ${page} of ${totalPages}`}
+          {filtered.length} {t("products.results")}
+          {totalPages > 1 && ` · ${t("products.pageOf")} ${page} of ${totalPages}`}
         </p>
         {totalPages > 1 && (
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
-            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>{t("common.previous")}</Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>{t("common.next")}</Button>
           </div>
         )}
       </div>
 
-      {/* Product form dialog */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-lg bg-popover">
-          <DialogHeader>
-            <DialogTitle>{editingId ? "Edit" : "New"} Product</DialogTitle>
-          </DialogHeader>
-
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="desc">Description</Label>
-              <Textarea id="desc" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="price">Price ($)</Label>
-                <Input id="price" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="sku">SKU</Label>
-                <Input id="sku" value={form.SKU} onChange={(e) => setForm({ ...form, SKU: e.target.value })} />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>Category</Label>
-                <Select value={form.categoryId} onValueChange={(v) => setForm({ ...form, categoryId: v })}>
-                  <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
-                  <SelectContent>
-                    {categories.map((c) => (
-                      <SelectItem key={c._id} value={c._id}>{c.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label>Type</Label>
-                <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="food">Food</SelectItem>
-                    <SelectItem value="drink">Drink</SelectItem>
-                    <SelectItem value="dessert">Dessert</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid gap-2">
-              <Label>Ingredients (comma separated)</Label>
-              <Input value={form.ingredients} onChange={(e) => setForm({ ...form, ingredients: e.target.value })} />
-            </div>
-
-            <div className="grid gap-2">
-              <Label>Available Turns</Label>
-              <div className="flex flex-wrap gap-2">
-                {turns.map((t) => {
-                  const selected = form.turnIds.includes(t._id);
-                  return (
-                    <button
-                      key={t._id}
-                      type="button"
-                      onClick={() => {
-                        setForm({
-                          ...form,
-                          turnIds: selected
-                            ? form.turnIds.filter((id: string) => id !== t._id)
-                            : [...form.turnIds, t._id],
-                        });
-                      }}
-                      className="px-3 py-1.5 rounded-full text-sm border transition-all"
-                      style={{
-                        backgroundColor: selected ? t.color : "transparent",
-                        borderColor: t.color,
-                        color: selected ? "#000" : t.color,
-                      }}
-                    >
-                      {t.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="grid gap-2">
-              <Label>Images</Label>
-              {form.images.map((url, i) => (
-                <div key={i} className="flex gap-2 items-start">
-                  <div className="flex-1">
-                    <MediaPicker value={url} onChange={(v) => setImage(i, v)} label="" />
-                  </div>
-                  {form.images.length > 1 && (
-                    <Button variant="ghost" size="icon" className="mt-6" onClick={() => removeImageField(i)}>
-                      <ImCross className="w-3 h-3" />
-                    </Button>
-                  )}
-                </div>
-              ))}
-              <Button variant="outline" size="sm" className="w-fit gap-2" onClick={addImageField}>
-                <ImPlus className="w-3 h-3" /> Add image
-              </Button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="avail"
-                checked={form.available}
-                onChange={(e) => setForm({ ...form, available: e.target.checked })}
-                className="rounded border-border"
-              />
-              <Label htmlFor="avail">Available</Label>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} className="gap-2">
-              <ImCross /> Cancel
-            </Button>
-            <Button onClick={handleSave} className="gap-2">
-              <ImCheckmark /> {editingId ? "Update" : "Create"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ProductFormDialog
+        open={open}
+        onOpenChange={setOpen}
+        editingId={editingId}
+        form={form}
+        setForm={setForm}
+        categories={categories}
+        turns={turns}
+        taxes={taxes}
+        onSaved={fetchData}
+      />
     </div>
   );
 }

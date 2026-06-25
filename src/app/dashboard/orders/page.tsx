@@ -1,324 +1,226 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ImPlus, ImCheckmark, ImCross } from "react-icons/im";
+import { ImPlus } from "react-icons/im";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-import {
-  Card, CardContent, CardHeader, CardTitle,
-} from "@/components/ui/card";
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
-} from "@/components/ui/dialog";
+import { useT } from "@/i18n/useT";
+import NewBillDialog from "@/components/dashboard/billing/NewBillDialog";
+import EditBillDialog from "@/components/dashboard/billing/EditBillDialog";
+import CreditNoteDialog from "@/components/dashboard/billing/CreditNoteDialog";
+import InvoiceDetailDialog from "@/components/dashboard/billing/InvoiceDetailDialog";
+import TodayView from "@/components/dashboard/billing/TodayView";
+import HistoryView from "@/components/dashboard/billing/HistoryView";
+import { BillingProvider } from "@/components/dashboard/billing/BillingContext";
+
+const TABS = ["today", "history"];
+const PER_PAGE = 20;
+
+// Shared helper to compute timezone offset in ms
+function tzOffsetMs(tz: string) {
+  const sign = tz.startsWith("-") ? -1 : 1;
+  const [h, m] = tz.replace(/[+-]/, "").split(":").map(Number);
+  return sign * (h * 3600 + m * 60) * 1000;
+}
 
 export default function OrdersPage() {
+  const { t } = useT();
+  const [tab, setTab] = useState(0);
   const [orders, setOrders] = useState<any[]>([]);
-  const [comandas, setComandas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const perPage = 10;
-  const [form, setForm] = useState({
-    comandaId: "", customerName: "", customerEmail: "", customerPhone: "",
-    paymentMethod: "cash", serviceCharge: 0, deliveryCost: 0,
-  });
-  const [pedidos, setPedidos] = useState<any[]>([]);
-  const [preview, setPreview] = useState<any[]>([]);
+  const [tz, setTz] = useState("-04:00");
+
+  useEffect(() => {
+    fetch("/api/config").then((r) => r.json()).then((cfg) => {
+      if (cfg?.timezone) setTz(cfg.timezone);
+    }).catch(() => {});
+  }, []);
+
+  const todayLocal = (() => {
+    const now = new Date();
+    return new Date(now.getTime() + tzOffsetMs(tz)).toISOString().slice(0, 10);
+  })();
+
+  // Dialog state
+  const [newBillOpen, setNewBillOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editingBill, setEditingBill] = useState<any>(null);
-  const [editForm, setEditForm] = useState<any>({});
+  const [cnOpen, setCnOpen] = useState(false);
+  const [cnOrder, setCnOrder] = useState<any>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailOrder, setDetailOrder] = useState<any>(null);
 
-  const fetchOrders = () => {
-    fetch("/api/orders").then((r) => r.json()).then((d) => { setOrders(d); setLoading(false); });
+  // History filters
+  const [closedDays, setClosedDays] = useState<any[]>([]);
+  const [hDateFrom, setHDateFrom] = useState("");
+  const [hDateTo, setHDateTo] = useState("");
+  const [hSearch, setHSearch] = useState("");
+  const [hInvNum, setHInvNum] = useState("");
+  // Today state
+  const [todayClosed, setTodayClosed] = useState(false);
+  const [unclosedDays, setUnclosedDays] = useState<string[]>([]);
+  const [todaySearch, setTodaySearch] = useState("");
+  const [todayInvNum, setTodayInvNum] = useState("");
+
+  const fetchOrders = (params?: string) => {
+    setLoading(true);
+    fetch(`/api/orders${params || ""}`).then((r) => r.json()).then((d) => {
+      setOrders(d);
+      setLoading(false);
+    }).catch(() => setLoading(false));
   };
 
-  const openCreate = () => {
-    fetch("/api/comandas").then((r) => r.json()).then((cs) => {
-      const openCs = cs.filter((c: any) => c.status === "open");
-      setComandas(openCs);
-      setForm({ comandaId: "", customerName: "", customerEmail: "", customerPhone: "", paymentMethod: "cash", serviceCharge: 0, deliveryCost: 0 });
-      setPedidos([]);
-      setPreview([]);
-      setOpen(true);
+  // Today: load unclosed orders
+  useEffect(() => {
+    if (tab !== 0) return;
+    fetch("/api/day-closings").then((r) => r.json()).then((closed) => {
+      const closedDates = new Set(closed.map((c: any) => c.date));
+      setTodayClosed(closedDates.has(todayLocal));
+      fetch("/api/orders?unclosedOnly=true").then((r) => r.json()).then((orders) => {
+        setOrders(orders);
+        const dates = new Set<string>();
+        orders.forEach((o: any) => {
+          const localDate = new Date(new Date(o.createdAt).getTime() + tzOffsetMs(tz)).toISOString().slice(0, 10);
+          if (!closedDates.has(localDate)) dates.add(localDate);
+        });
+        setUnclosedDays(Array.from(dates).sort());
+        setLoading(false);
+      }).catch(() => setLoading(false));
+    }).catch(() => fetchOrders(`?dateFrom=${todayLocal}&dateTo=${todayLocal}`));
+  }, [tab, todayLocal]);
+
+  // History: load closed days
+  useEffect(() => {
+    if (tab !== 1) return;
+    fetch("/api/day-closings").then((r) => r.json()).then((days) => {
+      setClosedDays(days);
+      if (days.length > 0) {
+        const latest = days[0].date;
+        setHDateFrom(latest);
+        setHDateTo(latest);
+        fetchOrders(`?dateFrom=${latest}&dateTo=${latest}`);
+      } else setLoading(false);
+    }).catch(() => setLoading(false));
+  }, [tab]);
+
+  const handleHistorySearch = () => {
+    if (!hDateFrom) return;
+    const p = new URLSearchParams({ dateFrom: hDateFrom });
+    if (hDateTo) p.set("dateTo", hDateTo);
+    else p.set("dateTo", hDateFrom);
+    if (hSearch) p.set("search", hSearch);
+    if (hInvNum) p.set("invoiceNumber", hInvNum);
+    fetchOrders("?" + p.toString());
+    setPage(1);
+  };
+
+  const handleHistoryReset = () => {
+    setHSearch("");
+    setHInvNum("");
+    if (closedDays.length === 0) return;
+    const d = closedDays[0].date;
+    setHDateFrom(d);
+    setHDateTo(d);
+    fetchOrders(`?dateFrom=${d}&dateTo=${d}`);
+  };
+
+  const apiFetch = async (id: string, body: any) =>
+    fetch(`/api/orders/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
-  };
 
-  const loadComanda = async (comandaId: string) => {
-    if (!comandaId) { setPedidos([]); setPreview([]); setForm({ ...form, comandaId: "", serviceCharge: 0, deliveryCost: 0 }); return; }
-    const comanda = comandas.find((c) => c._id === comandaId);
-    const res = await fetch(`/api/pedidos?comandaId=${comandaId}`);
-    const ps = await res.json();
-    setPedidos(ps);
-
-    const items: any[] = [];
-    const itemMap = new Map<string, any>();
-    for (const p of ps) {
-      for (const it of p.items) {
-        const key = it.name;
-        if (itemMap.has(key)) itemMap.get(key).quantity += it.quantity;
-        else itemMap.set(key, { name: it.name, price: it.price, quantity: it.quantity });
-      }
-    }
-    const consolidated = Array.from(itemMap.values());
-    setPreview(consolidated);
-
-    const subtotal = consolidated.reduce((s: number, i: any) => s + i.price * i.quantity, 0);
-    const sc = comanda?.tableId && !comanda?.isDelivery ? Math.round(subtotal * 0.1 * 100) / 100 : 0;
-    setForm({ ...form, comandaId, customerName: comanda?.customerName || "", serviceCharge: sc, deliveryCost: comanda?.isDelivery ? 5 : 0 });
-  };
-
-  const handleCreate = async () => {
-    const subtotal = preview.reduce((s: number, i: any) => s + i.price * i.quantity, 0);
-    await fetch("/api/orders", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        comandaId: form.comandaId || undefined,
-        pedidoIds: pedidos.map((p) => p._id),
-        items: preview,
-        tableLabel: comandas.find((c) => c._id === form.comandaId)?.tableLabel,
-        isDelivery: comandas.find((c) => c._id === form.comandaId)?.isDelivery || false,
-        serviceCharge: form.serviceCharge,
-        deliveryCost: form.deliveryCost,
-        subtotal,
-        total: subtotal + form.serviceCharge + form.deliveryCost,
-        paymentMethod: form.paymentMethod,
-        customer: { name: form.customerName, email: form.customerEmail, phone: form.customerPhone },
-        status: "pending",
-      }),
+  const comandaFetch = async (id: string, body: any) =>
+    fetch(`/api/comandas/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
     });
-    setOpen(false);
-    fetchOrders();
-  };
-
-  useEffect(fetchOrders, []);
 
   const confirmPayment = async (bill: any) => {
-    const total = (bill.subtotal || 0) + (bill.serviceCharge || 0) + (bill.deliveryCost || 0);
-    await fetch(`/api/orders/${bill._id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: "paid", total }),
-    });
-    // Close comanda
-    if (bill.comandaId) {
-      await fetch(`/api/comandas/${bill.comandaId}`, {
-        method: "PATCH", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "closed" }),
-      });
-    }
-    fetchOrders();
+    await apiFetch(bill._id, { status: "paid" });
+    if (bill.comandaId) await comandaFetch(bill.comandaId, { status: "closed" });
+    fetchOrders(tab === 0 ? "?unclosedOnly=true" : "");
   };
 
-  const openEdit = (bill: any) => {
-    setEditingBill(bill);
-    setEditForm({
-      customerName: bill.customer?.name || "",
-      customerEmail: bill.customer?.email || "",
-      customerPhone: bill.customer?.phone || "",
-      paymentMethod: bill.paymentMethod || "cash",
-    });
-    setEditOpen(true);
+  const cancelBill = async (bill: any) => {
+    await apiFetch(bill._id, { status: "cancelled" });
+    if (bill.comandaId) await comandaFetch(bill.comandaId, { status: "rejected" });
+    fetchOrders(tab === 0 ? "?unclosedOnly=true" : "");
   };
 
-  const handleEditSave = async () => {
-    if (!editingBill) return;
-    await fetch(`/api/orders/${editingBill._id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        customer: { name: editForm.customerName, email: editForm.customerEmail, phone: editForm.customerPhone },
-        paymentMethod: editForm.paymentMethod,
-      }),
-    });
-    setEditOpen(false);
-    fetchOrders();
+  const revertBill = async (bill: any) => {
+    await apiFetch(bill._id, { status: "pending" });
+    if (bill.comandaId) await comandaFetch(bill.comandaId, { status: "open" });
+    fetchOrders("?unclosedOnly=true");
   };
 
-  const filtered = orders.filter((o) =>
-    (o.customer?.name || "").toLowerCase().includes(search.toLowerCase()) ||
-    (o.paymentMethod || "").toLowerCase().includes(search.toLowerCase()),
-  );
-  const totalPages = Math.ceil(filtered.length / perPage);
-  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
+  const isTodayOrder = (bill: any) => {
+    const billLocal = new Date(new Date(bill.createdAt).getTime() + tzOffsetMs(tz)).toISOString().slice(0, 10);
+    return billLocal === todayLocal;
+  };
 
-  if (loading) return <p className="text-muted-foreground">Loading...</p>;
+  const openEdit = (bill: any) => { setEditingBill(bill); setEditOpen(true); };
+  const openCreditNote = (order: any) => { setCnOrder(order); setCnOpen(true); };
+  const handleDetail = (order: any) => { setDetailOrder(order); setDetailOpen(true); };
+
+  const displayOrders = tab === 0
+    ? orders.filter((o) => {
+        const q = todaySearch.toLowerCase();
+        return (!todaySearch || (o.customer?.name || "").toLowerCase().includes(q)) &&
+               (!todayInvNum || (o.invoiceNumber && String(o.invoiceNumber).includes(todayInvNum)));
+      })
+    : orders;
+  const paginated = displayOrders.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const totalPages = Math.ceil(displayOrders.length / PER_PAGE);
+
+  const billingValue = { todayClosed, todayLocal, isTodayOrder, confirmPayment, openEdit, revertBill, cancelBill, openCreditNote };
+
+  if (loading && orders.length === 0)
+    return <p className="text-muted-foreground">{t("common.loading")}</p>;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Billing</h1>
-        <Button onClick={openCreate} className="gap-2"><ImPlus /> New Bill</Button>
-      </div>
-
-      <Input placeholder="Search by customer..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="max-w-xs" />
-
-      <div className="grid gap-4 md:grid-cols-2">
-        {paginated.map((o) => (
-          <Card key={o._id}>
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle>{o.customer?.name || "Walk-in"}</CardTitle>
-                  <p className="text-xs text-muted-foreground">{new Date(o.createdAt).toLocaleDateString()}</p>
-                </div>
-                <span className={`text-xs px-2 py-0.5 rounded ${
-                  o.status === "paid" ? "bg-green-500/10 text-green-500" : "bg-yellow-500/10 text-yellow-500"
-                }`}>{o.status}</span>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-1 text-sm">
-              <p className="text-muted-foreground">{o.items?.length || 0} items · {o.paymentMethod}</p>
-              {o.isDelivery && <p className="text-xs text-muted-foreground">Delivery</p>}
-              <div className="border-t pt-2 space-y-0.5 font-medium">
-                {o.serviceCharge > 0 && <div className="flex justify-between text-xs text-muted-foreground"><span>Service (10%)</span><span>${o.serviceCharge.toFixed(2)}</span></div>}
-                {o.deliveryCost > 0 && <div className="flex justify-between text-xs text-muted-foreground"><span>Delivery</span><span>${o.deliveryCost.toFixed(2)}</span></div>}
-                <div className="flex justify-between text-golden"><span>Total</span><span>${o.total?.toFixed(2)}</span></div>
-              </div>
-              {o.status === "pending" && (
-                <div className="flex gap-2 pt-2">
-                  <Button size="sm" onClick={() => confirmPayment(o)} className="gap-1"><ImCheckmark className="w-3 h-3" /> Confirm Payment</Button>
-                  <Button size="sm" variant="outline" onClick={() => openEdit(o)}>Edit</Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {totalPages > 1 && (
+    <BillingProvider value={billingValue}>
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">{filtered.length} bills · Page {page} of {totalPages}</p>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
-            <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
-          </div>
+          <h1 className="dashboard-heading text-3xl font-bold tracking-tight">{t("billing.title")}</h1>
+          <Button onClick={() => setNewBillOpen(true)} className="gap-2"><ImPlus /> {t("billing.newBill")}</Button>
         </div>
-      )}
 
-      {/* New Bill Dialog */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="bg-popover sm:max-w-lg max-h-[85vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>New Bill</DialogTitle></DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label>Comanda</Label>
-              <Select value={form.comandaId} onValueChange={loadComanda}>
-                <SelectTrigger><SelectValue placeholder="Select comanda..." /></SelectTrigger>
-                <SelectContent>
-                  {comandas.map((c) => (
-                    <SelectItem key={c._id} value={c._id}>
-                      {c.tableLabel || "Bar"} — {c.customerName || "Walk-in"}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="flex gap-1 bg-muted rounded-lg p-1 w-fit">
+          {TABS.map((k, i) => (
+            <button key={k} onClick={() => setTab(i)}
+              className={`px-4 py-1.5 text-sm rounded-md transition-colors capitalize ${tab === i ? "bg-background text-foreground shadow-sm font-medium" : "text-muted-foreground hover:text-foreground"}`}>
+              {k === "today" ? t("billing.today") : t("billing.history")}
+            </button>
+          ))}
+        </div>
 
-            {preview.length > 0 && (
-              <div className="border rounded-lg p-3 space-y-1 text-sm">
-                <Label>Items</Label>
-                {preview.map((item, i) => (
-                  <div key={i} className="flex justify-between text-muted-foreground">
-                    <span>{item.quantity}x {item.name}</span>
-                    <span>${(item.price * item.quantity).toFixed(2)}</span>
-                  </div>
-                ))}
-                <div className="flex justify-between font-medium border-t pt-2">
-                  <span>Subtotal</span>
-                  <span>${preview.reduce((s: number, i: any) => s + i.price * i.quantity, 0).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Service (10%)</span>
-                  <span>${form.serviceCharge.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Delivery</span>
-                  <Input type="number" className="w-20 h-7 text-xs" value={form.deliveryCost}
-                    onChange={(e) => setForm({ ...form, deliveryCost: Number(e.target.value) })} />
-                </div>
-                <div className="flex justify-between font-bold text-golden border-t pt-2">
-                  <span>Total</span>
-                  <span>
-                    ${(preview.reduce((s: number, i: any) => s + i.price * i.quantity, 0) + form.serviceCharge + form.deliveryCost).toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            )}
+        {tab === 0 && (
+          <TodayView orders={orders} loading={loading} page={page} setPage={setPage}
+            totalPages={totalPages} displayOrders={displayOrders} paginated={paginated}
+            unclosedDays={unclosedDays} todayLocal={todayLocal}
+            todaySearch={todaySearch} setTodaySearch={setTodaySearch}
+            todayInvNum={todayInvNum} setTodayInvNum={setTodayInvNum} />
+        )}
 
-            <div className="grid gap-2">
-              <Label>Payment Method</Label>
-              <Select value={form.paymentMethod} onValueChange={(v) => setForm({ ...form, paymentMethod: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cash">Cash</SelectItem>
-                  <SelectItem value="card">Card</SelectItem>
-                  <SelectItem value="transfer">Transfer</SelectItem>
-                  <SelectItem value="invoice">Invoice</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+        {tab === 1 && (
+          <HistoryView orders={orders} loading={loading} page={page} setPage={setPage}
+            totalPages={totalPages} paginated={paginated} closedDays={closedDays}
+            hDateFrom={hDateFrom} setHDateFrom={setHDateFrom} hDateTo={hDateTo} setHDateTo={setHDateTo}
+            hSearch={hSearch} setHSearch={setHSearch} hInvNum={hInvNum} setHInvNum={setHInvNum}
+            onSearch={handleHistorySearch} onReset={handleHistoryReset} onDetail={handleDetail} />
+        )}
 
-            <div className="border-t pt-3">
-              <p className="text-sm font-medium mb-2">Customer</p>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="col-span-2 grid gap-1">
-                  <Label className="text-xs">Name</Label>
-                  <Input value={form.customerName} onChange={(e) => setForm({ ...form, customerName: e.target.value })} />
-                </div>
-                <div className="grid gap-1">
-                  <Label className="text-xs">Email</Label>
-                  <Input value={form.customerEmail} onChange={(e) => setForm({ ...form, customerEmail: e.target.value })} />
-                </div>
-                <div className="grid gap-1">
-                  <Label className="text-xs">Phone</Label>
-                  <Input value={form.customerPhone} onChange={(e) => setForm({ ...form, customerPhone: e.target.value })} />
-                </div>
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
-            <Button onClick={handleCreate} disabled={preview.length === 0} className="gap-2"><ImCheckmark /> Finalize Bill</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Bill Dialog */}
-      <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="bg-popover sm:max-w-sm">
-          <DialogHeader><DialogTitle>Edit Bill</DialogTitle></DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label>Payment Method</Label>
-              <Select value={editForm.paymentMethod} onValueChange={(v) => setEditForm({ ...editForm, paymentMethod: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cash">Cash</SelectItem>
-                  <SelectItem value="card">Card</SelectItem>
-                  <SelectItem value="transfer">Transfer</SelectItem>
-                  <SelectItem value="invoice">Invoice</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="border-t pt-3">
-              <p className="text-sm font-medium mb-2">Customer</p>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="col-span-2 grid gap-1"><Label className="text-xs">Name</Label><Input value={editForm.customerName} onChange={(e) => setEditForm({ ...editForm, customerName: e.target.value })} /></div>
-                <div className="grid gap-1"><Label className="text-xs">Email</Label><Input value={editForm.customerEmail} onChange={(e) => setEditForm({ ...editForm, customerEmail: e.target.value })} /></div>
-                <div className="grid gap-1"><Label className="text-xs">Phone</Label><Input value={editForm.customerPhone} onChange={(e) => setEditForm({ ...editForm, customerPhone: e.target.value })} /></div>
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditOpen(false)} className="gap-2"><ImCross /> Cancel</Button>
-            <Button onClick={handleEditSave} className="gap-2"><ImCheckmark /> Save</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+        <InvoiceDetailDialog open={detailOpen} onOpenChange={setDetailOpen} order={detailOrder}
+          onRefresh={() => { tab === 0 ? fetchOrders("?unclosedOnly=true") : handleHistorySearch(); }} />
+        <NewBillDialog open={newBillOpen} onOpenChange={setNewBillOpen}
+          onBillCreated={() => { fetchOrders(tab === 0 ? "?unclosedOnly=true" : ""); }} />
+        <EditBillDialog open={editOpen} onOpenChange={setEditOpen} bill={editingBill}
+          onSaved={() => { tab === 0 ? fetchOrders("?unclosedOnly=true") : handleHistorySearch(); }} />
+        <CreditNoteDialog open={cnOpen} onOpenChange={setCnOpen} order={cnOrder}
+          onIssued={() => { tab === 0 ? fetchOrders("?unclosedOnly=true") : handleHistorySearch(); }} />
+      </div>
+    </BillingProvider>
   );
 }

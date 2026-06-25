@@ -12,6 +12,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
+import { useT } from "@/i18n/useT";
 
 interface MediaItem {
   _id: string;
@@ -28,6 +29,7 @@ interface MediaItem {
 export default function MediaPage() {
   const [items, setItems] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useT();
   const [view, setView] = useState<"grid" | "list">("grid");
   const [uploadOpen, setUploadOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -94,18 +96,18 @@ export default function MediaPage() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading...</p>;
+  if (loading) return <p className="text-muted-foreground">{t("common.loading")}</p>;
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">Media Library</h1>
+        <h1 className="dashboard-heading text-3xl font-bold tracking-tight">{t("media.title")}</h1>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => setView(view === "grid" ? "list" : "grid")}>
             {view === "grid" ? "List" : "Grid"}
           </Button>
-          <Button onClick={() => setUploadOpen(true)} className="gap-2"><ImPlus /> Upload</Button>
+          <Button onClick={() => setUploadOpen(true)} className="gap-2"><ImPlus /> {t("media.upload")}</Button>
         </div>
       </div>
 
@@ -125,7 +127,7 @@ export default function MediaPage() {
               onClick={() => fileInputRef.current?.click()}
             >
               <ImImage className="w-10 h-10 mx-auto text-muted-foreground mb-2" />
-              <p className="text-sm text-muted-foreground">Drop files here or click to browse</p>
+              <p className="text-sm text-muted-foreground">{t("media.dropFiles")}</p>
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" multiple />
             </div>
 
@@ -205,7 +207,7 @@ export default function MediaPage() {
           ))}
           {filtered.length === 0 && (
             <p className="col-span-full text-center text-muted-foreground py-12">
-              {search ? "No images match your search" : "No images yet. Upload your first image."}
+              {t("media.noMedia")}
             </p>
           )}
         </div>
@@ -216,9 +218,9 @@ export default function MediaPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Preview</TableHead>
-                <TableHead>Filename</TableHead>
+                <TableHead>{t("common.name")}</TableHead>
                 <TableHead>Alt Text</TableHead>
-                <TableHead>Date</TableHead>
+                <TableHead>{t("common.date")}</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
