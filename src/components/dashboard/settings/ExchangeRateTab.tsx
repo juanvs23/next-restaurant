@@ -14,6 +14,8 @@ interface Props {
 const API_URLS = [
   "https://ve.dolarapi.com/v1/tasas/dolares",
   "https://pydolarve.com/api/dolar?moneda=usd",
+  // Fallback: general USD→VES rate when VZLA-specific APIs are down
+  "https://open.er-api.com/v6/latest/USD",
 ];
 
 export function ExchangeRateTab({ form, setForm }: Props) {
@@ -27,21 +29,21 @@ export function ExchangeRateTab({ form, setForm }: Props) {
 
     let bcv = 0;
     let usdt = 0;
+    let fallbackRate = 0;
 
     for (const url of API_URLS) {
       try {
-        const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+        const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
         if (!res.ok) continue;
         const data = await res.json();
 
         if (Array.isArray(data)) {
-          const b = data.find((d: any) => d._id === "bcv");
-          const p = data.find((d: any) => d._id === "paralelo");
-          bcv = b?.promedio || bcv;
-          usdt = p?.promedio || usdt;
-        } else if (data.bcv) {
-          bcv = data.bcv;
-          usdt = data.paralelo || data.usdt || 0;
+          const b = data.find((d: any) => d._id === "bcv" || d.casa === "bcv");
+          const p = data.find((d: any) => d._id === "paralelo" || d.casa === "paralelo");
+          bcv = b?.promedio || b?.venta || bcv;
+          usdt = p?.promedio || p?.venta || usdt;
+        } else if (data.rates?.VES) {
+          fallbackRate = data.rates.VES;
         }
         if (bcv > 0 || usdt > 0) break;
       } catch {
@@ -51,6 +53,9 @@ export function ExchangeRateTab({ form, setForm }: Props) {
 
     if (bcv > 0 || usdt > 0) {
       setForm({ ...form, exchangeRateBcv: bcv, exchangeRateUsdt: usdt || bcv });
+      setStatus("ok");
+    } else if (fallbackRate > 0) {
+      setForm({ ...form, exchangeRateBcv: fallbackRate, exchangeRateUsdt: fallbackRate });
       setStatus("ok");
     } else {
       setStatus("error");
