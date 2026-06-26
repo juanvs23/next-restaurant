@@ -12,9 +12,8 @@ interface Props {
 }
 
 const API_URLS = [
-  "https://ve.dolarapi.com/v1/tasas/dolares",
+  "https://ve.dolarapi.com/v1/dolares",
   "https://pydolarve.com/api/dolar?moneda=usd",
-  // Fallback: general USD→VES rate when VZLA-specific APIs are down
   "https://open.er-api.com/v6/latest/USD",
 ];
 
@@ -38,10 +37,10 @@ export function ExchangeRateTab({ form, setForm }: Props) {
         const data = await res.json();
 
         if (Array.isArray(data)) {
-          const b = data.find((d: any) => d._id === "bcv" || d.casa === "bcv");
-          const p = data.find((d: any) => d._id === "paralelo" || d.casa === "paralelo");
-          bcv = b?.promedio || b?.venta || bcv;
-          usdt = p?.promedio || p?.venta || usdt;
+          const oficial = data.find((d: any) => d.fuente === "oficial" || d._id === "bcv");
+          const paralelo = data.find((d: any) => d.fuente === "paralelo" || d._id === "paralelo");
+          bcv = oficial?.promedio || oficial?.venta || bcv;
+          usdt = paralelo?.promedio || paralelo?.venta || usdt;
         } else if (data.rates?.VES) {
           fallbackRate = data.rates.VES;
         }
