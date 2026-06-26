@@ -25,6 +25,7 @@ interface TodayViewProps {
   setTodaySearch: (s: string) => void;
   todayInvNum: string;
   setTodayInvNum: (s: string) => void;
+  bcvRate: number;
 }
 
 export default function TodayView({
@@ -39,13 +40,16 @@ export default function TodayView({
   setTodaySearch,
   todayInvNum,
   setTodayInvNum,
+  bcvRate,
 }: TodayViewProps) {
   const { t } = useT();
 
+  const toVes = (usd: number) => bcvRate > 0 ? usd * bcvRate : usd;
+
   const paidOrders = displayOrders.filter((o) => o.status === "paid");
-  const totalRevenue = paidOrders.reduce((s, o) => s + (o.total || 0), 0);
-  const totalTax = paidOrders.reduce((s, o) => s + (o.totalTax || 0), 0);
-  const totalCharges = paidOrders.reduce((s, o) => s + (o.totalCharge || 0), 0);
+  const totalRevenue = paidOrders.reduce((s, o) => s + toVes(o.total || 0), 0);
+  const totalTax = paidOrders.reduce((s, o) => s + toVes(o.totalTax || 0), 0);
+  const totalCharges = paidOrders.reduce((s, o) => s + toVes(o.totalCharge || 0), 0);
   const avgTicket = paidOrders.length > 0 ? totalRevenue / paidOrders.length : 0;
 
   return (

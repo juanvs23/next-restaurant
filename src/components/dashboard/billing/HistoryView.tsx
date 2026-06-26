@@ -39,6 +39,7 @@ interface HistoryViewProps {
   onSearch: () => void;
   onReset: () => void;
   onDetail: (order: any) => void;
+  bcvRate: number;
 }
 
 export default function HistoryView({
@@ -58,13 +59,16 @@ export default function HistoryView({
   onSearch,
   onReset,
   onDetail,
+  bcvRate,
 }: HistoryViewProps) {
   const { t } = useT();
 
+  const toVes = (usd: number) => bcvRate > 0 ? usd * bcvRate : usd;
+
   const paidOrders = orders.filter((o) => o.status === "paid");
-  const totalRevenue = paidOrders.reduce((s, o) => s + (o.total || 0), 0);
-  const totalTax = paidOrders.reduce((s, o) => s + (o.totalTax || 0), 0);
-  const totalCharges = paidOrders.reduce((s, o) => s + (o.totalCharge || 0), 0);
+  const totalRevenue = paidOrders.reduce((s, o) => s + toVes(o.total || 0), 0);
+  const totalTax = paidOrders.reduce((s, o) => s + toVes(o.totalTax || 0), 0);
+  const totalCharges = paidOrders.reduce((s, o) => s + toVes(o.totalCharge || 0), 0);
   const avgTicket = paidOrders.length > 0 ? totalRevenue / paidOrders.length : 0;
 
   return (
@@ -209,7 +213,7 @@ export default function HistoryView({
                     </TableCell>
                     <TableCell>{o.paymentMethod}</TableCell>
                     <TableCell className="text-right font-medium">
-                      {o.total ? formatVes(o.total) : "—"}
+                      {o.total ? formatVes(toVes(o.total)) : "—"}
                     </TableCell>
                     <TableCell>
                       <span

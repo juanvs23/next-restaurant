@@ -205,7 +205,8 @@ export default function OrdersPage() {
             totalPages={totalPages} displayOrders={displayOrders} paginated={paginated}
             unclosedDays={unclosedDays} todayLocal={todayLocal}
             todaySearch={todaySearch} setTodaySearch={setTodaySearch}
-            todayInvNum={todayInvNum} setTodayInvNum={setTodayInvNum} />
+            todayInvNum={todayInvNum} setTodayInvNum={setTodayInvNum}
+            bcvRate={bcvRate} />
         )}
 
         {tab === 1 && (
@@ -213,7 +214,8 @@ export default function OrdersPage() {
             totalPages={totalPages} paginated={paginated} closedDays={closedDays}
             hDateFrom={hDateFrom} setHDateFrom={setHDateFrom} hDateTo={hDateTo} setHDateTo={setHDateTo}
             hSearch={hSearch} setHSearch={setHSearch} hInvNum={hInvNum} setHInvNum={setHInvNum}
-            onSearch={handleHistorySearch} onReset={handleHistoryReset} onDetail={handleDetail} />
+            onSearch={handleHistorySearch} onReset={handleHistoryReset} onDetail={handleDetail}
+            bcvRate={bcvRate} />
         )}
 
         <InvoiceDetailDialog open={detailOpen} onOpenChange={setDetailOpen} order={detailOrder}
