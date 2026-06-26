@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { ImCheckmark, ImCross, ImWarning } from "react-icons/im";
 import { useT } from "@/i18n/useT";
+import { formatVes } from "@/libs/currency";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +28,15 @@ export default function ReportsPage() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [bcvRate, setBcvRate] = useState(0);
+
+  useEffect(() => {
+    fetch("/api/backoffice/exchange-rate").then((r) => r.json()).then((d) => {
+      if (d.exchangeRateBcv) setBcvRate(d.exchangeRateBcv);
+    }).catch(() => {});
+  }, []);
+
+  const toVes = (usd: number) => bcvRate > 0 ? bcvRate * usd : usd;
 
   // Today's close dialog
   const [closeOpen, setCloseOpen] = useState(false);
@@ -134,19 +144,19 @@ export default function ReportsPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">{t("reports.revenue")}</CardTitle></CardHeader>
-          <CardContent><p className="text-2xl font-bold text-green-600">${(data?.summary?.totalRevenue ?? 0).toFixed(2)}</p></CardContent>
+          <CardContent><p className="text-2xl font-bold text-green-600">{formatVes(toVes(data?.summary?.totalRevenue ?? 0))}</p></CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">{t("reports.avgTicket")}</CardTitle></CardHeader>
-          <CardContent><p className="text-2xl font-bold">${(data?.summary?.avgTicket ?? 0).toFixed(2)}</p></CardContent>
+          <CardContent><p className="text-2xl font-bold">{formatVes(toVes(data?.summary?.avgTicket ?? 0))}</p></CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">{t("reports.totalTax")}</CardTitle></CardHeader>
-          <CardContent><p className="text-2xl font-bold text-amber-600">${(data?.summary?.totalTax ?? 0).toFixed(2)}</p></CardContent>
+          <CardContent><p className="text-2xl font-bold text-amber-600">{formatVes(toVes(data?.summary?.totalTax ?? 0))}</p></CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">{t("reports.charges")}</CardTitle></CardHeader>
-          <CardContent><p className="text-2xl font-bold text-blue-600">${(data?.summary?.totalCharges ?? 0).toFixed(2)}</p></CardContent>
+          <CardContent><p className="text-2xl font-bold text-blue-600">{formatVes(toVes(data?.summary?.totalCharges ?? 0))}</p></CardContent>
         </Card>
       </div>
 
@@ -212,10 +222,10 @@ export default function ReportsPage() {
                   <TableRow key={d._id}>
                     <TableCell>{new Date(d._id + "T00:00:00").toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">{d.orders}</TableCell>
-                    <TableCell className="text-right">${d.subtotal.toFixed(2)}</TableCell>
-                    <TableCell className="text-right">${d.charges.toFixed(2)}</TableCell>
-                    <TableCell className="text-right">${d.tax.toFixed(2)}</TableCell>
-                    <TableCell className="text-right font-medium">${d.revenue.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">{formatVes(toVes(d.subtotal))}</TableCell>
+                    <TableCell className="text-right">{formatVes(toVes(d.charges))}</TableCell>
+                    <TableCell className="text-right">{formatVes(toVes(d.tax))}</TableCell>
+                    <TableCell className="text-right font-medium">{formatVes(toVes(d.revenue))}</TableCell>
                     <TableCell className="text-right">
                       {closedDates.has(d._id) ? (
                         <span className="text-xs bg-green-500/10 text-green-500 px-2 py-0.5 rounded">{t("reports.closed")}</span>
@@ -259,7 +269,7 @@ export default function ReportsPage() {
                     <TableRow key={p._id}>
                       <TableCell className="capitalize">{p._id}</TableCell>
                       <TableCell className="text-right">{p.count}</TableCell>
-                      <TableCell className="text-right font-medium">${p.total.toFixed(2)}</TableCell>
+                      <TableCell className="text-right font-medium">{formatVes(toVes(p.total))}</TableCell>
                     </TableRow>
                   ))
                 )}
@@ -290,7 +300,7 @@ export default function ReportsPage() {
                     <TableRow key={p._id}>
                       <TableCell>{p._id}</TableCell>
                       <TableCell className="text-right">{p.quantity}</TableCell>
-                      <TableCell className="text-right font-medium">${p.revenue.toFixed(2)}</TableCell>
+                      <TableCell className="text-right font-medium">{formatVes(toVes(p.revenue))}</TableCell>
                     </TableRow>
                   ))
                 )}
@@ -352,8 +362,8 @@ export default function ReportsPage() {
               </div>
               <div className="border rounded-lg p-3 text-sm space-y-1">
                 <div className="flex justify-between"><span>{t("reports.orders")}</span><span className="font-medium">{closeResult.closing.summary.totalOrders}</span></div>
-                <div className="flex justify-between"><span>{t("reports.revenue")}</span><span className="font-medium">${closeResult.closing.summary.totalRevenue.toFixed(2)}</span></div>
-                <div className="flex justify-between"><span>{t("reports.avgTicket")}</span><span className="font-medium">${closeResult.closing.summary.avgTicket.toFixed(2)}</span></div>
+                <div className="flex justify-between"><span>{t("reports.revenue")}</span><span className="font-medium">{formatVes(toVes(closeResult.closing.summary.totalRevenue))}</span></div>
+                <div className="flex justify-between"><span>{t("reports.avgTicket")}</span><span className="font-medium">{formatVes(toVes(closeResult.closing.summary.avgTicket))}</span></div>
               </div>
               <Button variant="outline" className="w-full" onClick={() => { setCloseOpen(false); setCloseResult(null); }}>{t("common.ok")}</Button>
             </div>

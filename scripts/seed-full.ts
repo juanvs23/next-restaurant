@@ -246,6 +246,9 @@ async function main() {
 
   // 11. Two weeks of operations
   const workingDays = getWorkingDays(14);
+  const todayStr = new Date().toISOString().split("T")[0];
+  const yesterdayD = new Date(); yesterdayD.setDate(yesterdayD.getDate() - 1);
+  const yesterdayStr = yesterdayD.toISOString().split("T")[0];
   const allProducts = await db.collection("products").find().toArray();
   const pms = ["cash", "debit", "credit", "transfer", "pago-movil"];
   const pmLabels: Record<string, string> = { cash: "Cash", debit: "Debit Card", credit: "Credit Card", transfer: "Transfer", "pago-movil": "Pago Móvil" };
@@ -253,9 +256,9 @@ async function main() {
 
   for (let dayIdx = 0; dayIdx < workingDays.length; dayIdx++) {
     const dateStr = workingDays[dayIdx];
-    const isToday = dayIdx === workingDays.length - 1;
-    const isYesterday = dayIdx === workingDays.length - 2;
-    const shouldClose = dayIdx < workingDays.length - 2;
+    const isToday = dateStr === todayStr;
+    const isYesterday = dateStr === yesterdayStr;
+    const shouldClose = !isToday && !isYesterday && dateStr < todayStr;
     const ordersPerDay = randInt(isToday || isYesterday ? 3 : 4, isToday || isYesterday ? 6 : 10);
 
     await db.collection("dayopenings").insertOne({ date: dateStr, openedBy: "Admin GERÍCHT", openedAt: formatDate(dateStr, 8, 0), workShiftId: morningId, notes: "Apertura automática (seed)", createdAt: new Date(), updatedAt: new Date() });
