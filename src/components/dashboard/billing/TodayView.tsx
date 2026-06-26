@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useT } from "@/i18n/useT";
+import { formatVes } from "@/libs/currency";
 import BillCard from "./BillCard";
 
 interface TodayViewProps {
@@ -73,7 +74,7 @@ export default function TodayView({
             <CardTitle className="text-xs text-muted-foreground">{t("billing.totalRevenue") || "Revenue"}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-bold">${totalRevenue.toFixed(2)}</p>
+            <p className="text-xl font-bold">{formatVes(totalRevenue)}</p>
           </CardContent>
         </Card>
         <Card>
@@ -89,7 +90,7 @@ export default function TodayView({
             <CardTitle className="text-xs text-muted-foreground">{t("billing.avgTicket") || "Avg ticket"}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-bold">${avgTicket.toFixed(2)}</p>
+            <p className="text-xl font-bold">{formatVes(avgTicket)}</p>
           </CardContent>
         </Card>
         <Card>
@@ -97,7 +98,7 @@ export default function TodayView({
             <CardTitle className="text-xs text-muted-foreground">{t("billing.taxesAndCharges") || "Taxes + charges"}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-bold">${(totalTax + totalCharges).toFixed(2)}</p>
+            <p className="text-xl font-bold">{formatVes(totalTax + totalCharges)}</p>
           </CardContent>
         </Card>
       </div>

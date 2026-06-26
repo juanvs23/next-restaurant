@@ -12,5 +12,7 @@ export async function GET() {
     timezone: config.timezone,
     businessName: config.businessName,
     defaultLanguage: config.defaultLanguage,
+    exchangeRateBcv: config.exchangeRateBcv ?? 0,
+    exchangeRateUsdt: config.exchangeRateUsdt ?? 0,
   });
 }

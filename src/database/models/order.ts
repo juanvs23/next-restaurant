@@ -76,6 +76,11 @@ const orderSchema = new mongoose.Schema(
     confirmedBy: { type: String },
     cashRegisterId: { type: mongoose.Schema.Types.ObjectId, ref: "CashRegister" },
     cashRegisterName: { type: String },
+
+    // Currency snapshot at order time
+    totalUsdRef: { type: Number },       // USD equivalent (BCV rate) when order was created
+    exchangeRateBcv: { type: Number },   // BCV rate frozen at order creation
+    exchangeRateUsdt: { type: Number },  // USDT rate frozen at order creation
   },
   { timestamps: true }
 );

@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useT } from "@/i18n/useT";
+import { formatVes } from "@/libs/currency";
 
 interface HistoryViewProps {
   orders: any[];
@@ -75,7 +76,7 @@ export default function HistoryView({
             <CardTitle className="text-xs text-muted-foreground">{t("billing.totalRevenue") || "Revenue"}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-bold">${totalRevenue.toFixed(2)}</p>
+            <p className="text-xl font-bold">{formatVes(totalRevenue)}</p>
           </CardContent>
         </Card>
         <Card>
@@ -91,7 +92,7 @@ export default function HistoryView({
             <CardTitle className="text-xs text-muted-foreground">{t("billing.avgTicket") || "Avg ticket"}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-bold">${avgTicket.toFixed(2)}</p>
+            <p className="text-xl font-bold">{formatVes(avgTicket)}</p>
           </CardContent>
         </Card>
         <Card>
@@ -208,7 +209,7 @@ export default function HistoryView({
                     </TableCell>
                     <TableCell>{o.paymentMethod}</TableCell>
                     <TableCell className="text-right font-medium">
-                      ${o.total?.toFixed(2)}
+                      {o.total ? formatVes(o.total) : "—"}
                     </TableCell>
                     <TableCell>
                       <span

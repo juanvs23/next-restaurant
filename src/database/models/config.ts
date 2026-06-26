@@ -49,6 +49,11 @@ const configSchema = new mongoose.Schema(
     // Timezone
     timezone: { type: String, default: "-04:00" }, // Venezuela UTC-4
 
+    // Exchange rates
+    exchangeRateBcv: { type: Number, default: 0 },   // VES per USD (BCV official)
+    exchangeRateUsdt: { type: Number, default: 0 },  // VES per USDT (parallel)
+    lastRateUpdate: { type: Date },
+
     // Storage
     storageProvider: {
       type: String,

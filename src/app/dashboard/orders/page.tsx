@@ -28,10 +28,14 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [tz, setTz] = useState("-04:00");
+  const [bcvRate, setBcvRate] = useState(0);
 
   useEffect(() => {
     fetch("/api/backoffice/config").then((r) => r.json()).then((cfg) => {
       if (cfg?.timezone) setTz(cfg.timezone);
+    }).catch(() => {});
+    fetch("/api/backoffice/exchange-rate").then((r) => r.json()).then((d) => {
+      if (d.exchangeRateBcv) setBcvRate(d.exchangeRateBcv);
     }).catch(() => {});
   }, []);
 

@@ -74,6 +74,8 @@ export default function ProductsPage() {
   const perPage = 10;
 
   const { t } = useT();
+  const [bcvRate, setBcvRate] = useState(0);
+  const [usdtRate, setUsdtRate] = useState(0);
 
   const filtered = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()),
@@ -85,6 +87,10 @@ export default function ProductsPage() {
     Promise.all([
       fetch("/api/backoffice/products").then((r) => r.json()),
       fetch("/api/backoffice/categories").then((r) => r.json()),
+      fetch("/api/backoffice/exchange-rate").then((r) => r.json()).then((d) => {
+        setBcvRate(d.exchangeRateBcv || 0);
+        setUsdtRate(d.exchangeRateUsdt || 0);
+      }).catch(() => {}),
     ]).then(([products, categories]) => {
       setProducts(products);
       setCategories(categories);
@@ -178,7 +184,10 @@ export default function ProductsPage() {
                   <TableCell className="text-muted-foreground">
                     {typeof p.categoryId === "string" ? p.categoryId : p.categoryId?.name}
                   </TableCell>
-                  <TableCell>${p.price}</TableCell>
+                  <TableCell>
+                    <span className="font-semibold">{bcvRate > 0 ? `Bs ${(p.price * bcvRate).toLocaleString("es-VE", { minimumFractionDigits: 2 })}` : `$${p.price}`}</span>
+                    <span className="text-xs text-muted-foreground ml-1">/ ${p.price}</span>
+                  </TableCell>
                   <TableCell className="capitalize">{p.type}</TableCell>
                   <TableCell>
                     <div className="flex gap-1">

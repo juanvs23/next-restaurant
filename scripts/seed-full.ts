@@ -139,7 +139,7 @@ async function main() {
     defaultDeliveryCost: 5,
     paymentMethods: ["cash", "card", "debit", "credit", "transfer", "pago-movil", "invoice"],
     nonWorkingDays: [0], holidays: [], defaultLanguage: "es",
-    timezone: "-04:00", nextInvoiceNumber: 1, nextCreditNoteNumber: 1,
+    timezone: "-04:00", exchangeRateBcv: 60, exchangeRateUsdt: 62, nextInvoiceNumber: 1, nextCreditNoteNumber: 1,
     storageProvider: "local",
     s3Config: { accessKeyId: "", secretAccessKey: "", region: "", bucket: "", endpoint: "" },
     createdAt: new Date(), updatedAt: new Date(),
