@@ -7,6 +7,7 @@ import NewBillDialog from "@/components/dashboard/billing/NewBillDialog";
 import EditBillDialog from "@/components/dashboard/billing/EditBillDialog";
 import CreditNoteDialog from "@/components/dashboard/billing/CreditNoteDialog";
 import InvoiceDetailDialog from "@/components/dashboard/billing/InvoiceDetailDialog";
+import DayOrdersDialog from "@/components/dashboard/billing/DayOrdersDialog";
 import TodayView from "@/components/dashboard/billing/TodayView";
 import HistoryView from "@/components/dashboard/billing/HistoryView";
 import { BillingProvider } from "@/components/dashboard/billing/BillingContext";
@@ -52,6 +53,8 @@ export default function OrdersPage() {
   const [cnOrder, setCnOrder] = useState<any>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailOrder, setDetailOrder] = useState<any>(null);
+  const [detailDayOrders, setDetailDayOrders] = useState<any[]>([]);
+  const [detailDayOpen, setDetailDayOpen] = useState(false);
 
   // History filters
   const [closedDays, setClosedDays] = useState<any[]>([]);
@@ -166,7 +169,19 @@ export default function OrdersPage() {
 
   const openEdit = (bill: any) => { setEditingBill(bill); setEditOpen(true); };
   const openCreditNote = (order: any) => { setCnOrder(order); setCnOpen(true); };
-  const handleDetail = (order: any) => { setDetailOrder(order); setDetailOpen(true); };
+  const handleDetail = (order: any) => {
+    setDetailOrder(order);
+    setDetailOpen(true);
+  };
+
+  const handleDayDetail = (order: any) => {
+    const orderDate = new Date(order.createdAt).toLocaleDateString();
+    const dayOrders = orders.filter((o) =>
+      new Date(o.createdAt).toLocaleDateString() === orderDate,
+    );
+    setDetailDayOrders(dayOrders);
+    setDetailDayOpen(true);
+  };
 
   const displayOrders = tab === 0
     ? orders.filter((o) => {
@@ -214,12 +229,13 @@ export default function OrdersPage() {
             totalPages={totalPages} paginated={paginated} closedDays={closedDays}
             hDateFrom={hDateFrom} setHDateFrom={setHDateFrom} hDateTo={hDateTo} setHDateTo={setHDateTo}
             hSearch={hSearch} setHSearch={setHSearch} hInvNum={hInvNum} setHInvNum={setHInvNum}
-            onSearch={handleHistorySearch} onReset={handleHistoryReset} onDetail={handleDetail}
+            onSearch={handleHistorySearch} onReset={handleHistoryReset} onDetail={handleDetail} onDayDetail={handleDayDetail}
             bcvRate={bcvRate} />
         )}
 
         <InvoiceDetailDialog open={detailOpen} onOpenChange={setDetailOpen} order={detailOrder}
           onRefresh={() => { tab === 0 ? fetchOrders("?unclosedOnly=true") : handleHistorySearch(); }} />
+        <DayOrdersDialog open={detailDayOpen} onOpenChange={setDetailDayOpen} orders={detailDayOrders} />
         <NewBillDialog open={newBillOpen} onOpenChange={setNewBillOpen}
           onBillCreated={() => { fetchOrders(tab === 0 ? "?unclosedOnly=true" : ""); }} />
         <EditBillDialog open={editOpen} onOpenChange={setEditOpen} bill={editingBill}

@@ -39,6 +39,7 @@ interface HistoryViewProps {
   onSearch: () => void;
   onReset: () => void;
   onDetail: (order: any) => void;
+  onDayDetail: (order: any) => void;
   bcvRate: number;
 }
 
@@ -59,6 +60,7 @@ export default function HistoryView({
   onSearch,
   onReset,
   onDetail,
+  onDayDetail,
   bcvRate,
 }: HistoryViewProps) {
   const { t } = useT();
@@ -232,7 +234,7 @@ export default function HistoryView({
                         size="sm"
                         variant="ghost"
                         className="h-7 text-xs"
-                        onClick={() => onDetail(o)}
+                        onClick={() => onDayDetail(o)}
                       >
                         {t("billing.details")}
                       </Button>
