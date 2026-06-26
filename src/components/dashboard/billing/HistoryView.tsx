@@ -104,7 +104,7 @@ export default function HistoryView({
             <CardTitle className="text-xs text-muted-foreground">{t("billing.taxesAndCharges") || "Taxes + charges"}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-bold">{fmt(totalTax + totalCharges)}</p>
+            <p className="text-xl font-bold">{formatVes(toVes(totalTax + totalCharges))}</p>
           </CardContent>
         </Card>
       </div>
