@@ -20,6 +20,7 @@ import OpenDayDialog from "@/components/dashboard/reports/OpenDayDialog";
 import CashAuditDialog from "@/components/dashboard/reports/CashAuditDialog";
 import ManualCloseDialog from "@/components/dashboard/reports/ManualCloseDialog";
 import CloseResultDialog from "@/components/dashboard/reports/CloseResultDialog";
+import DayOrdersDialog from "@/components/dashboard/billing/DayOrdersDialog";
 
 export default function ReportsPage() {
   const { t } = useT();
@@ -47,6 +48,8 @@ export default function ReportsPage() {
   const [openOpen, setOpenOpen] = useState(false);
   const [caOpen, setCaOpen] = useState(false);
   const [manualCloseOpen, setManualCloseOpen] = useState(false);
+  const [dayOrders, setDayOrders] = useState<any[]>([]);
+  const [dayOrdersOpen, setDayOrdersOpen] = useState(false);
 
   // Close by date
   const [closeDate, setCloseDate] = useState<string | null>(null);
@@ -107,6 +110,18 @@ export default function ReportsPage() {
       setCloseDateResult({ error: "Failed to close day" });
     }
     setCloseDateLoading(false);
+  };
+
+  const handleDayDetail = async (date: string) => {
+    try {
+      const res = await fetch(`/api/backoffice/orders?dateFrom=${date}&dateTo=${date}&status=paid`);
+      const orders = await res.json();
+      setDayOrders(Array.isArray(orders) ? orders : []);
+      setDayOrdersOpen(true);
+    } catch {
+      setDayOrders([]);
+      setDayOrdersOpen(true);
+    }
   };
 
   if (loading && !data) return <p className="text-muted-foreground">{t("common.loading")}</p>;
@@ -207,13 +222,14 @@ export default function ReportsPage() {
                 <TableHead className="text-right">{t("reports.charges")}</TableHead>
                 <TableHead className="text-right">{t("reports.totalTax")}</TableHead>
                 <TableHead className="text-right">{t("reports.revenue")}</TableHead>
+                <TableHead className="text-center">{t("common.actions")}</TableHead>
                 <TableHead className="text-right">{t("reports.status")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {(data?.byDay ?? []).length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                  <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
                     {t("reports.noPaidOrders")}
                   </TableCell>
                 </TableRow>
@@ -226,6 +242,12 @@ export default function ReportsPage() {
                     <TableCell className="text-right">{formatVes(toVes(d.charges))}</TableCell>
                     <TableCell className="text-right">{formatVes(toVes(d.tax))}</TableCell>
                     <TableCell className="text-right font-medium">{formatVes(toVes(d.revenue))}</TableCell>
+                    <TableCell className="text-center">
+                      <Button size="sm" variant="ghost" className="h-6 text-xs"
+                        onClick={() => handleDayDetail(d._id)}>
+                        {t("billing.details")}
+                      </Button>
+                    </TableCell>
                     <TableCell className="text-right">
                       {closedDates.has(d._id) ? (
                         <span className="text-xs bg-green-500/10 text-green-500 px-2 py-0.5 rounded">{t("reports.closed")}</span>
@@ -331,6 +353,7 @@ export default function ReportsPage() {
         closeDate={closeDate}
         onClose={() => setCloseDateResult(null)}
       />
+      <DayOrdersDialog open={dayOrdersOpen} onOpenChange={setDayOrdersOpen} orders={dayOrders} />
 
       {/* Close Day dialog (today) */}
       <Dialog open={closeOpen} onOpenChange={setCloseOpen}>
