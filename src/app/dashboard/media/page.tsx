@@ -50,7 +50,7 @@ export default function MediaPage() {
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   const fetchMedia = () => {
-    fetch("/api/media")
+    fetch("/api/backoffice/media")
       .then((r) => r.json())
       .then((d) => { setItems(d); setLoading(false); });
   };
@@ -60,7 +60,7 @@ export default function MediaPage() {
   const handleUploadUrl = async () => {
     if (!urlInput) return;
     const filename = urlInput.split("/").pop() || "image";
-    await fetch("/api/media", {
+    await fetch("/api/backoffice/media", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ filename, url: urlInput, mimeType: "image/*" }),
@@ -72,7 +72,7 @@ export default function MediaPage() {
 
   const handleSaveEdit = async () => {
     if (!selected) return;
-    await fetch(`/api/media/${selected._id}`, {
+    await fetch(`/api/backoffice/media/${selected._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -87,7 +87,7 @@ export default function MediaPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this image?")) return;
-    await fetch(`/api/media/${id}`, { method: "DELETE" });
+    await fetch(`/api/backoffice/media/${id}`, { method: "DELETE" });
     fetchMedia();
   };
 
@@ -139,7 +139,7 @@ export default function MediaPage() {
                 for (const file of Array.from(files)) {
                   const formData = new FormData();
                   formData.append("file", file);
-                  await fetch("/api/media", { method: "POST", body: formData });
+                  await fetch("/api/backoffice/media", { method: "POST", body: formData });
                 }
                 setUploadOpen(false);
                 fetchMedia();
@@ -154,7 +154,7 @@ export default function MediaPage() {
                   for (const file of Array.from(files)) {
                     const formData = new FormData();
                     formData.append("file", file);
-                    await fetch("/api/media", { method: "POST", body: formData });
+                    await fetch("/api/backoffice/media", { method: "POST", body: formData });
                   }
                   setUploadOpen(false);
                   fetchMedia();

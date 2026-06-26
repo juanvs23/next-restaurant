@@ -26,7 +26,7 @@ export default function CashAuditDialog({ open, onOpenChange, onClose }: CashAud
 
   useEffect(() => {
     if (open) {
-      fetch("/api/work-shifts").then((r) => r.json()).then(setWorkShifts);
+      fetch("/api/backoffice/work-shifts").then((r) => r.json()).then(setWorkShifts);
       setCaShiftId("");
       setCaDeclared(0);
       setCaNotes("");
@@ -37,7 +37,7 @@ export default function CashAuditDialog({ open, onOpenChange, onClose }: CashAud
   const handleCashAudit = async () => {
     setCaCreating(true);
     try {
-      const res = await fetch("/api/cash-audits", {
+      const res = await fetch("/api/backoffice/cash-audits", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

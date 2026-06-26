@@ -70,6 +70,10 @@
   "dashboard": {
     "title": "Panel de Control",
     "welcome": "Bienvenido",
+    "financialSummary": "Resumen Financiero",
+    "todayBalance": "Balance de Hoy",
+    "yesterdayBalance": "Balance de Ayer",
+    "monthBalance": "Balance del Mes",
     "totalOrders": "Órdenes totales",
     "revenue": "Ingresos",
     "avgTicket": "Ticket promedio",

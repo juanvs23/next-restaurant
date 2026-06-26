@@ -4,6 +4,7 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/database/connection";
 import { User } from "@/database/models/user";
+import { checkRateLimit, recordFailedAttempt, resetRateLimit } from "@/libs/auth/rate-limit";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -12,18 +13,37 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) return null;
 
+        const email = credentials.email as string;
+        const ip = req?.headers?.get("x-forwarded-for")?.split(",")[0]?.trim()
+          || req?.headers?.get("x-real-ip")
+          || "unknown";
+
+        const { allowed, remaining, resetIn } = checkRateLimit(email, ip);
+        if (!allowed) {
+          const mins = Math.ceil(resetIn / 60000);
+          throw new Error(`Too many attempts. Try again in ${mins} minute(s).`);
+        }
+
         await connectDB();
-        const user = await User.findOne({ email: credentials.email as string });
-        if (!user) return null;
+        const user = await User.findOne({ email });
+        if (!user) {
+          recordFailedAttempt(email, ip);
+          return null;
+        }
 
         const isValid = await bcrypt.compare(
           credentials.password as string,
           user.password || "",
         );
-        if (!isValid) return null;
+        if (!isValid) {
+          recordFailedAttempt(email, ip);
+          return null;
+        }
+
+        resetRateLimit(email, ip);
 
         return {
           id: user._id.toString(),
@@ -64,7 +84,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             googleId: account.providerAccountId,
             provider: account.provider,
             image: user.image,
-            role: userCount === 0 ? "admin" : "staff",
+            role: userCount === 0 ? "admin" : "user",
           });
         } else {
           existing.name = user.name ?? existing.name;

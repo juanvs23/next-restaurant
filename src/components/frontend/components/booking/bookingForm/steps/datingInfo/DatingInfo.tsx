@@ -21,7 +21,7 @@ export default function DatingInfo() {
     }
     setLoadingAvail(true);
     setAvailability(null);
-    fetch(`/api/availability?date=${dateTime}&arrival=${arrivalTime}&departure=${departureTime}`)
+    fetch(`/api/frontend/availability?date=${dateTime}&arrival=${arrivalTime}&departure=${departureTime}`)
       .then((r) => r.json())
       .then((data) => {
         setAvailability({ available: data.available || [], total: data.total || 0 });

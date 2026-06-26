@@ -44,7 +44,7 @@ export default function NewBillDialog({ open, onOpenChange, onBillCreated }: New
 
   useEffect(() => {
     if (!open) return;
-    fetch("/api/comandas").then((r) => r.json()).then((cs) => {
+    fetch("/api/backoffice/comandas").then((r) => r.json()).then((cs) => {
       const openCs = cs.filter((c: any) => c.status === "open");
       setComandas(openCs);
       setForm({
@@ -58,9 +58,9 @@ export default function NewBillDialog({ open, onOpenChange, onBillCreated }: New
       setCurrentPmFields([]);
     });
     Promise.all([
-      fetch("/api/charges").then((r) => r.json()),
-      fetch("/api/payment-methods").then((r) => r.json()),
-      fetch("/api/cash-registers").then((r) => r.json()),
+      fetch("/api/backoffice/charges").then((r) => r.json()),
+      fetch("/api/backoffice/payment-methods").then((r) => r.json()),
+      fetch("/api/backoffice/cash-registers").then((r) => r.json()),
     ]).then(([charges, methods, registers]) => {
       setChargeDefs(charges);
       setPmMethods(methods.filter((m: any) => m.active));
@@ -76,7 +76,7 @@ export default function NewBillDialog({ open, onOpenChange, onBillCreated }: New
       return;
     }
     const comanda = comandas.find((c) => c._id === comandaId);
-    const res = await fetch(`/api/pedidos?comandaId=${comandaId}`);
+    const res = await fetch(`/api/backoffice/pedidos?comandaId=${comandaId}`);
     const ps = await res.json();
     setPedidos(ps);
 
@@ -113,7 +113,7 @@ export default function NewBillDialog({ open, onOpenChange, onBillCreated }: New
   };
 
   const handleCreate = async () => {
-    await fetch("/api/orders", {
+    await fetch("/api/backoffice/orders", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         comandaId: form.comandaId || undefined,

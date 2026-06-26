@@ -45,14 +45,14 @@ export default function TurnsPage() {
   const totalPages = Math.ceil(filtered.length / perPage);
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
-  const loadTurns = () => { fetch("/api/turns").then(r => r.json()).then(d => { setItems(d); setLoading(false); }); };
+  const loadTurns = () => { fetch("/api/backoffice/turns").then(r => r.json()).then(d => { setItems(d); setLoading(false); }); };
   useEffect(loadTurns, []);
 
   const openCreate = () => { setForm({ ...emptyForm }); setEditingId(null); setOpen(true); };
   const openEdit = (t: TurnItem) => { setForm(t); setEditingId(t._id); setOpen(true); };
 
   const handleSave = async () => {
-    const url = editingId ? `/api/turns/${editingId}` : "/api/turns";
+    const url = editingId ? `/api/backoffice/turns/${editingId}` : "/api/backoffice/turns";
     await fetch(url, {
       method: editingId ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
@@ -63,7 +63,7 @@ export default function TurnsPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm(t("common.confirmDelete"))) return;
-    await fetch(`/api/turns/${id}`, { method: "DELETE" }); loadTurns();
+    await fetch(`/api/backoffice/turns/${id}`, { method: "DELETE" }); loadTurns();
   };
 
   if (loading) return <p className="text-muted-foreground">{t("common.loading")}</p>;

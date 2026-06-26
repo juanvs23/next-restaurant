@@ -5,6 +5,12 @@ import { Config } from "@/database/models/config";
 import { auth } from "@/app/auth";
 import { NextRequest, NextResponse } from "next/server";
 
+export async function GET() {
+  await connectDB();
+  const notes = await CreditNote.find().sort({ createdAt: -1 });
+  return NextResponse.json(notes);
+}
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.role || !["admin", "staff"].includes(session.role)) {

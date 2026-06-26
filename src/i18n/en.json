@@ -70,6 +70,10 @@
   "dashboard": {
     "title": "Dashboard",
     "welcome": "Welcome",
+    "financialSummary": "Financial Summary",
+    "todayBalance": "Today's Balance",
+    "yesterdayBalance": "Yesterday's Balance",
+    "monthBalance": "Month's Balance",
     "totalOrders": "Total orders",
     "revenue": "Revenue",
     "avgTicket": "Avg ticket",

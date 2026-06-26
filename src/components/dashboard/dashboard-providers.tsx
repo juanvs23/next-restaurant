@@ -7,7 +7,7 @@ export function DashboardProviders({ children }: { children: React.ReactNode }) 
   const [locale, setLocale] = useState("es");
 
   useEffect(() => {
-    fetch("/api/config")
+    fetch("/api/backoffice/config")
       .then((r) => r.json())
       .then((cfg) => {
         if (cfg?.defaultLanguage) setLocale(cfg.defaultLanguage);

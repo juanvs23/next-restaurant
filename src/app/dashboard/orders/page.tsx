@@ -30,7 +30,7 @@ export default function OrdersPage() {
   const [tz, setTz] = useState("-04:00");
 
   useEffect(() => {
-    fetch("/api/config").then((r) => r.json()).then((cfg) => {
+    fetch("/api/backoffice/config").then((r) => r.json()).then((cfg) => {
       if (cfg?.timezone) setTz(cfg.timezone);
     }).catch(() => {});
   }, []);
@@ -63,7 +63,7 @@ export default function OrdersPage() {
 
   const fetchOrders = (params?: string) => {
     setLoading(true);
-    fetch(`/api/orders${params || ""}`).then((r) => r.json()).then((d) => {
+    fetch(`/api/backoffice/orders${params || ""}`).then((r) => r.json()).then((d) => {
       setOrders(d);
       setLoading(false);
     }).catch(() => setLoading(false));
@@ -72,10 +72,10 @@ export default function OrdersPage() {
   // Today: load unclosed orders
   useEffect(() => {
     if (tab !== 0) return;
-    fetch("/api/day-closings").then((r) => r.json()).then((closed) => {
+    fetch("/api/backoffice/day-closings").then((r) => r.json()).then((closed) => {
       const closedDates = new Set(closed.map((c: any) => c.date));
       setTodayClosed(closedDates.has(todayLocal));
-      fetch("/api/orders?unclosedOnly=true").then((r) => r.json()).then((orders) => {
+      fetch("/api/backoffice/orders?unclosedOnly=true").then((r) => r.json()).then((orders) => {
         setOrders(orders);
         const dates = new Set<string>();
         orders.forEach((o: any) => {
@@ -91,7 +91,7 @@ export default function OrdersPage() {
   // History: load closed days
   useEffect(() => {
     if (tab !== 1) return;
-    fetch("/api/day-closings").then((r) => r.json()).then((days) => {
+    fetch("/api/backoffice/day-closings").then((r) => r.json()).then((days) => {
       setClosedDays(days);
       if (days.length > 0) {
         const latest = days[0].date;
@@ -124,14 +124,14 @@ export default function OrdersPage() {
   };
 
   const apiFetch = async (id: string, body: any) =>
-    fetch(`/api/orders/${id}`, {
+    fetch(`/api/backoffice/orders/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
 
   const comandaFetch = async (id: string, body: any) =>
-    fetch(`/api/comandas/${id}`, {
+    fetch(`/api/backoffice/comandas/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),

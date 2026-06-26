@@ -42,7 +42,7 @@ export default function CategoriesPage() {
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   const fetchCategories = () => {
-    fetch("/api/categories")
+    fetch("/api/backoffice/categories")
       .then((r) => r.json())
       .then((d) => { setCategories(d); setLoading(false); });
   };
@@ -53,7 +53,7 @@ export default function CategoriesPage() {
   const openEdit = (c: Category) => { setForm({ name: c.name, description: c.description || "", image: c.image || "" }); setEditingId(c._id); setOpen(true); };
 
   const handleSave = async () => {
-    const url = editingId ? `/api/categories/${editingId}` : "/api/categories";
+    const url = editingId ? `/api/backoffice/categories/${editingId}` : "/api/backoffice/categories";
     const method = editingId ? "PUT" : "POST";
 
     await fetch(url, {
@@ -68,7 +68,7 @@ export default function CategoriesPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm(t("common.confirmDelete"))) return;
-    await fetch(`/api/categories/${id}`, { method: "DELETE" });
+    await fetch(`/api/backoffice/categories/${id}`, { method: "DELETE" });
     fetchCategories();
   };
 

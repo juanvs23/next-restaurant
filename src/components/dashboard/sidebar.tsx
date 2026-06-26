@@ -20,10 +20,23 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "./theme-provider";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useT } from "@/i18n/useT";
 
-const navItems = [
+const adminOnly = new Set([
+  "/dashboard/users",
+  "/dashboard/tables",
+  "/dashboard/turns",
+  "/dashboard/config",
+]);
+
+interface NavItem {
+  labelKey: string;
+  path: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+const navItems: NavItem[] = [
   { labelKey: "nav.dashboard", path: "/dashboard", icon: LayoutDashboard },
   { labelKey: "nav.products", path: "/dashboard/products", icon: Package },
   { labelKey: "nav.categories", path: "/dashboard/categories", icon: Tags },
@@ -42,6 +55,12 @@ const navItems = [
 export function Sidebar() {
   const { theme, toggle } = useTheme();
   const { t } = useT();
+  const { data: session } = useSession();
+  const role = session?.role;
+
+  const visibleItems = navItems.filter(
+    (item) => role === "admin" || !adminOnly.has(item.path),
+  );
 
   return (
     <aside className="w-64 border-r bg-card p-4 flex flex-col gap-6">
@@ -53,7 +72,7 @@ export function Sidebar() {
       </Link>
 
       <nav className="flex flex-col gap-1 flex-1">
-        {navItems.map((item) => {
+        {visibleItems.map((item) => {
           const Icon = item.icon;
           return (
             <Button

@@ -24,7 +24,7 @@ export default function CalendarInput({ func }: { func: (value: string) => void 
 
   // Load config for non-working days and holidays
   useEffect(() => {
-    fetch("/api/config")
+    fetch("/api/frontend/config")
       .then((r) => r.json())
       .then((cfg) => {
         if (cfg.nonWorkingDays) setClosedDays(cfg.nonWorkingDays);
@@ -41,7 +41,7 @@ export default function CalendarInput({ func }: { func: (value: string) => void 
 
     Promise.all(
       dates.map((d) =>
-        fetch(`/api/availability?date=${d}&persons=2`)
+        fetch(`/api/frontend/availability?date=${d}&persons=2`)
           .then((r) => r.json())
           .then((data) => ({ date: d, available: (data.available?.length || 0) > 0 }))
           .catch(() => ({ date: d, available: true })),

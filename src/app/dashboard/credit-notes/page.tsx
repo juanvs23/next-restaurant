@@ -14,7 +14,7 @@ export default function CreditNotesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/credit-notes")
+    fetch("/api/backoffice/credit-notes")
       .then((r) => r.json())
       .then(setNotes)
       .finally(() => setLoading(false));

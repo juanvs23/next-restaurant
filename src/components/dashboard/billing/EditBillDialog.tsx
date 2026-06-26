@@ -27,7 +27,7 @@ export default function EditBillDialog({ open, onOpenChange, bill, onSaved }: Ed
 
   useEffect(() => {
     if (!open || !bill) return;
-    fetch("/api/payment-methods").then((r) => r.json()).then((methods) => {
+    fetch("/api/backoffice/payment-methods").then((r) => r.json()).then((methods) => {
       const active = methods.filter((m: any) => m.active);
       setPmMethods(active);
       const pm = active.find((m: any) => m.type === (bill.paymentType || bill.paymentMethod));
@@ -45,7 +45,7 @@ export default function EditBillDialog({ open, onOpenChange, bill, onSaved }: Ed
   const handleEditSave = async () => {
     if (!bill) return;
     const pm = pmMethods.find((m: any) => m.type === editForm.paymentMethod);
-    await fetch(`/api/orders/${bill._id}`, {
+    await fetch(`/api/backoffice/orders/${bill._id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

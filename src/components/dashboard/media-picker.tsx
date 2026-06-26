@@ -26,7 +26,7 @@ async function uploadFile(file: File): Promise<string | null> {
   try {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await fetch("/api/media", { method: "POST", body: formData });
+    const res = await fetch("/api/backoffice/media", { method: "POST", body: formData });
     if (!res.ok) return null;
     const media = await res.json();
     return media.url;
@@ -44,7 +44,7 @@ export function MediaPicker({ value, onChange, label = "Image" }: MediaPickerPro
 
   useEffect(() => {
     if (open) {
-      fetch("/api/media").then((r) => r.json()).then(setItems);
+      fetch("/api/backoffice/media").then((r) => r.json()).then(setItems);
     }
   }, [open]);
 

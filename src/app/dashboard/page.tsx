@@ -1,12 +1,50 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, CalendarDays, Users } from "lucide-react";
+import { Package, CalendarDays, Users, DollarSign, TrendingUp, Clock } from "lucide-react";
 import { useT } from "@/i18n/useT";
+
+function todayStr(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function yesterdayStr(): string {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function monthStartStr(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
+}
+
+function fmt(n: number | null): string {
+  return n !== null ? `$${n.toFixed(2)}` : "—";
+}
+
+async function fetchSum(url: string): Promise<number | null> {
+  try {
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    const data: any[] = await r.json();
+    if (!Array.isArray(data)) return null;
+    return data.reduce((sum, o) => sum + (o.total || 0), 0);
+  } catch {
+    return null;
+  }
+}
 
 export default function DashboardHome() {
   const { t } = useT();
   const [userName, setUserName] = useState("");
+  const [productCount, setProductCount] = useState<number | null>(null);
+  const [bookingCount, setBookingCount] = useState<number | null>(null);
+  const [userCount, setUserCount] = useState<number | null>(null);
+  const [todayTotal, setTodayTotal] = useState<number | null>(null);
+  const [yesterdayTotal, setYesterdayTotal] = useState<number | null>(null);
+  const [monthTotal, setMonthTotal] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/auth/session")
@@ -17,10 +55,31 @@ export default function DashboardHome() {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    const today = todayStr();
+    const yesterday = yesterdayStr();
+    const monthStart = monthStartStr();
+
+    Promise.all([
+      fetch("/api/backoffice/products").then((r) => r.ok ? r.json() : null).then((d) => setProductCount(Array.isArray(d) ? d.length : null)),
+      fetch("/api/backoffice/bookings").then((r) => r.ok ? r.json() : null).then((d) => setBookingCount(Array.isArray(d) ? d.length : null)),
+      fetch("/api/backoffice/users").then((r) => r.ok ? r.json() : null).then((d) => setUserCount(Array.isArray(d) ? d.length : null)),
+      fetchSum(`/api/backoffice/orders?dateFrom=${today}&dateTo=${today}&status=paid`).then(setTodayTotal),
+      fetchSum(`/api/backoffice/orders?dateFrom=${yesterday}&dateTo=${yesterday}&status=paid`).then(setYesterdayTotal),
+      fetchSum(`/api/backoffice/orders?dateFrom=${monthStart}&dateTo=${today}&status=paid`).then(setMonthTotal),
+    ]);
+  }, []);
+
   const stats = [
-    { labelKey: "nav.products", icon: Package, value: "—", href: "/dashboard/products" },
-    { labelKey: "nav.bookings", icon: CalendarDays, value: "—", href: "/dashboard/bookings" },
-    { labelKey: "nav.users", icon: Users, value: "—", href: "/dashboard/users" },
+    { labelKey: "nav.products", icon: Package, value: productCount !== null ? String(productCount) : "—", href: "/dashboard/products" },
+    { labelKey: "nav.bookings", icon: CalendarDays, value: bookingCount !== null ? String(bookingCount) : "—", href: "/dashboard/bookings" },
+    { labelKey: "nav.users", icon: Users, value: userCount !== null ? String(userCount) : "—", href: "/dashboard/users" },
+  ];
+
+  const finances = [
+    { label: "dashboard.todayBalance", icon: DollarSign, value: fmt(todayTotal) },
+    { label: "dashboard.yesterdayBalance", icon: Clock, value: fmt(yesterdayTotal) },
+    { label: "dashboard.monthBalance", icon: TrendingUp, value: fmt(monthTotal) },
   ];
 
   return (
@@ -49,6 +108,26 @@ export default function DashboardHome() {
                 </CardContent>
               </Card>
             </a>
+          );
+        })}
+      </div>
+
+      <h2 className="text-xl font-semibold tracking-tight">{t("dashboard.financialSummary")}</h2>
+      <div className="grid gap-4 md:grid-cols-3">
+        {finances.map((f) => {
+          const Icon = f.icon;
+          return (
+            <Card key={f.label}>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {t(f.label)}
+                </CardTitle>
+                <Icon className="w-4 h-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold">{f.value}</p>
+              </CardContent>
+            </Card>
           );
         })}
       </div>

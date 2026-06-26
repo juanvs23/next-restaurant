@@ -26,7 +26,7 @@ export default function CreditNoteDialog({ open, onOpenChange, order, onIssued }
     if (!cnForm.reason.trim()) return;
     setCnCreating(true);
     try {
-      const res = await fetch("/api/credit-notes", {
+      const res = await fetch("/api/backoffice/credit-notes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

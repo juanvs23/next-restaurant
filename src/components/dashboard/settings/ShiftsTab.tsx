@@ -23,7 +23,7 @@ export function ShiftsTab() {
   });
 
   const fetchWorkShifts = () => {
-    fetch("/api/work-shifts").then((r) => r.json()).then(setWorkShifts);
+    fetch("/api/backoffice/work-shifts").then((r) => r.json()).then(setWorkShifts);
   };
 
   useEffect(() => { fetchWorkShifts(); }, []);
@@ -42,7 +42,7 @@ export function ShiftsTab() {
 
   const saveWs = async () => {
     const payload = { ...wsForm, sortOrder: Number(wsForm.sortOrder) };
-    await fetch(editingWsId ? `/api/work-shifts/${editingWsId}` : "/api/work-shifts", {
+    await fetch(editingWsId ? `/api/backoffice/work-shifts/${editingWsId}` : "/api/backoffice/work-shifts", {
       method: editingWsId ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -53,7 +53,7 @@ export function ShiftsTab() {
 
   const deleteWs = async (id: string) => {
     if (!confirm(t("settings.deleteWorkShiftConfirm"))) return;
-    await fetch(`/api/work-shifts/${id}`, { method: "DELETE" });
+    await fetch(`/api/backoffice/work-shifts/${id}`, { method: "DELETE" });
     fetchWorkShifts();
   };
 

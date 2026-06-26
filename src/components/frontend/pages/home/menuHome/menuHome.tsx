@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { getSlidesContents } from "@/app/api/slidesContents";
+import { getSlidesContents } from "@/libs/data/slidesContents";
 import { SlideMenuSection } from "@/types/sections";
 import BackgroundImage from "@/public/menu/bg.jpg";
 

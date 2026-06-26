@@ -60,14 +60,14 @@ export default function BookingsPage() {
   const perPage = 10;
 
   const fetchBookings = () => {
-    fetch("/api/bookings")
+    fetch("/api/backoffice/bookings")
       .then((r) => r.json())
       .then((d) => { setBookings(d); setLoading(false); });
   };
 
   useEffect(fetchBookings, []);
 
-  const openCreate = () => { setForm({ ...emptyForm }); setEditingId(null); setOpen(true); fetch("/api/tables").then(r=>r.json()).then(setTables); };
+  const openCreate = () => { setForm({ ...emptyForm }); setEditingId(null); setOpen(true); fetch("/api/backoffice/tables").then(r=>r.json()).then(setTables); };
 
   const openEdit = (b: Booking) => {
     setForm({
@@ -80,12 +80,12 @@ export default function BookingsPage() {
     });
     setEditingId(b._id);
     setOpen(true);
-    fetch("/api/tables").then(r=>r.json()).then(setTables);
+    fetch("/api/backoffice/tables").then(r=>r.json()).then(setTables);
   };
 
   const handleSave = async () => {
     const payload = { ...form, numberPersons: Number(form.numberPersons) };
-    const url = editingId ? `/api/bookings/${editingId}` : "/api/bookings";
+    const url = editingId ? `/api/backoffice/bookings/${editingId}` : "/api/backoffice/bookings";
     const method = editingId ? "PUT" : "POST";
 
     await fetch(url, {
@@ -98,7 +98,7 @@ export default function BookingsPage() {
   };
 
   const updateStatus = async (id: string, status: string) => {
-    await fetch(`/api/bookings/${id}`, {
+    await fetch(`/api/backoffice/bookings/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),

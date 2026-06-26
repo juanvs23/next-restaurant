@@ -61,7 +61,7 @@ export default function UsersPage() {
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   const fetchUsers = () => {
-    fetch("/api/users")
+    fetch("/api/backoffice/users")
       .then((r) => r.json())
       .then((d) => { setUsers(d); setLoading(false); });
   };
@@ -77,7 +77,7 @@ export default function UsersPage() {
   };
 
   const handleCreate = async () => {
-    await fetch("/api/users", {
+    await fetch("/api/backoffice/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
@@ -90,7 +90,7 @@ export default function UsersPage() {
     if (!editId) return;
     const payload: any = { name: editForm.name, email: editForm.email, role: editForm.role };
     if (editForm.password) payload.password = editForm.password;
-    await fetch(`/api/users/${editId}`, {
+    await fetch(`/api/backoffice/users/${editId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -100,7 +100,7 @@ export default function UsersPage() {
   };
 
   const toggleActive = async (id: string, current: boolean) => {
-    await fetch(`/api/users/${id}`, {
+    await fetch(`/api/backoffice/users/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ active: !current }),
@@ -109,7 +109,7 @@ export default function UsersPage() {
   };
 
   const updateRole = async (id: string, role: string) => {
-    await fetch(`/api/users/${id}`, {
+    await fetch(`/api/backoffice/users/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ role }),

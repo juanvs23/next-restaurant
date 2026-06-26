@@ -83,8 +83,8 @@ export default function ProductsPage() {
 
   const fetchData = () => {
     Promise.all([
-      fetch("/api/products").then((r) => r.json()),
-      fetch("/api/categories").then((r) => r.json()),
+      fetch("/api/backoffice/products").then((r) => r.json()),
+      fetch("/api/backoffice/categories").then((r) => r.json()),
     ]).then(([products, categories]) => {
       setProducts(products);
       setCategories(categories);
@@ -94,8 +94,8 @@ export default function ProductsPage() {
 
   const fetchDialogData = () => {
     Promise.all([
-      fetch("/api/turns").then(r => r.json()),
-      fetch("/api/taxes").then(r => r.json()),
+      fetch("/api/backoffice/turns").then(r => r.json()),
+      fetch("/api/backoffice/taxes").then(r => r.json()),
     ]).then(([turns, taxes]) => {
       setTurns(turns);
       setTaxes(taxes.filter((t: Tax) => t.scope === "product"));
@@ -132,7 +132,7 @@ export default function ProductsPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm(t("common.confirmDelete"))) return;
-    await fetch(`/api/products/${id}`, { method: "DELETE" });
+    await fetch(`/api/backoffice/products/${id}`, { method: "DELETE" });
     fetchData();
   };
 

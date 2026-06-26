@@ -36,8 +36,8 @@ export function TaxTab({ form, setForm }: TaxTabProps) {
 
   const fetchTaxes = () => {
     Promise.all([
-      fetch("/api/taxes").then((r) => r.json()),
-      fetch("/api/categories").then((r) => r.json()),
+      fetch("/api/backoffice/taxes").then((r) => r.json()),
+      fetch("/api/backoffice/categories").then((r) => r.json()),
     ]).then(([ts, cats]) => {
       setTaxes(ts);
       setCategories(cats);
@@ -66,7 +66,7 @@ export function TaxTab({ form, setForm }: TaxTabProps) {
 
   const saveTax = async () => {
     const payload = { ...taxForm, rate: Number(taxForm.rate), categoryIds: taxForm.scope === "product" ? taxForm.categoryIds : [] };
-    await fetch(editingTaxId ? `/api/taxes/${editingTaxId}` : "/api/taxes", {
+    await fetch(editingTaxId ? `/api/backoffice/taxes/${editingTaxId}` : "/api/backoffice/taxes", {
       method: editingTaxId ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -77,7 +77,7 @@ export function TaxTab({ form, setForm }: TaxTabProps) {
 
   const deleteTax = async (id: string) => {
     if (!confirm(t("settings.deleteTaxConfirm"))) return;
-    await fetch(`/api/taxes/${id}`, { method: "DELETE" });
+    await fetch(`/api/backoffice/taxes/${id}`, { method: "DELETE" });
     fetchTaxes();
   };
 

@@ -70,7 +70,7 @@ export function ProductFormDialog({
       taxIds: form.taxIds,
     };
 
-    await fetch(editingId ? `/api/products/${editingId}` : "/api/products", {
+    await fetch(editingId ? `/api/backoffice/products/${editingId}` : "/api/products", {
       method: editingId ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

@@ -27,14 +27,14 @@ export default function OpenDayDialog({ open, onOpenChange, onClose, onCloseDate
     if (open) {
       setOpenResult(null);
       setOpenShiftId("");
-      fetch("/api/work-shifts").then((r) => r.json()).then(setWorkShifts);
+      fetch("/api/backoffice/work-shifts").then((r) => r.json()).then(setWorkShifts);
     }
   }, [open]);
 
   const handleOpenDay = async () => {
     setOpening(true);
     try {
-      const res = await fetch("/api/day-opening", {
+      const res = await fetch("/api/backoffice/day-opening", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ workShiftId: openShiftId || undefined }),

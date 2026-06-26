@@ -25,7 +25,7 @@ export default function ConfigPage() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    fetch("/api/config")
+    fetch("/api/backoffice/config")
       .then((r) => r.json())
       .then((d) => {
         setConfig(d);
@@ -60,7 +60,7 @@ export default function ConfigPage() {
 
   const handleSave = async () => {
     setSaving(true);
-    await fetch("/api/config", {
+    await fetch("/api/backoffice/config", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),

@@ -207,6 +207,26 @@ npm run test:e2e         # correr tests
 | NEXT_PUBLIC_BASE_URL | Public base URL |
 | TZ | Server timezone (e.g. America/Caracas) |
 
+## Seed Data (`scripts/seed-full.ts`)
+
+| Concepto | Cantidad | Notas |
+|----------|----------|-------|
+| Categorías | 10 | Con imágenes Unsplash de alimentos reales |
+| Productos | 30 | Con imágenes Unsplash específicas por producto |
+| Mesas | 12 | 6 ubicaciones distintas |
+| Reservas | 20 | Pasadas y futuras |
+| Facturas | ~95 | 14 días hábiles de operación |
+| Usuarios | 3 | admin@gericht.com / staff@gericht.com + Google |
+| Días cerrados | 12 | Ayer y hoy abiertos |
+
+### Categorías
+Entradas, Sopas, Ensaladas, Platos Principales, Pastas, Carnes, Pescados & Mariscos, Postres, Bebidas, Panadería
+
+### Roles y accesos
+- **admin**: todo
+- **staff**: dashboard, products, categories, media, bookings, comanda, orders, reports, credit-notes
+- **staff NO ve en sidebar**: users, tables, turns, config
+
 ## MongoDB
 
 - **Version**: 7.0.37 LTS (service: mongod7)

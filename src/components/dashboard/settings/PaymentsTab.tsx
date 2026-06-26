@@ -34,11 +34,11 @@ export function PaymentsTab() {
   const [regForm, setRegForm] = useState({ name: "", active: true, sortOrder: 0 });
 
   const fetchPaymentMethods = () => {
-    fetch("/api/payment-methods").then((r) => r.json()).then(setPmMethods);
+    fetch("/api/backoffice/payment-methods").then((r) => r.json()).then(setPmMethods);
   };
 
   const fetchRegisters = () => {
-    fetch("/api/cash-registers").then((r) => r.json()).then(setRegisters);
+    fetch("/api/backoffice/cash-registers").then((r) => r.json()).then(setRegisters);
   };
 
   useEffect(() => { fetchPaymentMethods(); fetchRegisters(); }, []);
@@ -68,7 +68,7 @@ export function PaymentsTab() {
     setPmError("");
     if (!pmForm.label.trim()) { setPmError(t("settings.labelRequired")); return; }
     const payload = { ...pmForm, label: pmForm.label.trim() };
-    const res = await fetch(editingPmId ? `/api/payment-methods/${editingPmId}` : "/api/payment-methods", {
+    const res = await fetch(editingPmId ? `/api/backoffice/payment-methods/${editingPmId}` : "/api/backoffice/payment-methods", {
       method: editingPmId ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -84,7 +84,7 @@ export function PaymentsTab() {
 
   const deletePm = async (id: string) => {
     if (!confirm(t("settings.deletePaymentMethodConfirm"))) return;
-    const res = await fetch(`/api/payment-methods/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/backoffice/payment-methods/${id}`, { method: "DELETE" });
     if (!res.ok) {
       const err = await res.json();
       alert(err.error);
@@ -121,7 +121,7 @@ export function PaymentsTab() {
     setRegOpen(true);
   };
   const saveReg = async () => {
-    await fetch(editingRegId ? `/api/cash-registers/${editingRegId}` : "/api/cash-registers", {
+    await fetch(editingRegId ? `/api/backoffice/cash-registers/${editingRegId}` : "/api/backoffice/cash-registers", {
       method: editingRegId ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(regForm),
@@ -131,7 +131,7 @@ export function PaymentsTab() {
   };
   const deleteReg = async (id: string) => {
     if (!confirm(t("common.confirmDelete"))) return;
-    await fetch(`/api/cash-registers/${id}`, { method: "DELETE" });
+    await fetch(`/api/backoffice/cash-registers/${id}`, { method: "DELETE" });
     fetchRegisters();
   };
 

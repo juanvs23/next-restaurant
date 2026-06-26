@@ -1,10 +1,13 @@
 import { connectDB } from "@/database/connection";
 import { Category } from "@/database/models/category";
 import { Product } from "@/database/models/product";
+import { requireRole } from "@/libs/auth/require-role";
 import { NextResponse } from "next/server";
-import { menu } from "../menu";
+import { menu } from "@/libs/data/menu";
 
 export async function POST() {
+  const error = await requireRole("admin");
+  if (error) return error;
   await connectDB();
 
   // 1. Create categories

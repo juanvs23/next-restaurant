@@ -45,7 +45,7 @@ export default function ReportsPage() {
 
   const fetchReports = () => {
     setLoading(true);
-    fetch(`/api/reports?year=${year}&month=${month}`)
+    fetch(`/api/backoffice/reports?year=${year}&month=${month}`)
       .then((r) => r.json())
       .then(setData)
       .finally(() => setLoading(false));
@@ -65,7 +65,7 @@ export default function ReportsPage() {
   const handleCloseDay = async () => {
     setClosing(true);
     try {
-      const res = await fetch("/api/reports/close", { method: "POST" });
+      const res = await fetch("/api/backoffice/reports/close", { method: "POST" });
       const result = await res.json();
       if (!res.ok) {
         setCloseResult({ error: result.error });
@@ -84,7 +84,7 @@ export default function ReportsPage() {
     setCloseDateResult(null);
     setCloseDateLoading(true);
     try {
-      const res = await fetch("/api/reports/close", {
+      const res = await fetch("/api/backoffice/reports/close", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date }),

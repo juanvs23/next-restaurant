@@ -31,7 +31,7 @@ export function ChargesTab() {
   });
 
   const fetchCharges = () => {
-    fetch("/api/charges").then((r) => r.json()).then(setCharges);
+    fetch("/api/backoffice/charges").then((r) => r.json()).then(setCharges);
   };
 
   useEffect(() => { fetchCharges(); }, []);
@@ -61,7 +61,7 @@ export function ChargesTab() {
       applyTo: chargeForm.scope === "global" ? chargeForm.applyTo : [],
       categoryIds: chargeForm.scope === "product" ? chargeForm.categoryIds : [],
     };
-    await fetch(editingChargeId ? `/api/charges/${editingChargeId}` : "/api/charges", {
+    await fetch(editingChargeId ? `/api/backoffice/charges/${editingChargeId}` : "/api/backoffice/charges", {
       method: editingChargeId ? "PUT" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -72,7 +72,7 @@ export function ChargesTab() {
 
   const deleteCharge = async (id: string) => {
     if (!confirm(t("settings.deleteChargeConfirm"))) return;
-    await fetch(`/api/charges/${id}`, { method: "DELETE" });
+    await fetch(`/api/backoffice/charges/${id}`, { method: "DELETE" });
     fetchCharges();
   };
 

@@ -46,7 +46,7 @@ export default function TablesPage() {
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   const fetchTables = () => {
-    fetch("/api/tables")
+    fetch("/api/backoffice/tables")
       .then((r) => r.json())
       .then((d) => { setTables(d); setLoading(false); });
   };
@@ -62,7 +62,7 @@ export default function TablesPage() {
   };
 
   const handleSave = async () => {
-    const url = editingId ? `/api/tables/${editingId}` : "/api/tables";
+    const url = editingId ? `/api/backoffice/tables/${editingId}` : "/api/backoffice/tables";
     const method = editingId ? "PUT" : "POST";
     await fetch(url, {
       method,
@@ -75,7 +75,7 @@ export default function TablesPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm(t("common.confirmDelete"))) return;
-    await fetch(`/api/tables/${id}`, { method: "DELETE" });
+    await fetch(`/api/backoffice/tables/${id}`, { method: "DELETE" });
     fetchTables();
   };
 

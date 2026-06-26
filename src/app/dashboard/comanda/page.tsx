@@ -55,17 +55,17 @@ export default function ComandaPage() {
   const fetchAll = (date?: string) => {
     const query = date ? `?date=${date}` : "";
     Promise.all([
-      fetch("/api/tables").then(r => r.json()),
-      fetch(`/api/comandas${query}`).then(r => r.json()),
-      fetch("/api/products").then(r => r.json()),
-      fetch("/api/orders").then(r => r.json()),
+      fetch("/api/backoffice/tables").then(r => r.json()),
+      fetch(`/api/backoffice/comandas${query}`).then(r => r.json()),
+      fetch("/api/backoffice/products").then(r => r.json()),
+      fetch("/api/backoffice/orders").then(r => r.json()),
     ]).then(([t, c, p, o]) => { setTables(t); setComandas(c); setProducts(p); setOrders(o); setLoading(false); });
   };
 
   const refresh = () => fetchAll(filterDate);
 
   const fetchPedidos = (comandaId: string) => {
-    fetch(`/api/pedidos?comandaId=${comandaId}`).then(r => r.json()).then(setPedidos);
+    fetch(`/api/backoffice/pedidos?comandaId=${comandaId}`).then(r => r.json()).then(setPedidos);
   };
 
   useEffect(() => { refresh(); }, []);
@@ -83,7 +83,7 @@ export default function ComandaPage() {
 
   const createComanda = async () => {
     const table = tables.find((t) => t._id === comandaForm.tableId);
-    const res = await fetch("/api/comandas", {
+    const res = await fetch("/api/backoffice/comandas", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         tableId: comandaForm.tableId || null,
@@ -124,7 +124,7 @@ export default function ComandaPage() {
 
   const savePedido = async () => {
     if (!pedidoComandaId || pedidoItems.length === 0) return;
-    await fetch("/api/pedidos", {
+    await fetch("/api/backoffice/pedidos", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ comandaId: pedidoComandaId, items: pedidoItems, notes: pedidoNotes, status: "pending" }),
     });
@@ -133,13 +133,13 @@ export default function ComandaPage() {
   };
 
   const updatePedidoStatus = async (id: string, status: string) => {
-    await fetch(`/api/pedidos/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) });
+    await fetch(`/api/backoffice/pedidos/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) });
     if (selectedTable) fetchPedidos(selectedTable._id);
   };
 
   const updateComandaStatus = async (status: string) => {
     if (!selectedTable) return;
-    await fetch(`/api/comandas/${selectedTable._id}`, {
+    await fetch(`/api/backoffice/comandas/${selectedTable._id}`, {
       method: "PATCH", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
