@@ -11,6 +11,11 @@ interface Props {
   setForm: (f: any) => void;
 }
 
+const API_URLS = [
+  "https://ve.dolarapi.com/v1/tasas/dolares",
+  "https://pydolarve.com/api/dolar?moneda=usd",
+];
+
 export function ExchangeRateTab({ form, setForm }: Props) {
   const { t } = useT();
   const [fetching, setFetching] = useState(false);
@@ -19,28 +24,40 @@ export function ExchangeRateTab({ form, setForm }: Props) {
   const handleFetch = async () => {
     setFetching(true);
     setStatus("idle");
-    try {
-      const res = await fetch("/api/backoffice/exchange-rate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-      const data = await res.json();
-      if (data.exchangeRateBcv || data.exchangeRateUsdt) {
-        setForm({
-          ...form,
-          exchangeRateBcv: data.exchangeRateBcv ?? form.exchangeRateBcv,
-          exchangeRateUsdt: data.exchangeRateUsdt ?? form.exchangeRateUsdt,
-        });
-        setStatus("ok");
-      } else {
-        setStatus("error");
+
+    let bcv = 0;
+    let usdt = 0;
+
+    for (const url of API_URLS) {
+      try {
+        const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+        if (!res.ok) continue;
+        const data = await res.json();
+
+        if (Array.isArray(data)) {
+          const b = data.find((d: any) => d._id === "bcv");
+          const p = data.find((d: any) => d._id === "paralelo");
+          bcv = b?.promedio || bcv;
+          usdt = p?.promedio || usdt;
+        } else if (data.bcv) {
+          bcv = data.bcv;
+          usdt = data.paralelo || data.usdt || 0;
+        }
+        if (bcv > 0 || usdt > 0) break;
+      } catch {
+        continue;
       }
-    } catch {
+    }
+
+    if (bcv > 0 || usdt > 0) {
+      setForm({ ...form, exchangeRateBcv: bcv, exchangeRateUsdt: usdt || bcv });
+      setStatus("ok");
+    } else {
       setStatus("error");
     }
+
     setFetching(false);
-    setTimeout(() => setStatus("idle"), 4000);
+    setTimeout(() => setStatus("idle"), 5000);
   };
 
   return (
@@ -61,9 +78,9 @@ export function ExchangeRateTab({ form, setForm }: Props) {
       </div>
       <div className="flex items-center gap-3">
         <Button onClick={handleFetch} disabled={fetching} variant="outline" size="sm" className="gap-2">
-          {fetching ? "Consultando..." : "Actualizar desde dolarapi.com"}
+          {fetching ? "Consultando..." : "Obtener tasas actuales"}
         </Button>
-        {status === "ok" && <span className="text-xs text-green-500 flex items-center gap-1"><ImCheckmark /> Tasas actualizadas</span>}
+        {status === "ok" && <span className="text-xs text-green-500 flex items-center gap-1"><ImCheckmark /> Tasas cargadas — guardá los cambios abajo</span>}
         {status === "error" && <span className="text-xs text-red-500 flex items-center gap-1"><ImCross /> No se pudieron obtener las tasas</span>}
       </div>
       <p className="text-xs text-muted-foreground">Las tasas se guardan al hacer clic en "Guardar cambios" abajo.</p>
