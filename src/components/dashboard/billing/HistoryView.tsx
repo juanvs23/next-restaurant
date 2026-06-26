@@ -60,8 +60,50 @@ export default function HistoryView({
 }: HistoryViewProps) {
   const { t } = useT();
 
+  const paidOrders = orders.filter((o) => o.status === "paid");
+  const totalRevenue = paidOrders.reduce((s, o) => s + (o.total || 0), 0);
+  const totalTax = paidOrders.reduce((s, o) => s + (o.totalTax || 0), 0);
+  const totalCharges = paidOrders.reduce((s, o) => s + (o.totalCharge || 0), 0);
+  const avgTicket = paidOrders.length > 0 ? totalRevenue / paidOrders.length : 0;
+
   return (
     <div className="space-y-4">
+      {/* Summary cards */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs text-muted-foreground">{t("billing.totalRevenue") || "Revenue"}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xl font-bold">${totalRevenue.toFixed(2)}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs text-muted-foreground">{t("billing.bills")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xl font-bold">{orders.length}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs text-muted-foreground">{t("billing.avgTicket") || "Avg ticket"}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xl font-bold">${avgTicket.toFixed(2)}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs text-muted-foreground">{t("billing.taxesAndCharges") || "Taxes + charges"}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xl font-bold">{fmt(totalTax + totalCharges)}</p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Filters */}
       <Card>
         <CardHeader>

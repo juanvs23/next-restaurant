@@ -1,6 +1,12 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useT } from "@/i18n/useT";
 import BillCard from "./BillCard";
 
@@ -35,6 +41,12 @@ export default function TodayView({
 }: TodayViewProps) {
   const { t } = useT();
 
+  const paidOrders = displayOrders.filter((o) => o.status === "paid");
+  const totalRevenue = paidOrders.reduce((s, o) => s + (o.total || 0), 0);
+  const totalTax = paidOrders.reduce((s, o) => s + (o.totalTax || 0), 0);
+  const totalCharges = paidOrders.reduce((s, o) => s + (o.totalCharge || 0), 0);
+  const avgTicket = paidOrders.length > 0 ? totalRevenue / paidOrders.length : 0;
+
   return (
     <>
       {/* Unclosed days banner */}
@@ -53,6 +65,43 @@ export default function TodayView({
             </p>
           </div>
         )}
+
+      {/* Summary cards */}
+      <div className="grid gap-4 md:grid-cols-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs text-muted-foreground">{t("billing.totalRevenue") || "Revenue"}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xl font-bold">${totalRevenue.toFixed(2)}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs text-muted-foreground">{t("billing.bills")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xl font-bold">{displayOrders.length}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs text-muted-foreground">{t("billing.avgTicket") || "Avg ticket"}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xl font-bold">${avgTicket.toFixed(2)}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xs text-muted-foreground">{t("billing.taxesAndCharges") || "Taxes + charges"}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xl font-bold">${(totalTax + totalCharges).toFixed(2)}</p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Today filters */}
       <div className="flex flex-wrap items-center gap-3">
         <Input

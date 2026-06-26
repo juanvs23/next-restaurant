@@ -22,11 +22,11 @@
 | Reportes mensuales + cierre de día | ✅ Completado | 🔴 Alta |
 | Traducciones i18n (ES/EN/PT en UI) | ✅ Completado | 🟡 Media |
 | Refactor <400 líneas por archivo | ✅ Completado | 🟡 Media |
-| Historial de facturación (pestañas Today/History) | 🟡 Pendiente ajustes | 🟡 Media |
-| Separar backoffice del frontend | ⏳ Pendiente | 🟢 Baja |
-| File upload real (uploadthing / S3) | ⏳ Pendiente | 🟢 Baja |
-| Proteger API routes con auth | ⏳ Pendiente | 🟢 Baja |
-| MSW para tests | ⏳ Pendiente | 🟢 Baja |
+| Historial de facturación (pestañas Today/History) | ✅ Ajustes completados | 🟡 Media |
+| Separar backoffice del frontend | ✅ API routes separadas | 🟢 Baja |
+| File upload real (uploadthing / S3) | ✅ Storage híbrido Local/S3 implementado | 🟢 Baja |
+| Proteger API routes con auth | ✅ Middleware + requireRole | 🟢 Baja |
+| MSW para tests | ✅ Fetch mock implementado | 🟢 Baja |
 
 ---
 

@@ -5,6 +5,7 @@ import { Product } from "@/database/models/product";
 import { Tax } from "@/database/models/tax";
 import { Charge } from "@/database/models/charge";
 import { Config } from "@/database/models/config";
+import { createOrderSchema } from "@/schemas/backoffice";
 import { NextRequest, NextResponse } from "next/server";
 
 import { DayClosing } from "@/database/models/day-closing";
@@ -67,7 +68,8 @@ export async function GET(req: NextRequest) {
 
   // Text search: customer name or payment method
   if (search) {
-    const regex = new RegExp(search, "i");
+    const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(escaped, "i");
     filter.$or = [
       { "customer.name": regex },
       { paymentMethod: regex },
@@ -80,13 +82,17 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
+  const parsed = createOrderSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
+  }
   await connectDB();
 
-  let items = body.items || [];
+  let items = parsed.data.items;
 
   // Consolidate items from pedidos if provided
-  if (body.pedidoIds?.length > 0) {
-    const pedidos = await Pedido.find({ _id: { $in: body.pedidoIds } });
+  if (parsed.data.pedidoIds && parsed.data.pedidoIds.length > 0) {
+    const pedidos = await Pedido.find({ _id: { $in: parsed.data.pedidoIds } });
     const itemMap = new Map<string, any>();
     for (const p of pedidos) {
       for (const it of p.items) {
@@ -129,11 +135,11 @@ export async function POST(req: NextRequest) {
     deliveryCost,
   } = await calculateCharges(
     subtotal,
-    body.isDelivery,
+    parsed.data.isDelivery ?? false,
     globalCharges,
     config,
-    body.orderCharges,
-    body.deliveryCost,
+    parsed.data.orderCharges,
+    parsed.data.deliveryCost,
   );
 
   // ── Step 3: Taxes ──
@@ -168,7 +174,7 @@ export async function POST(req: NextRequest) {
   const total = Math.round((subtotal + totalCharge + totalTax) * 100) / 100;
 
   const order = await Order.create({
-    ...body,
+    ...parsed.data,
     items,
     subtotal,
     serviceCharge,

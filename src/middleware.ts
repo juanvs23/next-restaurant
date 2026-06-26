@@ -39,7 +39,7 @@ function redirectToLogin(req: any) {
   const response = NextResponse.redirect(signInUrl);
   response.cookies.set("authjs.callback-url", req.url, {
     path: "/",
-    httpOnly: false,
+    httpOnly: true,
   });
   return response;
 }
