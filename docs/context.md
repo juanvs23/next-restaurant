@@ -112,6 +112,30 @@ Full-stack restaurant POS/web application for **GERÍCHT**, a fine dining restau
 - Billing/Reports/Products: dialogs extraídos a componentes
 - 14 componentes nuevos en `components/dashboard/`
 
+## Monorepo Architecture — Backoffice/Frontend Separation
+
+La separación entre backoffice y frontend es **parcial por diseño deliberado**, no un pendiente técnico. El proyecto está concebido como un **monorepo reutilizable** (similar a WordPress) que pueda clonarse y adaptarse a otros proyectos similares (restaurantes, POS, comercios).
+
+### Cómo funciona
+- **Rutas separadas por prefijo**: `/api/backoffice/*` (42 rutas protegidas) y `/api/frontend/*` (5 rutas públicas)
+- **Modelos compartidos**: Todos los modelos de DB viven en `src/database/models/` y son usados por ambos grupos de rutas
+- **Middleware unificado**: `src/middleware.ts` protege por prefijo de ruta
+- **Roles y permisos**: `requireRole()` para control granular en rutas críticas
+
+### Por qué no monorepo físico (apps/ + packages/)
+- No se necesita mantener múltiples repos o workspaces
+- El template se clona y se adapta borrando lo que no aplica
+- Se evita la sobreingeniería de una separación física cuando el negocio es el mismo
+- Si en el futuro un proyecto requiere separación real, la estructura de rutas ya está lista para extraerse
+
+### Routing map
+| Prefijo | Rutas | Protegido |
+|---------|-------|-----------|
+| `/api/backoffice/*` | 42 routes (CRUD users, products, orders, config, etc.) | ✅ Middleware + requireRole |
+| `/api/frontend/*` | 5 routes (availability, config, subscription, users, verify) | ❌ Públicas (endpoints públicos del landing) |
+| `/api/auth/*` | Auth.js callbacks | ❌ Manejado por Auth.js |
+| `/dashboard/*` | UI del backoffice | ✅ Middleware redirige a login |
+
 ## Service Layer — Business Logic Extraction
 
 ### `src/libs/services/order-service.ts`
@@ -128,11 +152,11 @@ Full-stack restaurant POS/web application for **GERÍCHT**, a fine dining restau
 ## Known Issues
 
 1. ~~No file upload real~~ **(Resuelto — Storage híbrido Local/S3)**
-2. **API sin auth** — Rutas /api/* sin protección (solo middleware protege dashboard UI)
-3. **Sin MSW** — Tests sin mock de API
-4. **Pendiente**: Separar backoffice del frontend
-5. **Pendiente**: Proteger API routes con auth
-6. **Pendiente**: Middleware check de auth usa `accessToken` (solo OAuth) — corregido con fallback a `userId`
+2. ~~**API sin auth**~~ **(Resuelto — middleware protege `/api/backoffice/*`, `requireRole()` en rutas críticas; `/api/frontend/*` queda público por diseño)**
+3. **Sin MSW** — Tests unitarios sin mock de API (msw instalado pero no hay handlers ni setup en `src/mocks/`)
+4. ~~**Separar backoffice del frontend**~~ **(Decisión arquitectónica — monorepo reutilizable como WordPress, separación lógica por prefijos)**
+5. ~~**Proteger API routes con auth**~~ **(Resuelto — middleware + requireRole)**
+6. ~~**Middleware check de auth usa accessToken (solo OAuth)**~~ **(Corregido — fallback a `userId`)**
 
 ## E2E Testing
 
@@ -193,6 +217,18 @@ npm run test:e2e         # correr tests
 | `src/app/api/media/route.ts` | POST con multipart |
 | `src/app/api/media/[id]/route.ts` | DELETE con cleanup
 
+## Security Headers (next.config.mjs)
+
+| Header | Value | Entorno |
+|--------|-------|---------|
+| Content-Security-Policy-Report-Only | default-src, script-src, style-src, img-src, font-src, connect-src, frame-src, base-uri, form-action | Todos |
+| X-Frame-Options | DENY | Todos |
+| X-Content-Type-Options | nosniff | Todos |
+| Referrer-Policy | strict-origin-when-cross-origin | Todos |
+| Strict-Transport-Security | max-age=31536000; includeSubDomains | Producción (o si HSTS_ENABLED=true) |
+
+HSTS usa flag híbrido: `NODE_ENV=production` lo activa automáticamente; en staging/dev se forza con `HSTS_ENABLED=true`.
+
 ## Environment Variables
 
 | Variable | Description |
@@ -206,6 +242,7 @@ npm run test:e2e         # correr tests
 | DB_NAME | MongoDB database name |
 | NEXT_PUBLIC_BASE_URL | Public base URL |
 | TZ | Server timezone (e.g. America/Caracas) |
+| HSTS_ENABLED | Force HSTS in non-production (true/false, default: auto via NODE_ENV) |
 
 ## Seed Data (`scripts/seed-full.ts`)
 
