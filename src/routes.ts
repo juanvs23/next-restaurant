@@ -8,8 +8,12 @@ export const routes = [
     title: "About us",
   },
   {
-    path: "/#menu",
+    path: "/menu",
     title: "Our Menu",
+  },
+  {
+    path: "/#menu",
+    title: "Home — Our Menu",
   },
   {
     path: "/#chef",

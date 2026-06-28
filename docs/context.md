@@ -16,7 +16,7 @@ Full-stack restaurant POS/web application for **GERÍCHT**, a fine dining restau
 | **Auth** | Auth.js v5 (Credentials + Google OAuth) |
 | **Validation** | Zod 3 |
 | **Animation** | Framer Motion 11, Swiper 11 |
-| **Testing** | Jest 29 (5 tests) |
+| **Testing** | Jest 29 (51 tests) |
 | **Package Manager** | npm 10.9.2 |
 
 ## Database Models
@@ -132,7 +132,7 @@ La separación entre backoffice y frontend es **parcial por diseño deliberado**
 | Prefijo | Rutas | Protegido |
 |---------|-------|-----------|
 | `/api/backoffice/*` | 42 routes (CRUD users, products, orders, config, etc.) | ✅ Middleware + requireRole |
-| `/api/frontend/*` | 5 routes (availability, config, subscription, users, verify) | ❌ Públicas (endpoints públicos del landing) |
+| `/api/frontend/*` | 8 routes (availability, config, subscription, users, verify, menu, menu/breakdown, orders) | ❌ Públicas (endpoints públicos del landing) |
 | `/api/auth/*` | Auth.js callbacks | ❌ Manejado por Auth.js |
 | `/dashboard/*` | UI del backoffice | ✅ Middleware redirige a login |
 
@@ -229,6 +229,63 @@ npm run test:e2e         # correr tests
 
 HSTS usa flag híbrido: `NODE_ENV=production` lo activa automáticamente; en staging/dev se forza con `HSTS_ENABLED=true`.
 
+## Frontend Foundation Components (PR 1)
+
+Se implementaron los componentes base del frontend público para el carrito de compras, navegación de menú y visualización de productos.
+
+### Cart System
+
+| Componente | Archivo | Propósito |
+|------------|---------|-----------|
+| `cartSlicer` | `src/libs/store/slicers/cartSlicer.ts` | Slice Redux con items, loading, reducers (addItem, removeItem, updateQuantity, clearCart, hydrateCart) y selectors (selectCartCount, selectSubtotal, selectSubtotalBs) |
+| `CartContext` | `src/components/frontend/CartContext.tsx` | React context para open/close del CartSheet (isCartOpen, setCartOpen, toggleCart) |
+| `CartHydrator` | `src/components/frontend/CartHydrator.tsx` | Client component que hydrata el carrito desde localStorage al montar |
+| `CartPersister` | `src/components/frontend/CartPersister.tsx` | Watchea items del carrito y persiste a localStorage en cada cambio |
+| `CartBadge` | `src/components/frontend/CartBadge.tsx` | Ícono de carrito con badge animado (framer-motion scale) |
+| `CartSheet` | `src/components/frontend/CartSheet.tsx` | Sheet lateral con lista de items, controles +/- , eliminar, subtotal Bs, botón "Ir al Checkout" |
+
+### Menu Display
+
+| Componente | Archivo | Propósito |
+|------------|---------|-----------|
+| `ProductCard` | `src/components/frontend/ProductCard.tsx` | Card con imagen, nombre, precio Bs, hover translateY, botón "Agregar" |
+| `ResponsiveGrid` | `src/components/frontend/ResponsiveGrid.tsx` | Grid responsive (1→2→3→4 cols) con stagger animation via framer-motion |
+| `CategorySlider` | `src/components/frontend/CategorySlider.tsx` | Scroll horizontal con pills de categorías, active state |
+| `SearchBar` | `src/components/frontend/SearchBar.tsx` | Input con icono Search, debounce 300ms, botón X para limpiar |
+| `ImageCarousel` | `src/components/frontend/ImageCarousel.tsx` | Imagen principal + thumbnails para detalle de producto |
+| `MenuFilters` | `src/components/frontend/MenuFilters.tsx` | Client wrapper que conecta SearchBar + CategorySlider con router.push |
+
+### Pages
+
+| Página | Ruta | Archivo |
+|--------|------|---------|
+| Menú | `/menu` | `src/app/(frontend)/menu/page.tsx` (SSR, searchParams) |
+| Detalle producto | `/menu/[slug]` | `src/app/(frontend)/menu/[slug]/page.tsx` (SSR) |
+| 404 menú | `/menu/*` | `src/app/(frontend)/menu/not-found.tsx` |
+
+### API Routes (nuevas)
+
+| Ruta | Archivo | Propósito |
+|------|---------|-----------|
+| `GET /api/frontend/menu/[slug]` | `src/app/api/frontend/menu/[slug]/route.ts` | Producto individual por slug con priceBs, categoryName |
+
+### Modificaciones existentes
+
+- `src/libs/store/store.ts`: agregado `cart: cartSlicer` al reducer
+- `src/libs/providers.tsx`: envuelve app con `CartProvider`
+- `src/app/(frontend)/layout.tsx`: agregado `CartHydrator`, `CartPersister`, `CartSheet`
+- `src/app/(frontend)/page.tsx`: sección "Menú Destacado" con fetch a `/api/frontend/menu`
+- `src/utils/localStorage.ts`: creado con `safeGetItem`, `safeSetItem`
+- `src/components/frontend/index.ts`: barrel exports actualizados
+
+### Reglas de integración para próximas fases
+
+- `CartBadge` debe colocarse en el Header para que los usuarios puedan abrir el carrito
+- CartSheet usa `Sheet` de `@/components/ui/sheet` (basado en Radix Dialog)
+- Las imágenes se sirven desde `/uploads/food/{filename}`
+- Los precios se muestran en Bs usando `formatVes()`
+- La tasa de cambio se calcula server-side en las APIs con `Config.exchangeRateBcv`
+
 ## Frontend Delivery Order Flow
 
 Los pedidos realizados desde el frontend público (carrito en landing/menu) siguen un flujo **con revisión de staff**, sin crear comandas automáticamente.
@@ -310,6 +367,11 @@ Ambos son vulnerabilidades **moderadas en tooling/build**, no en runtime. Sin im
 | `src/utils/escapeRegex.ts` | Escapa metacaracteres de regex para búsqueda segura |
 | `src/utils/slugify.ts` | Genera slugs URL-friendly desde nombres (con tildes/ñ) |
 | `src/utils/phoneRegex.ts` | Validación de formato telefónico |
+| `src/libs/currency.ts` | Funciones usdToVes, formatVes, formatUsd, fmtPrice, fmtPriceFull |
+| `src/schemas/frontend.ts` | Schemas checkoutSchema (customer+items+notes), reviewOrderSchema |
+| `src/app/api/frontend/menu/route.ts` | GET /api/frontend/menu — categorías con featured products + priceBs |
+| `src/app/api/frontend/menu/breakdown/route.ts` | GET /api/frontend/menu/breakdown — todos los productos agrupados con filtros search/category |
+| `src/app/api/frontend/orders/route.ts` | POST /api/frontend/orders — crea Order(source:frontend) desde carrito público |
 
 ## DB Model Changes (Frontend Public Prep)
 

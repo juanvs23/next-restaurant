@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import modalSlicer from "./slicers/modalSlicer";
 import bookingSlicer from "./slicers/bookingSlicer";
+import cartSlicer from "./slicers/cartSlicer";
 
 export const store = configureStore({
   reducer: {
     modal: modalSlicer,
     booking: bookingSlicer,
+    cart: cartSlicer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

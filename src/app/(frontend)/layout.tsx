@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Components } from "@/components/frontend";
+import { Components, CartHydrator, CartSheet, CartPersister } from "@/components/frontend";
 
 export const metadata: Metadata = {
   title: "GERÍCHT - RESTAURANT",
@@ -13,9 +13,12 @@ export default function RootLayout({
 }>) {
   return (
     <div className="bg-black2 min-h-screen text-white2">
+      <CartHydrator />
+      <CartPersister />
       <Components.Header />
       {children}
       <Components.Footer />
+      <CartSheet />
     </div>
   );
 }

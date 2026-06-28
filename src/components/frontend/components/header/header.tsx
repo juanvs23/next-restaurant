@@ -4,6 +4,7 @@ import { montSerrat } from "@/components/common/fonts";
 import BookingButton from "../booking/bookingButton/bookingButton";
 import Modal from "../modal/modal";
 import MobilMenuWrapper from "./MobilMenuWrapper";
+import CartBadge from "@/components/frontend/CartBadge";
 
 export default function Header() {
   return (
@@ -17,7 +18,8 @@ export default function Header() {
             </div>
             <MenuNav />
             <MobilMenuWrapper />
-            <div className="hidden lg:flex justify-end lg:w-1/4">
+            <div className="hidden lg:flex justify-end lg:w-1/4 items-center gap-4">
+              <CartBadge />
               <BookingButton />
             </div>
           </div>

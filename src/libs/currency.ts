@@ -20,5 +20,5 @@ export function fmtPriceFull(ves: number, bcv: number, usdt: number): string {
 }
 
 export function usdToVes(usd: number, rate: number): number {
-  return usd * rate;
+  return Math.round(usd * rate * 100) / 100;
 }

@@ -1,2 +1,13 @@
 export * as Pages from "./pages";
 export * as Components from "./components";
+export { CartProvider, useCart } from "./CartContext";
+export { default as CartHydrator } from "./CartHydrator";
+export { default as CartPersister } from "./CartPersister";
+export { default as CartBadge } from "./CartBadge";
+export { default as CartSheet } from "./CartSheet";
+export { default as ProductCard } from "./ProductCard";
+export { default as ResponsiveGrid } from "./ResponsiveGrid";
+export { default as CategorySlider } from "./CategorySlider";
+export { default as SearchBar } from "./SearchBar";
+export { default as ImageCarousel } from "./ImageCarousel";
+export { default as MenuFilters } from "./MenuFilters";
