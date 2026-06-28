@@ -56,9 +56,15 @@ const orderSchema = new mongoose.Schema(
     // Breakdown of global-scope taxes
     globalTaxBreakdown: [taxEntrySchema],
 
+    source: {
+      type: String,
+      enum: ["backoffice", "frontend"],
+      default: "backoffice",
+      index: true,
+    },
     status: {
       type: String,
-      enum: ["pending", "paid", "cancelled"],
+      enum: ["pending", "preparing", "paid", "cancelled"],
       default: "pending",
     },
     paymentMethod: { type: String }, // Snapshot label (e.g. "Cash", "Tarjeta")

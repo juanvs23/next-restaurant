@@ -27,6 +27,8 @@ const productSchema = new mongoose.Schema(
     SKU: { type: String, unique: true },
     taxRate: { type: Number, default: 0 }, // 0.16 = 16% IVA — fallback if taxIds is empty
     taxIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tax" }],
+    slug: { type: String, unique: true, sparse: true },
+    featured: { type: Boolean, default: false, index: true },
     available: { type: Boolean, default: true },
   },
   { timestamps: true }

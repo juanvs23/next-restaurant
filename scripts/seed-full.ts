@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import { slugify } from "../src/utils/slugify";
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/gericht";
 const DB_NAME = process.env.DB_NAME || "gericht";
@@ -31,23 +32,24 @@ const PRODUCTS: {
   name: string; description: string; price: number;
   category: string; type: "food" | "drink" | "dessert";
   images: string[]; ingredients: string[];
+  featured?: boolean;
 }[] = [
   // Entradas (4)
   // imgSet indices: 0=soup, 1=steak, 2=salmon, 3=meat, 4=salad, 5=tacos, 6=eggs, 7=pizza
   // Entradas (4)
-  { name: "Bruschetta Clásica", description: "Pan tostado con tomate, albahaca fresca y aceite de oliva extra virgen", price: 8.5, category: "Entradas", type: "food", images: imgSet(6, 3, 4, 0, 5, 7), ingredients: ["Pan artesanal", "Tomate", "Albahaca", "Aceite de oliva", "Ajo"] },
+  { name: "Bruschetta Clásica", description: "Pan tostado con tomate, albahaca fresca y aceite de oliva extra virgen", price: 8.5, category: "Entradas", type: "food", images: imgSet(6, 3, 4, 0, 5, 7), ingredients: ["Pan artesanal", "Tomate", "Albahaca", "Aceite de oliva", "Ajo"], featured: true },
   { name: "Carpaccio de Res", description: "Finas láminas de res con parmesano, rúcula y vinagreta de limón", price: 14.0, category: "Entradas", type: "food", images: imgSet(3, 1, 2, 4, 6, 0), ingredients: ["Lomo de res", "Parmesano", "Rúcula", "Limón", "Aceite de oliva"] },
   { name: "Croquetas de Jamón", description: "Croquetas cremosas de jamón serrano con bechamel", price: 9.0, category: "Entradas", type: "food", images: imgSet(6, 4, 7, 5, 0, 3), ingredients: ["Jamón serrano", "Harina", "Leche", "Mantequilla", "Huevo"] },
   { name: "Hummus con Pita", description: "Puré de garbanzos con tahini, aceite de oliva y pan pita tostado", price: 7.0, category: "Entradas", type: "food", images: imgSet(5, 4, 6, 7, 0, 2), ingredients: ["Garbanzos", "Tahini", "Aceite de oliva", "Limón", "Pan pita"] },
   // Sopas (2)
-  { name: "Crema de Calabaza", description: "Crema suave de calabaza asada con jengibre y croutons", price: 9.5, category: "Sopas", type: "food", images: imgSet(0, 6, 4, 5, 7, 3), ingredients: ["Calabaza", "Jengibre", "Crema de leche", "Croutons", "Nuez moscada"] },
+  { name: "Crema de Calabaza", description: "Crema suave de calabaza asada con jengibre y croutons", price: 9.5, category: "Sopas", type: "food", images: imgSet(0, 6, 4, 5, 7, 3), ingredients: ["Calabaza", "Jengibre", "Crema de leche", "Croutons", "Nuez moscada"], featured: true },
   { name: "Sopa de Cebolla Gratinada", description: "Sopa de cebolla clásica con queso gratinado y croutons", price: 10.0, category: "Sopas", type: "food", images: imgSet(0, 7, 3, 1, 4, 6), ingredients: ["Cebolla", "Caldo de res", "Queso gruyère", "Pan", "Tomillo"] },
   // Ensaladas (3)
-  { name: "Ensalada César", description: "Lechuga romana, croutones, parmesano y aderezo César", price: 11.0, category: "Ensaladas", type: "food", images: imgSet(4, 0, 5, 6, 7, 2), ingredients: ["Lechuga romana", "Croutones", "Parmesano", "Aderezo César", "Pollo"] },
+  { name: "Ensalada César", description: "Lechuga romana, croutones, parmesano y aderezo César", price: 11.0, category: "Ensaladas", type: "food", images: imgSet(4, 0, 5, 6, 7, 2), ingredients: ["Lechuga romana", "Croutones", "Parmesano", "Aderezo César", "Pollo"], featured: true },
   { name: "Ensalada Griega", description: "Tomate, pepino, aceitunas, queso feta y orégano", price: 10.5, category: "Ensaladas", type: "food", images: imgSet(4, 6, 0, 7, 5, 1), ingredients: ["Tomate", "Pepino", "Aceitunas", "Queso feta", "Orégano"] },
   { name: "Ensalada de Palta", description: "Palta, mango, camarones y vinagreta de maracuyá", price: 13.5, category: "Ensaladas", type: "food", images: imgSet(4, 2, 5, 6, 7, 0), ingredients: ["Palta", "Mango", "Camarones", "Maracuyá", "Mix de hojas"] },
   // Platos Principales (3)
-  { name: "Risotto al Funghi", description: "Risotto cremoso con mix de hongos silvestres y parmesano", price: 18.0, category: "Platos Principales", type: "food", images: imgSet(1, 3, 2, 4, 0, 7), ingredients: ["Arroz arbóreo", "Hongos silvestres", "Parmesano", "Vino blanco", "Caldo de verduras"] },
+  { name: "Risotto al Funghi", description: "Risotto cremoso con mix de hongos silvestres y parmesano", price: 18.0, category: "Platos Principales", type: "food", images: imgSet(1, 3, 2, 4, 0, 7), ingredients: ["Arroz arbóreo", "Hongos silvestres", "Parmesano", "Vino blanco", "Caldo de verduras"], featured: true },
   { name: "Pollo al Curry", description: "Pollo tierno en salsa curry con leche de coco y arroz basmati", price: 16.5, category: "Platos Principales", type: "food", images: imgSet(1, 5, 4, 6, 7, 0), ingredients: ["Pollo", "Curry", "Leche de coco", "Arroz basmati", "Cilantro"] },
   { name: "Lomo Saltado", description: "Tiras de lomo salteadas con cebolla, tomate y papas fritas", price: 19.0, category: "Platos Principales", type: "food", images: imgSet(1, 3, 2, 5, 4, 6), ingredients: ["Lomo de res", "Cebolla", "Tomate", "Papas", "Salsa de soya"] },
   // Pastas (3)
@@ -55,15 +57,15 @@ const PRODUCTS: {
   { name: "Lasagna Bolognese", description: "Lasagna clásica con ragú de res, bechamel y queso gratinado", price: 17.0, category: "Pastas", type: "food", images: imgSet(7, 1, 3, 2, 5, 4), ingredients: ["Pasta de lasagna", "Carne molida", "Bechamel", "Queso mozzarella", "Tomate"] },
   { name: "Fettuccine Alfredo", description: "Fettuccine en cremosa salsa Alfredo con pollo y champiñones", price: 16.0, category: "Pastas", type: "food", images: imgSet(7, 6, 4, 0, 3, 5), ingredients: ["Fettuccine", "Crema de leche", "Pollo", "Champiñones", "Parmesano"] },
   // Carnes (3)
-  { name: "Steck Medium Rare", description: "Filete de res 300g sellado con mantequilla, romero y ajo", price: 32.0, category: "Carnes", type: "food", images: imgSet(1, 3, 2, 4, 5, 7), ingredients: ["Filete de res", "Mantequilla", "Romero", "Ajo", "Sal marina"] },
+  { name: "Steck Medium Rare", description: "Filete de res 300g sellado con mantequilla, romero y ajo", price: 32.0, category: "Carnes", type: "food", images: imgSet(1, 3, 2, 4, 5, 7), ingredients: ["Filete de res", "Mantequilla", "Romero", "Ajo", "Sal marina"], featured: true },
   { name: "Costillas BBQ", description: "Costillas de cerdo glaseadas con salsa BBQ ahumada", price: 26.0, category: "Carnes", type: "food", images: imgSet(3, 1, 5, 7, 0, 6), ingredients: ["Costillas de cerdo", "Salsa BBQ", "Miel", "Especias", "Papas fritas"] },
   { name: "Cordero al Horno", description: "Pierna de cordero asada con hierbas provenzales y papas", price: 34.0, category: "Carnes", type: "food", images: imgSet(3, 2, 1, 4, 7, 0), ingredients: ["Pierna de cordero", "Hierbas provenzales", "Papas", "Ajo", "Vino tinto"] },
   // Pescados & Mariscos (3)
-  { name: "Salmón Glaseado", description: "Salmón glaseado con miel y mostaza, servido con espárragos", price: 24.0, category: "Pescados & Mariscos", type: "food", images: imgSet(2, 4, 0, 5, 7, 1), ingredients: ["Salmón", "Miel", "Mostaza", "Espárragos", "Limón"] },
+  { name: "Salmón Glaseado", description: "Salmón glaseado con miel y mostaza, servido con espárragos", price: 24.0, category: "Pescados & Mariscos", type: "food", images: imgSet(2, 4, 0, 5, 7, 1), ingredients: ["Salmón", "Miel", "Mostaza", "Espárragos", "Limón"], featured: true },
   { name: "Paella de Mariscos", description: "Paella valenciana con camarones, mejillones, calamares y azafrán", price: 27.0, category: "Pescados & Mariscos", type: "food", images: imgSet(2, 1, 3, 4, 6, 7), ingredients: ["Arroz", "Camarones", "Mejillones", "Calamares", "Azafrán"] },
   { name: "Ceviche Clásico", description: "Pescado fresco marinado en limón con cebolla morada y camote", price: 15.0, category: "Pescados & Mariscos", type: "food", images: imgSet(2, 5, 4, 0, 6, 3), ingredients: ["Pescado blanco", "Limón", "Cebolla morada", "Camote", "Choclo"] },
   // Postres (3)
-  { name: "Tiramisú Clásico", description: "Tiramisú tradicional con mascarpone, café y cacao", price: 9.0, category: "Postres", type: "dessert", images: imgSet(6, 7, 4, 5, 0, 2), ingredients: ["Mascarpone", "Café", "Cacao", "Bizcochos", "Huevo"] },
+  { name: "Tiramisú Clásico", description: "Tiramisú tradicional con mascarpone, café y cacao", price: 9.0, category: "Postres", type: "dessert", images: imgSet(6, 7, 4, 5, 0, 2), ingredients: ["Mascarpone", "Café", "Cacao", "Bizcochos", "Huevo"], featured: true },
   { name: "Cheesecake New York", description: "Cheesecake cremoso con base de galleta y coulis de frutos rojos", price: 10.0, category: "Postres", type: "dessert", images: imgSet(6, 4, 5, 7, 3, 1), ingredients: ["Queso crema", "Galleta", "Frutos rojos", "Crema", "Vainilla"] },
   { name: "Crème Brûlée", description: "Crema de vainilla caramelizada con azúcar quemado", price: 8.5, category: "Postres", type: "dessert", images: imgSet(6, 0, 4, 7, 5, 2), ingredients: ["Crema de leche", "Vainilla", "Huevo", "Azúcar", "Caramelo"] },
   // Bebidas (3)
@@ -196,13 +198,23 @@ async function main() {
   console.log(`✅ ${CATEGORIES.length} categorías creadas con imágenes`);
 
   let skuCounter = 1;
+  const usedSlugs = new Set<string>();
   for (const prod of PRODUCTS) {
     const catId = categoryMap.get(prod.category)!;
     const productId = new mongoose.Types.ObjectId();
+    let slug = slugify(prod.name);
+    // Ensure unique slug by appending counter if collision
+    if (usedSlugs.has(slug)) {
+      let counter = 1;
+      while (usedSlugs.has(`${slug}-${counter}`)) counter++;
+      slug = `${slug}-${counter}`;
+    }
+    usedSlugs.add(slug);
     await db.collection("products").insertOne({
       _id: productId, name: prod.name, description: prod.description,
       price: prod.price, categoryId: catId, type: prod.type,
       images: prod.images, ingredients: prod.ingredients,
+      slug, featured: prod.featured ?? false,
       SKU: `SKU-${String(skuCounter).padStart(4, "0")}`,
       taxRate: 0.16, taxIds: [], available: true,
       createdAt: new Date(), updatedAt: new Date(),
@@ -301,7 +313,7 @@ async function main() {
       const pm = pickRandom(pms);
 
       if (isPaid && !isToday) {
-        orderDocs.push({ comandaId, pedidoIds, tableLabel: table.name, isDelivery: false, items: orderItems, serviceCharge: chargeAmount, deliveryCost: 0, orderCharges: [{ name: "Servicio 10%", type: "percentage", value: 10, amount: chargeAmount }], totalCharge: chargeAmount, subtotal, totalTax, total, globalTaxBreakdown: [{ name: "IVA 16%", rate: 0.16, amount: totalTax }], status: "paid", paymentMethod: pmLabels[pm], paymentType: pm, paymentData: { amountReceived: String(total + randInt(0, 20)) }, invoiceNumber: invoiceNum++, customer: { name: customer }, notes: "", createdBy: "Admin GERÍCHT", confirmedBy: "Admin GERÍCHT", createdAt, updatedAt: new Date(createdAt.getTime() + randInt(30, 120) * 60000) });
+        orderDocs.push({ comandaId, pedidoIds, tableLabel: table.name, isDelivery: false, source: "backoffice", items: orderItems, serviceCharge: chargeAmount, deliveryCost: 0, orderCharges: [{ name: "Servicio 10%", type: "percentage", value: 10, amount: chargeAmount }], totalCharge: chargeAmount, subtotal, totalTax, total, globalTaxBreakdown: [{ name: "IVA 16%", rate: 0.16, amount: totalTax }], status: "paid", paymentMethod: pmLabels[pm], paymentType: pm, paymentData: { amountReceived: String(total + randInt(0, 20)) }, invoiceNumber: invoiceNum++, customer: { name: customer }, notes: "", createdBy: "Admin GERÍCHT", confirmedBy: "Admin GERÍCHT", createdAt, updatedAt: new Date(createdAt.getTime() + randInt(30, 120) * 60000) });
       }
     }
 

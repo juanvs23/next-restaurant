@@ -308,7 +308,17 @@ Ambos son vulnerabilidades **moderadas en tooling/build**, no en runtime. Sin im
 | File | Purpose |
 |------|---------|
 | `src/utils/escapeRegex.ts` | Escapa metacaracteres de regex para búsqueda segura |
+| `src/utils/slugify.ts` | Genera slugs URL-friendly desde nombres (con tildes/ñ) |
 | `src/utils/phoneRegex.ts` | Validación de formato telefónico |
+
+## DB Model Changes (Frontend Public Prep)
+
+| Model | Change | Purpose |
+|-------|--------|---------|
+| Product | Added `slug` (unique, sparse) | URLs SEO-friendly tipo `/menu/chapel-hill-shiraz` |
+| Product | Added `featured` (Boolean, indexed) | Productos destacados para landing menu |
+| Order | Added `source` (enum: backoffice/frontend, indexed) | Distinguir órdenes del frontend público |
+| Order | Added `"preparing"` to `status` enum | Estado intermedio al aceptar pedido delivery |
 
 ## Seed Data (`scripts/seed-full.ts`)
 
