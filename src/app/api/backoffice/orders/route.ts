@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { DayClosing } from "@/database/models/day-closing";
 import { getLocalDayRange } from "@/libs/timezone";
+import { escapeRegex } from "@/utils/escapeRegex";
 import {
   calculateCharges,
   calculateItemTaxes,
@@ -68,8 +69,7 @@ export async function GET(req: NextRequest) {
 
   // Text search: customer name or payment method
   if (search) {
-    const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const regex = new RegExp(escaped, "i");
+    const regex = new RegExp(escapeRegex(search), "i");
     filter.$or = [
       { "customer.name": regex },
       { paymentMethod: regex },

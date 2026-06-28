@@ -36,7 +36,7 @@
 |---------|-----------|--------|
 | MSW para tests (handlers + mocks) | 🟢 Baja | ❌ Descartado — se usan mocks manuales (KISS) |
 | Validación Zod en API routes | 🟡 Media | ✅ Completado |
-| Sanitizar regex en queries de búsqueda | 🟡 Media | ⏳ Pendiente |
+| Sanitizar regex en queries de búsqueda | 🟡 Media | ⏳ Pendiente (helper listo, falta implementar en rutas frontend) |
 | HSTS header en next.config.mjs | 🟡 Alta | ✅ Completado |
 
 ---
@@ -75,7 +75,7 @@
 |---------|----------|--------|
 | MSW for tests (handlers + mocks setup) | 🟢 Low | ❌ Discarded — manual mocks instead (KISS) |
 | Zod validation on API routes | 🟡 Medium | ✅ Completed |
-| Sanitize regex in search queries | 🟡 Medium | ⏳ Pending |
+| Sanitize regex in search queries | 🟡 Medium | ⏳ Pending (helper ready, needs frontend routes) |
 | HSTS header in next.config.mjs | 🟡 High | ✅ Completed |
 
 ---
@@ -93,4 +93,4 @@
 | 5 | **Validación Zod en API routes** / _Zod validation on API routes_ | 🟡 Medio | ✅ Completado / _Done_ | 4-6h |
 | 6 | **Sanitizar regex en queries** / _Sanitize regex in queries_ | 🟡 Medio | ⏳ Pendiente / _Pending_ | 15min |
 | 7 | **Asegurar endpoint `/api/seed`** / _Secure `/api/seed` endpoint_ | 🟢 Bajo | ✅ Completado / _Done_ | 15min |
-| 8 | **Auditar dependencias** / _Dependency audit_ | 🟢 Bajo | ⏳ Pendiente / _Pending_ | 30min |
+| 8 | **Auditar dependencias** / _Dependency audit_ | 🟢 Bajo | ✅ Completado / _Completed_ | 30min |

@@ -294,6 +294,22 @@ Ver `docs/frontend-roadmap.md` — 5 fases, ~6-8 días hábiles.
 | TZ | Server timezone (e.g. America/Caracas) |
 | HSTS_ENABLED | Force HSTS in non-production (true/false, default: auto via NODE_ENV) |
 
+## Dependency Audit (Jun 2026)
+
+| Issue | Severity | Location | Fix | Estado |
+|-------|----------|----------|-----|--------|
+| PostCSS < 8.5.10 (XSS) | 🟡 Moderate | Bundled inside Next.js 16.2.9 | Requires Next.js update upstream | ⏳ WON'T FIX (tooling dep, not runtime) |
+| js-yaml (ReDoS) | 🟡 Moderate | Transitive via Jest's dependency chain | Would downgrade Jest 29 → 25 (breaking) | ⏳ WON'T FIX (tooling dep, not runtime) |
+
+Ambos son vulnerabilidades **moderadas en tooling/build**, no en runtime. Sin impacto en producción.
+
+## Utilities
+
+| File | Purpose |
+|------|---------|
+| `src/utils/escapeRegex.ts` | Escapa metacaracteres de regex para búsqueda segura |
+| `src/utils/phoneRegex.ts` | Validación de formato telefónico |
+
 ## Seed Data (`scripts/seed-full.ts`)
 
 | Concepto | Cantidad | Notas |
