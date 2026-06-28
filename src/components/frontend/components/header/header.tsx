@@ -5,6 +5,7 @@ import BookingButton from "../booking/bookingButton/bookingButton";
 import Modal from "../modal/modal";
 import MobilMenuWrapper from "./MobilMenuWrapper";
 import CartBadge from "@/components/frontend/CartBadge";
+import BookingIcon from "./BookingIcon";
 
 export default function Header() {
   return (
@@ -17,10 +18,15 @@ export default function Header() {
               <LogoBrand />
             </div>
             <MenuNav />
-            <MobilMenuWrapper />
-            <div className="hidden lg:flex justify-end lg:w-1/4 items-center gap-4">
+            <div className="flex items-center gap-3">
               <CartBadge />
-              <BookingButton />
+              <div className="lg:hidden">
+                <BookingIcon />
+              </div>
+              <div className="hidden lg:block">
+                <BookingButton />
+              </div>
+              <MobilMenuWrapper />
             </div>
           </div>
         </div>

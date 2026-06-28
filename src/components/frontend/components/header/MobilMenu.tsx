@@ -39,9 +39,7 @@ export default function MobilMenu() {
         >
           <BsXLg color="white" size="2rem" />
         </motion.button>
-        <div>
-            <Menu />
-        </div>
+        <Menu />
       </motion.nav>
     </div>
   );

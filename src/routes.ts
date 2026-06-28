@@ -9,23 +9,19 @@ export const routes = [
   },
   {
     path: "/menu",
-    title: "Our Menu",
-  },
-  {
-    path: "/#menu",
-    title: "Home — Our Menu",
+    title: "Menu",
   },
   {
     path: "/#chef",
-    title: "Our chef",
+    title: "Chef",
   },
   {
     path: "/#gallery",
-    title: "Our Gallery",
+    title: "Gallery",
   },
   {
     path: "/#awards",
-    title: "Our awards",
+    title: "Awards",
   },
   {
     path: "/#find",
