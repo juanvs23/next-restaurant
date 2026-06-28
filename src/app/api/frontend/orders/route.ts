@@ -24,6 +24,13 @@ export async function POST(req: NextRequest) {
     const config = await Config.findOne().lean();
     const exchangeRateBcv = config?.exchangeRateBcv ?? 0;
 
+    if (!exchangeRateBcv || exchangeRateBcv <= 0) {
+      return NextResponse.json(
+        { error: "Exchange rate not configured. Orders are temporarily unavailable." },
+        { status: 503 }
+      );
+    }
+
     // Map items to order format and calculate totals
     const items = parsed.data.items.map((item) => ({
       productId: item.productId,
