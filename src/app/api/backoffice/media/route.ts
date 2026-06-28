@@ -2,6 +2,7 @@ import { connectDB } from "@/database/connection";
 import { Media } from "@/database/models/media";
 import { Config } from "@/database/models/config";
 import { getStorageProvider } from "@/libs/services/storage-service";
+import { createMediaSchema } from "@/schemas/backoffice";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
@@ -46,6 +47,10 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const media = await Media.create(body);
+  const parsed = createMediaSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
+  }
+  const media = await Media.create(parsed.data);
   return NextResponse.json(media, { status: 201 });
 }

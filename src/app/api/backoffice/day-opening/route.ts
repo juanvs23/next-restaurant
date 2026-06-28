@@ -3,6 +3,7 @@ import { DayOpening } from "@/database/models/day-opening";
 import { DayClosing } from "@/database/models/day-closing";
 import { Config } from "@/database/models/config";
 import { auth } from "@/app/auth";
+import { createDayOpeningSchema } from "@/schemas/backoffice";
 import { NextRequest, NextResponse } from "next/server";
 import { validateSequentialOpen } from "@/libs/services/day-service";
 
@@ -28,6 +29,10 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
+  const parsed = createDayOpeningSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
+  }
   await connectDB();
 
   const config = await Config.findOne();
@@ -62,8 +67,8 @@ export async function POST(req: NextRequest) {
   const opening = await DayOpening.create({
     date: dateStr,
     openedBy: session.user?.name || session.user?.email || "unknown",
-    workShiftId: body.workShiftId || undefined,
-    notes: body.notes || "",
+    workShiftId: parsed.data.workShiftId || undefined,
+    notes: parsed.data.notes || "",
   });
 
   return NextResponse.json(opening, { status: 201 });

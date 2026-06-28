@@ -5,6 +5,7 @@ import { WorkShift } from "@/database/models/work-shift";
 import { Config } from "@/database/models/config";
 import { getLocalDayRange } from "@/libs/timezone";
 import { auth } from "@/app/auth";
+import { createCashAuditSchema } from "@/schemas/backoffice";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
@@ -22,11 +23,15 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
+  const parsed = createCashAuditSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
+  }
   await connectDB();
 
   const [config, ws] = await Promise.all([
     Config.findOne(),
-    body.workShiftId ? WorkShift.findById(body.workShiftId) : null,
+    parsed.data.workShiftId ? WorkShift.findById(parsed.data.workShiftId) : null,
   ]);
 
   const tz = config?.timezone || "-04:00";
@@ -57,16 +62,16 @@ export async function POST(req: NextRequest) {
   ]);
 
   const expectedCash = cashResult?.total || 0;
-  const declaredCash = Number(body.declaredCash);
+  const declaredCash = Number(parsed.data.declaredCash);
 
   const audit = await CashAudit.create({
     date: dateStr,
-    workShiftId: body.workShiftId || undefined,
+    workShiftId: parsed.data.workShiftId || undefined,
     workShiftName,
     expectedCash,
     declaredCash,
     difference: Math.round((declaredCash - expectedCash) * 100) / 100,
-    notes: body.notes || "",
+    notes: parsed.data.notes || "",
     createdBy: session.user?.name || session.user?.email || "unknown",
   });
 

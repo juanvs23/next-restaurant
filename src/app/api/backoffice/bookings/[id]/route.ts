@@ -1,12 +1,17 @@
 import { connectDB } from "@/database/connection";
 import { Booking } from "@/database/models/booking";
+import { updateBookingSchema } from "@/schemas/backoffice";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const body = await req.json();
+  const parsed = updateBookingSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
+  }
   await connectDB();
-  const updated = await Booking.findByIdAndUpdate(id, body, { new: true });
+  const updated = await Booking.findByIdAndUpdate(id, parsed.data, { new: true });
   if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(updated);
 }
@@ -14,6 +19,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const body = await req.json();
+  const parsed = updateBookingSchema.pick({ status: true }).safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
+  }
   await connectDB();
 
   const booking = await Booking.findById(id);
@@ -23,7 +32,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const bookingDate = new Date(booking.dateTime);
 
   // Rule: Reschedule requires 30 min advance notice
-  if (body.status === "rescheduled") {
+  if (parsed.data.status === "rescheduled") {
     const diffMs = bookingDate.getTime() - now.getTime();
     const diffMin = Math.floor(diffMs / 60000);
     if (diffMin < 30) {
@@ -35,7 +44,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
 
   // Apply status change
-  booking.status = body.status;
+  booking.status = parsed.data.status;
   await booking.save();
 
   return NextResponse.json(booking);

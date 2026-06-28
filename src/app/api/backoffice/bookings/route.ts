@@ -1,6 +1,7 @@
 import { connectDB } from "@/database/connection";
 import { Booking } from "@/database/models/booking";
 import { TableModel } from "@/database/models/table";
+import { createBookingSchema } from "@/schemas/backoffice";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
@@ -22,17 +23,14 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json() as any;
+  const parsed = createBookingSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
+  }
   await connectDB();
 
-  // Validate required fields
   const { firstName, lastName, email, dateTime, turnTime, numberPersons } =
-    body;
-  if (!firstName || !lastName || !email || !dateTime || !turnTime || !numberPersons) {
-    return NextResponse.json(
-      { error: "Missing required fields" },
-      { status: 400 }
-    );
-  }
+    parsed.data;
 
   // Find an available table
   const datePart = dateTime.substring(0, 10);
@@ -59,7 +57,7 @@ export async function POST(req: NextRequest) {
   );
 
   const booking = await Booking.create({
-    ...body,
+    ...parsed.data,
     tableId: availableTable?._id,
     status: "confirmed",
   });

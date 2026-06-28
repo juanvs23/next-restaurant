@@ -1,6 +1,7 @@
 import { connectDB } from "@/database/connection";
 import { User } from "@/database/models/user";
 import { requireRole } from "@/libs/auth/require-role";
+import { createUserSchema } from "@/schemas/backoffice";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
@@ -13,6 +14,10 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
+  const parsed = createUserSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
+  }
   await connectDB();
 
   // Check if email already exists
@@ -25,9 +30,7 @@ export async function POST(req: NextRequest) {
   }
 
   const user = await User.create({
-    name: body.name,
-    email: body.email,
-    password: body.password,
+    ...parsed.data,
     role: "user",
     provider: "credentials",
   });

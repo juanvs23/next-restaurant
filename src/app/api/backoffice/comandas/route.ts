@@ -1,6 +1,7 @@
 import { connectDB } from "@/database/connection";
 import { Comanda } from "@/database/models/comanda";
 import { Order } from "@/database/models/order";
+import { createComandaSchema } from "@/schemas/backoffice";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -44,7 +45,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
+  const parsed = createComandaSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
+  }
   await connectDB();
-  const comanda = await Comanda.create(body);
+  const comanda = await Comanda.create(parsed.data);
   return NextResponse.json(comanda, { status: 201 });
 }

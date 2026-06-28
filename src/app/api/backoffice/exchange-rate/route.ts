@@ -1,6 +1,7 @@
 import { connectDB } from "@/database/connection";
 import { Config } from "@/database/models/config";
 import { requireRole } from "@/libs/auth/require-role";
+import { exchangeRateSchema } from "@/schemas/backoffice";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
@@ -18,9 +19,13 @@ export async function POST(req: NextRequest) {
   if (error) return error;
 
   const body = await req.json().catch(() => ({}));
+  const parsed = exchangeRateSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
+  }
   await connectDB();
-  const bcvRate = body.exchangeRateBcv || 0;
-  const usdtRate = body.exchangeRateUsdt || 0;
+  const bcvRate = parsed.data.exchangeRateBcv || 0;
+  const usdtRate = parsed.data.exchangeRateUsdt || 0;
 
   if (bcvRate > 0 || usdtRate > 0) {
     const update: any = { lastRateUpdate: new Date() };

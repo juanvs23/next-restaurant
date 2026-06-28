@@ -2,6 +2,7 @@ import { connectDB } from "@/database/connection";
 import { Order } from "@/database/models/order";
 import { Config } from "@/database/models/config";
 import { auth } from "@/app/auth";
+import { updateOrderStatusSchema } from "@/schemas/backoffice";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -12,25 +13,29 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const { id } = await params;
   const body = await req.json();
+  const parsed = updateOrderStatusSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
+  }
   await connectDB();
 
   // If confirming payment, assign sequential invoice number
-  if (body.status === "paid") {
+  if (parsed.data.status === "paid") {
     // Atomically get and increment the invoice counter
     const config = await Config.findOneAndUpdate(
       {},
       { $inc: { nextInvoiceNumber: 1 } },
       { new: true, upsert: true }
     );
-    body.invoiceNumber = config.nextInvoiceNumber - 1; // value before increment
+    parsed.data.invoiceNumber = config.nextInvoiceNumber - 1; // value before increment
 
     // Assign confirmedBy from session
     const sessionForConfirm = await auth();
-    if (sessionForConfirm?.user?.name) body.confirmedBy = sessionForConfirm.user.name;
-    else if (sessionForConfirm?.user?.email) body.confirmedBy = sessionForConfirm.user.email;
+    if (sessionForConfirm?.user?.name) parsed.data.confirmedBy = sessionForConfirm.user.name;
+    else if (sessionForConfirm?.user?.email) parsed.data.confirmedBy = sessionForConfirm.user.email;
   }
 
-  const updated = await Order.findByIdAndUpdate(id, body, { new: true });
+  const updated = await Order.findByIdAndUpdate(id, parsed.data, { new: true });
   if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(updated);
 }

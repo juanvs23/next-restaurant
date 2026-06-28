@@ -3,6 +3,7 @@ import { CreditNote } from "@/database/models/credit-note";
 import { Order } from "@/database/models/order";
 import { Config } from "@/database/models/config";
 import { auth } from "@/app/auth";
+import { createCreditNoteSchema } from "@/schemas/backoffice";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
@@ -18,10 +19,14 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
+  const parsed = createCreditNoteSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
+  }
   await connectDB();
 
   // Validate original order
-  const order = await Order.findById(body.originalOrderId);
+  const order = await Order.findById(parsed.data.originalOrderId);
   if (!order) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
   }
@@ -30,15 +35,11 @@ export async function POST(req: NextRequest) {
   }
 
   // Validate amount
-  const amount = Number(body.amount);
+  const amount = Number(parsed.data.amount);
   if (amount <= 0 || amount > order.total) {
     return NextResponse.json({
       error: `Amount must be between 0.01 and ${order.total.toFixed(2)} (the original total)`,
     }, { status: 400 });
-  }
-
-  if (!body.reason?.trim()) {
-    return NextResponse.json({ error: "Reason is required" }, { status: 400 });
   }
 
   // Calculate proportional tax
@@ -61,7 +62,7 @@ export async function POST(req: NextRequest) {
     amount,
     taxAmount,
     total: amount + taxAmount,
-    reason: body.reason.trim(),
+    reason: parsed.data.reason.trim(),
     createdBy: session.user?.name || session.user?.email || "unknown",
     items: order.items?.map((i: any) => ({
       name: i.name, quantity: i.quantity, price: i.price,

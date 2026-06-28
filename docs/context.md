@@ -153,7 +153,7 @@ La separación entre backoffice y frontend es **parcial por diseño deliberado**
 
 1. ~~No file upload real~~ **(Resuelto — Storage híbrido Local/S3)**
 2. ~~**API sin auth**~~ **(Resuelto — middleware protege `/api/backoffice/*`, `requireRole()` en rutas críticas; `/api/frontend/*` queda público por diseño)**
-3. **Sin MSW** — Tests unitarios sin mock de API (msw instalado pero no hay handlers ni setup en `src/mocks/`)
+3. **Mock de API en tests** — Se evaluó MSW v2 pero se descartó por sobrecarga de configuración con next/jest (~15 paquetes ESM en transpilePackages + moduleNameMapper). Se opta por mocks manuales con `jest.fn()` para mantener KISS. Los 9 tests unitarios actuales usan este enfoque sin configuración extra.
 4. ~~**Separar backoffice del frontend**~~ **(Decisión arquitectónica — monorepo reutilizable como WordPress, separación lógica por prefijos)**
 5. ~~**Proteger API routes con auth**~~ **(Resuelto — middleware + requireRole)**
 6. ~~**Middleware check de auth usa accessToken (solo OAuth)**~~ **(Corregido — fallback a `userId`)**

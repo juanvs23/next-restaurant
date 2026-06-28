@@ -5,6 +5,7 @@ import { DayClosing } from "@/database/models/day-closing";
 import { DayOpening } from "@/database/models/day-opening";
 import { Config } from "@/database/models/config";
 import { auth } from "@/app/auth";
+import { closeDaySchema } from "@/schemas/backoffice";
 import { NextRequest, NextResponse } from "next/server";
 import { getDaySummary } from "@/libs/services/day-service";
 
@@ -15,6 +16,10 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json().catch(() => ({}));
+  const parsed = closeDaySchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Validation failed", details: parsed.error.flatten() }, { status: 400 });
+  }
   await connectDB();
 
   const config = await Config.findOne();
@@ -31,7 +36,7 @@ export async function POST(req: NextRequest) {
   const todayLocal = localNow.toISOString().slice(0, 10);
 
   // Use provided date or today in local timezone
-  const dateStr = body.date || todayLocal;
+  const dateStr = parsed.data.date || todayLocal;
   const isToday = dateStr === todayLocal;
 
   // Check if already closed

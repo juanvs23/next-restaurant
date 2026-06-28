@@ -32,12 +32,12 @@
 
 ### Pendiente real
 
-| Feature | Prioridad |
-|---------|-----------|
-| MSW para tests (handlers + mocks) | 🟢 Baja |
-| Validación Zod en API routes | 🟡 Media |
-| Sanitizar regex en queries de búsqueda | 🟡 Media |
-| HSTS header en next.config.mjs | 🟡 Alta |
+| Feature | Prioridad | Estado |
+|---------|-----------|--------|
+| MSW para tests (handlers + mocks) | 🟢 Baja | ❌ Descartado — se usan mocks manuales (KISS) |
+| Validación Zod en API routes | 🟡 Media | ✅ Completado |
+| Sanitizar regex en queries de búsqueda | 🟡 Media | ⏳ Pendiente |
+| HSTS header en next.config.mjs | 🟡 Alta | ✅ Completado |
 
 ---
 
@@ -71,12 +71,12 @@
 
 ### Actual Pending
 
-| Feature | Priority |
-|---------|----------|
-| MSW for tests (handlers + mocks setup) | 🟢 Low |
-| Zod validation on API routes | 🟡 Medium |
-| Sanitize regex in search queries | 🟡 Medium |
-| HSTS header in next.config.mjs | 🟡 High |
+| Feature | Priority | Status |
+|---------|----------|--------|
+| MSW for tests (handlers + mocks setup) | 🟢 Low | ❌ Discarded — manual mocks instead (KISS) |
+| Zod validation on API routes | 🟡 Medium | ✅ Completed |
+| Sanitize regex in search queries | 🟡 Medium | ⏳ Pending |
+| HSTS header in next.config.mjs | 🟡 High | ✅ Completed |
 
 ---
 
@@ -89,8 +89,8 @@
 | 1 | **Proteger rutas `/api/backoffice/*` con auth** / _Protect `/api/backoffice/*` routes with auth_ | 🔴 Crítico | ✅ Completado / _Done_ | 2-3h |
 | 2 | **Corregir `httpOnly: false`** en cookie `authjs.callback-url` / _Fix `httpOnly: false` on `authjs.callback-url` cookie_ | 🔴 Crítico | ✅ Completado / _Done_ | 15min |
 | 3 | **Rate limiting en login** / _Rate limiting on login_ | 🟡 Alto | ✅ Completado / _Done_ | 1-2h |
-| 4 | **Headers de seguridad (falta HSTS)** / _Security headers (HSTS missing)_ | 🟡 Alto | ⚠️ Parcial — falta HSTS / _Partial — HSTS missing_ | 5min restante |
-| 5 | **Validación Zod en API routes** / _Zod validation on API routes_ | 🟡 Medio | ⏳ Pendiente / _Pending_ | 4-6h |
+| 4 | **Headers de seguridad (HSTS)** / _Security headers (HSTS)_ | 🟡 Alto | ✅ Completado / _Done_ | 5min |
+| 5 | **Validación Zod en API routes** / _Zod validation on API routes_ | 🟡 Medio | ✅ Completado / _Done_ | 4-6h |
 | 6 | **Sanitizar regex en queries** / _Sanitize regex in queries_ | 🟡 Medio | ⏳ Pendiente / _Pending_ | 15min |
 | 7 | **Asegurar endpoint `/api/seed`** / _Secure `/api/seed` endpoint_ | 🟢 Bajo | ✅ Completado / _Done_ | 15min |
 | 8 | **Auditar dependencias** / _Dependency audit_ | 🟢 Bajo | ⏳ Pendiente / _Pending_ | 30min |
