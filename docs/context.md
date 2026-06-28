@@ -229,6 +229,56 @@ npm run test:e2e         # correr tests
 
 HSTS usa flag híbrido: `NODE_ENV=production` lo activa automáticamente; en staging/dev se forza con `HSTS_ENABLED=true`.
 
+## Frontend Delivery Order Flow
+
+Los pedidos realizados desde el frontend público (carrito en landing/menu) siguen un flujo **con revisión de staff**, sin crear comandas automáticamente.
+
+### Flujo completo
+
+```
+Cliente → POST /api/frontend/orders → Order(source:"frontend", status:"pending")
+    ↓
+Staff ve en dashboard "Pedidos Pendientes"
+    ↓
+┌── Acepta ──────────────────────┐   ┌── Rechaza ──────────────────┐
+│ Crea Comanda(isDelivery:true,   │   │ Order.status → "cancelled"  │
+│   tableId:null,                 │   │ (con motivo opcional)       │
+│   tableLabel:"Delivery - [nom]")│   └─────────────────────────────┘
+│ Crea Pedido(items, "pending")   │
+│ Order.comandaId = comanda._id   │
+│ Order.pedidoIds = [pedido._id]  │
+│ Order.status → "pending" (pago) │
+└─────────────────────────────────┘
+    ↓
+Flujo existente: cocina prepara → sirve → factura
+```
+
+### Decisiones arquitectónicas
+
+| Aspecto | Decisión |
+|---------|----------|
+| **Modelo** | Se reusa Comanda/Pedido/Order existente. Comanda con `isDelivery:true`, `tableId:null`. |
+| **Source** | Order agrega campo `source: ["backoffice", "frontend"]` para filtrar. |
+| **Precios** | USD → Bs. con `Config.exchangeRateBcv` (tasa BCV). Congelado en `Order.exchangeRateBcv` al crear la orden. |
+| **Carrito** | Redux Toolkit (el existente), no se agrega Zustand. |
+| **Tax/Charge calc** | El server calcula al ACEPTAR la orden, no en frontend. |
+| **Popularidad** | Pendiente de definir (automático vs manual). |
+| **Pedidos desde mesa** | Pospuesto para después del MVP delivery. |
+
+### Componentes nuevos necesarios
+
+| Componente | Descripción |
+|------------|-------------|
+| `GET /api/frontend/menu` | Landing: categorías + top productos |
+| `GET /api/frontend/menu/breakdown` | Breakdown completo con filtros |
+| `POST /api/frontend/orders` | Crear pedido delivery (status "pending", source "frontend") |
+| `GET /api/backoffice/orders/pending` | Staff: listar órdenes frontend pendientes |
+| `PUT /api/backoffice/orders/[id]/review` | Staff: aceptar (crea comanda+pedido) o rechazar |
+| Staff "Pending Orders" view | Sección en dashboard para revisar pedidos |
+
+### Roadmap completo
+Ver `docs/frontend-roadmap.md` — 5 fases, ~6-8 días hábiles.
+
 ## Environment Variables
 
 | Variable | Description |
