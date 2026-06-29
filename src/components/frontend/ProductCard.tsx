@@ -10,7 +10,7 @@ import { useAppSelector } from "@/libs/store/hooks";
 import { selectCartItems } from "@/libs/store/slicers/cartSlicer";
 import { cn } from "@/lib/utils";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay, EffectFade, Navigation } from "swiper/modules";
+import { Pagination, EffectFade, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
@@ -81,7 +81,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             />
           ) : (
             <Swiper
-              modules={[Pagination, Autoplay, EffectFade, Navigation]}
+              modules={[Pagination, EffectFade, Navigation]}
               effect="fade"
               speed={800}
               navigation
@@ -89,7 +89,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                 clickable: true,
                 dynamicBullets: true,
               }}
-              autoplay={{ delay: 4000, disableOnInteraction: false }}
               loop
               className="card-swiper h-full w-full"
             >
@@ -147,13 +146,13 @@ export default function ProductCard({ product }: ProductCardProps) {
       <style jsx>{`
         .card-swiper .swiper-button-next,
         .card-swiper .swiper-button-prev {
-          color: #dcca87;
+          color: #f5efdb;
           opacity: 0;
           transition: opacity 0.3s;
         }
         .card-swiper:hover .swiper-button-next,
         .card-swiper:hover .swiper-button-prev {
-          opacity: 0.8;
+          opacity: 0.9;
         }
         .card-swiper .swiper-button-next:hover,
         .card-swiper .swiper-button-prev:hover {
@@ -166,7 +165,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           text-shadow: 0 0 6px rgba(0,0,0,0.6);
         }
         .card-swiper .swiper-pagination-bullet {
-          background: #dcca87;
+          background: #f5efdb;
           opacity: 0.4;
         }
         .card-swiper .swiper-pagination-bullet-active {
