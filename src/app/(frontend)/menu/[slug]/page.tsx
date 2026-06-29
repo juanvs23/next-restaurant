@@ -39,7 +39,7 @@ export async function generateMetadata({
     cache: "no-store",
   });
 
-  if (!res.ok) return { title: "Producto no encontrado — GERÍCHT" };
+  if (!res.ok) notFound();
 
   const product: ProductDetail = await res.json();
   return {

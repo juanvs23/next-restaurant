@@ -1,13 +1,18 @@
 import { z } from "zod";
-import { phoneRegex } from "@/utils/phoneRegex";
+import { phoneRegex, isValidPhone } from "@/utils/phoneRegex";
 
 export const checkoutSchema = z.object({
   customer: z.object({
-    name: z.string().min(1, "Customer name is required"),
+    name: z
+      .string()
+      .trim()
+      .min(1, "Customer name is required")
+      .refine((v) => v.trim().length > 0, "Customer name cannot be only whitespace"),
     email: z.string().email("Invalid email format").optional(),
     phone: z
       .string()
-      .regex(phoneRegex, "Invalid phone number format"),
+      .regex(phoneRegex, "Invalid phone number format")
+      .refine(isValidPhone, "Phone number must have 7 to 15 digits"),
   }),
   items: z
     .array(

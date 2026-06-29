@@ -83,12 +83,12 @@ export const selectCartCount = (state: RootState) =>
   state.cart.items.reduce((sum, item) => sum + item.quantity, 0);
 export const selectSubtotal = (state: RootState) =>
   state.cart.items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + (item.price || 0) * (item.quantity || 0),
     0
   );
 export const selectSubtotalBs = (state: RootState) =>
   state.cart.items.reduce(
-    (sum, item) => sum + item.priceBs * item.quantity,
+    (sum, item) => sum + (item.priceBs || 0) * (item.quantity || 0),
     0
   );
 

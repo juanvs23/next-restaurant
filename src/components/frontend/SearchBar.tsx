@@ -50,6 +50,7 @@ export default function SearchBar({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
+        aria-label={placeholder}
         className={cn(
           "w-full rounded-full border border-white2/20 bg-black2/60 py-2.5 pl-10 pr-10",
           "text-sm text-white2 placeholder:text-white2/30",

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useAppDispatch } from "@/libs/store/hooks";
 import { addItem } from "@/libs/store/slicers/cartSlicer";
 import { formatVes } from "@/libs/currency";
-import { safeSetItem } from "@/utils/localStorage";
 import { useAppSelector } from "@/libs/store/hooks";
 import { selectCartItems } from "@/libs/store/slicers/cartSlicer";
 import { cn } from "@/lib/utils";

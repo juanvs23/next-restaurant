@@ -9,10 +9,6 @@ export const store = configureStore({
     booking: bookingSlicer,
     cart: cartSlicer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -23,7 +23,11 @@ export async function GET(req: NextRequest) {
     }
 
     if (category) {
-      filter.categoryId = category;
+      // Validate ObjectId (24 hex chars) to prevent CastError
+      if (/^[a-fA-F0-9]{24}$/.test(category)) {
+        filter.categoryId = category;
+      }
+      // Invalid format → filter returns empty, graceful (not 500)
     }
 
     const [products, categories, config] = await Promise.all([

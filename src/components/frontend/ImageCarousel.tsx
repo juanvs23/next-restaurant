@@ -41,9 +41,6 @@ export default function ImageCarousel({
           src={imageSrc(selectedIndex)}
           alt={`${productName} - imagen ${selectedIndex + 1}`}
           className="aspect-square w-full object-cover transition-opacity duration-300"
-          style={{
-            viewTransitionName: "product-main-image",
-          }}
         />
       </div>
 
@@ -55,6 +52,7 @@ export default function ImageCarousel({
               key={idx}
               type="button"
               onClick={() => setSelectedIndex(idx)}
+              aria-label={`${productName} - miniatura ${idx + 1}`}
               className={cn(
                 "h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border-2 transition-all duration-200",
                 idx === selectedIndex
