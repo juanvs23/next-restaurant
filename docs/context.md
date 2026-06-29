@@ -440,7 +440,7 @@ Entradas, Sopas, Ensaladas, Platos Principales, Pastas, Carnes, Pescados & Maris
 
 ### XPending
 - ~~CRITICAL-002: fetch `localhost:3000` in SSR pages~~ **(Resuelto — utility getBaseUrl.ts con headers())**
-- Review warnings (11) + suggestions (5) from adversarial audit
+- ~~Review warnings (11) + suggestions (5) from adversarial audit~~ **(Resueltos — commit ad33d43)**
 - Pipeline: review → scribe → archive → PR
 
 - **Kernel note**: Ubuntu 26.04 (kernel 7.0.0) incompatible with MongoDB 8.0+ (SIGSEGV). Upgrade blocked until 8.x fixes.
