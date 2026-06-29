@@ -143,35 +143,6 @@ export default function ProductCard({ product }: ProductCardProps) {
           </button>
         </div>
       </div>
-      <style jsx>{`
-        .card-swiper .swiper-button-next,
-        .card-swiper .swiper-button-prev {
-          color: #f5efdb;
-          opacity: 0;
-          transition: opacity 0.3s;
-        }
-        .card-swiper:hover .swiper-button-next,
-        .card-swiper:hover .swiper-button-prev {
-          opacity: 0.9;
-        }
-        .card-swiper .swiper-button-next:hover,
-        .card-swiper .swiper-button-prev:hover {
-          opacity: 1;
-        }
-        .card-swiper .swiper-button-next::after,
-        .card-swiper .swiper-button-prev::after {
-          font-size: 1rem;
-          font-weight: bold;
-          text-shadow: 0 0 6px rgba(0,0,0,0.6);
-        }
-        .card-swiper .swiper-pagination-bullet {
-          background: #f5efdb;
-          opacity: 0.4;
-        }
-        .card-swiper .swiper-pagination-bullet-active {
-          opacity: 1;
-        }
-      `}</style>
     </div>
   );
 }
