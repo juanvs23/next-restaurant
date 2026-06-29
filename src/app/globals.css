@@ -1102,9 +1102,9 @@ span.hero-counter.swiper-pagination-bullet-active::after {
 /* ── ProductCard Swiper ── */
 
 .card-swiper {
-  --swiper-navigation-color: var(--golden);
-  --swiper-pagination-color: var(--golden);
-  --swiper-pagination-bullet-inactive-color: var(--golden);
+  --swiper-navigation-color: var(--golden2);
+  --swiper-pagination-color: var(--golden2);
+  --swiper-pagination-bullet-inactive-color: var(--golden2);
   --swiper-pagination-bullet-inactive-opacity: 0.4;
 }
 
