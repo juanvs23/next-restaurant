@@ -22,22 +22,26 @@ export default function SearchBar({
   const [value, setValue] = useState(defaultValue);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const onSearchRef = useRef(onSearch);
+  onSearchRef.current = onSearch;
 
   // Sync internal state with prop changes (e.g., browser back/forward)
   useEffect(() => {
     setValue(defaultValue);
   }, [defaultValue]);
+
+  // Debounce: sync value → callback after 300ms of inactivity
   useEffect(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     timeoutRef.current = setTimeout(() => {
-      onSearch(value);
+      onSearchRef.current(value);
     }, 300);
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [value, onSearch]);
+  }, [value]);
 
   const handleClear = () => {
     setValue("");

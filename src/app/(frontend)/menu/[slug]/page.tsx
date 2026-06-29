@@ -36,7 +36,7 @@ export async function generateMetadata({
   const baseUrl = await getBaseUrl();
 
   const res = await fetch(`${baseUrl}/api/frontend/menu/${slug}`, {
-    cache: "no-store",
+    next: { revalidate: 60 },
   });
 
   if (!res.ok) notFound();
@@ -55,7 +55,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const baseUrl = await getBaseUrl();
 
   const res = await fetch(`${baseUrl}/api/frontend/menu/${slug}`, {
-    cache: "no-store",
+    next: { revalidate: 60 },
   });
 
   if (!res.ok) notFound();

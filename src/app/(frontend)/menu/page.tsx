@@ -54,7 +54,7 @@ export default async function MenuPage({
 
   const res = await fetch(
     `${baseUrl}/api/frontend/menu/breakdown${queryString ? `?${queryString}` : ""}`,
-    { cache: "no-store" }
+    { next: { revalidate: 60 } }
   );
 
   if (!res.ok) {
