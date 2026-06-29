@@ -56,7 +56,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       className={cn(
         "group flex flex-col overflow-hidden rounded-lg border border-white2/10",
         "bg-black2/60 shadow-sm transition-all duration-300",
-        "hover:shadow-lg hover:-translate-y-1 hover:border-golden/30"
+        "hover:shadow-lg"
       )}
     >
       {/* Image */}
