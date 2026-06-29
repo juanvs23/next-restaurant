@@ -9,6 +9,10 @@ import { formatVes } from "@/libs/currency";
 import { useAppSelector } from "@/libs/store/hooks";
 import { selectCartItems } from "@/libs/store/slicers/cartSlicer";
 import { cn } from "@/lib/utils";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 
 // ── Types ──
 
@@ -31,8 +35,8 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const dispatch = useAppDispatch();
   const items = useAppSelector(selectCartItems);
-  const firstImage = product.images?.[0];
-  const imageSrc = firstImage || undefined;
+  const images = product.images?.length ? product.images : [];
+  const firstImage = images[0];
 
   const inCart = items.find((i) => i.productId === product._id);
   const cartQty = inCart?.quantity ?? 0;
@@ -59,19 +63,44 @@ export default function ProductCard({ product }: ProductCardProps) {
         "hover:shadow-lg"
       )}
     >
-      {/* Image */}
+      {/* Image carousel */}
       <Link
         href={`/menu/${product.slug}`}
         className="relative aspect-[4/3] overflow-hidden"
       >
-        {imageSrc ? (
-          <Image
-            src={imageSrc}
-            alt={product.name}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+        {images.length > 0 ? (
+          images.length === 1 ? (
+            <Image
+              src={images[0]}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-cover"
+            />
+          ) : (
+            <Swiper
+              modules={[Pagination, Autoplay]}
+              pagination={{
+                clickable: true,
+                dynamicBullets: true,
+              }}
+              autoplay={{ delay: 4000, disableOnInteraction: false }}
+              loop
+              className="h-full w-full"
+            >
+              {images.map((src, i) => (
+                <SwiperSlide key={i}>
+                  <Image
+                    src={src}
+                    alt={`${product.name} - ${i + 1}`}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover"
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          )
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-white2/5">
             <ImageIcon className="h-10 w-10 text-white2/20" />
