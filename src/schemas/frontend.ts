@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { phoneRegex, isValidPhone } from "@/utils/phoneRegex";
 
+const objectIdPattern = /^[a-fA-F0-9]{24}$/;
+
 export const checkoutSchema = z.object({
   customer: z.object({
     name: z
@@ -17,7 +19,10 @@ export const checkoutSchema = z.object({
   items: z
     .array(
       z.object({
-        productId: z.string().min(1, "Product ID is required"),
+        productId: z
+          .string()
+          .min(1, "Product ID is required")
+          .regex(objectIdPattern, "Invalid product ID format"),
         productName: z.string().min(1, "Product name is required"),
         price: z.number().nonnegative("Price must be non-negative"),
         quantity: z
