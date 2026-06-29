@@ -37,6 +37,7 @@ export const createProductSchema = z.object({
   taxRate: z.number().min(0).max(1).optional(),
   taxIds: z.array(z.string()).optional(),
   available: z.boolean().optional(),
+  featured: z.boolean().optional(),
 });
 
 export const updateProductSchema = z.object({
@@ -51,6 +52,7 @@ export const updateProductSchema = z.object({
   taxRate: z.number().min(0).max(1).optional(),
   taxIds: z.array(z.string()).optional(),
   available: z.boolean().optional(),
+  featured: z.boolean().optional(),
 });
 
 // ── Orders ──
@@ -127,6 +129,7 @@ export const createCreditNoteSchema = z.object({
 export const createDayOpeningSchema = z.object({
   workShiftId: z.string().optional(),
   notes: z.string().max(500).optional(),
+  exchangeRateBcv: z.number().min(0.01, "Exchange rate is required to open the day"),
 });
 
 // ── Cash Audit ──
@@ -325,7 +328,21 @@ export const updateBookingSchema = z.object({
 
 // ── Order status update (PATCH) ──
 export const updateOrderStatusSchema = z.object({
-  status: z.enum(["pending", "paid", "cancelled"]),
+  status: z.enum(["pending", "paid", "cancelled"]).optional(),
+  items: z.array(orderItemSchema).optional(),
+  subtotal: z.number().optional(),
+  total: z.number().optional(),
+  customer: z.object({
+    name: z.string().optional(),
+    email: z.string().email().optional().or(z.literal("")),
+    phone: z.string().optional(),
+  }).optional(),
+  paymentMethod: z.string().optional(),
+  paymentType: z.string().optional(),
+  paymentData: z.record(z.string()).optional(),
+  notes: z.string().optional(),
+  confirmedBy: z.string().optional(),
+  invoiceNumber: z.number().optional(),
 });
 
 // ── Comanda (update via PATCH) ──

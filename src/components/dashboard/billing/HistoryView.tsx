@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useT } from "@/i18n/useT";
-import { formatVes } from "@/libs/currency";
+import { formatVes, formatUsd } from "@/libs/currency";
 
 interface HistoryViewProps {
   orders: any[];
@@ -65,13 +65,28 @@ export default function HistoryView({
 }: HistoryViewProps) {
   const { t } = useT();
 
-  const toVes = (usd: number) => bcvRate > 0 ? usd * bcvRate : usd;
-
   const paidOrders = orders.filter((o) => o.status === "paid");
-  const totalRevenue = paidOrders.reduce((s, o) => s + toVes(o.total || 0), 0);
-  const totalTax = paidOrders.reduce((s, o) => s + toVes(o.totalTax || 0), 0);
-  const totalCharges = paidOrders.reduce((s, o) => s + toVes(o.totalCharge || 0), 0);
-  const avgTicket = paidOrders.length > 0 ? totalRevenue / paidOrders.length : 0;
+  const totalRevenue = paidOrders.reduce((s, o) => s + (o.total || 0), 0);
+  const totalUsd = paidOrders.reduce((s, o) => s + (o.totalUsdRef || 0), 0);
+
+  // Aggregate charges by name
+  const chargesMap = new Map<string, number>();
+  for (const o of paidOrders) {
+    for (const ch of o.orderCharges || [])
+      chargesMap.set(ch.name, (chargesMap.get(ch.name) || 0) + (ch.amount || 0));
+  }
+
+  // Aggregate taxes by name
+  const taxesMap = new Map<string, number>();
+  for (const o of paidOrders) {
+    for (const tx of o.globalTaxBreakdown || [])
+      taxesMap.set(tx.name, (taxesMap.get(tx.name) || 0) + (tx.amount || 0));
+    for (const it of o.items || [])
+      for (const tx of it.taxBreakdown || [])
+        taxesMap.set(tx.name, (taxesMap.get(tx.name) || 0) + (tx.amount || 0));
+    if (taxesMap.size === 0 && (o.totalTax || 0) > 0)
+      taxesMap.set("IVA", (taxesMap.get("IVA") || 0) + (o.totalTax || 0));
+  }
 
   return (
     <div className="space-y-4">
@@ -83,6 +98,9 @@ export default function HistoryView({
           </CardHeader>
           <CardContent>
             <p className="text-xl font-bold">{formatVes(totalRevenue)}</p>
+            {totalUsd > 0 && bcvRate > 0 && (
+              <p className="text-xs text-muted-foreground">{formatUsd(totalUsd)}</p>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -95,18 +113,36 @@ export default function HistoryView({
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs text-muted-foreground">{t("billing.avgTicket") || "Avg ticket"}</CardTitle>
+            <CardTitle className="text-xs text-muted-foreground">{t("reports.charges") || "Charges"}</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-xl font-bold">{formatVes(avgTicket)}</p>
+          <CardContent className="space-y-0.5">
+            {chargesMap.size === 0 ? (
+              <p className="text-xs text-muted-foreground">—</p>
+            ) : (
+              Array.from(chargesMap.entries()).map(([name, amount]) => (
+                <div key={name} className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">{name}</span>
+                  <span className="font-medium">{formatVes(amount)}</span>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs text-muted-foreground">{t("billing.taxesAndCharges") || "Taxes + charges"}</CardTitle>
+            <CardTitle className="text-xs text-muted-foreground">{t("reports.totalTax") || "Taxes"}</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-xl font-bold">{formatVes(toVes(totalTax + totalCharges))}</p>
+          <CardContent className="space-y-0.5">
+            {taxesMap.size === 0 ? (
+              <p className="text-xs text-muted-foreground">—</p>
+            ) : (
+              Array.from(taxesMap.entries()).map(([name, amount]) => (
+                <div key={name} className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">{name}</span>
+                  <span className="font-medium">{formatVes(amount)}</span>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
       </div>
@@ -215,7 +251,7 @@ export default function HistoryView({
                     </TableCell>
                     <TableCell>{o.paymentMethod}</TableCell>
                     <TableCell className="text-right font-medium">
-                      {o.total ? formatVes(toVes(o.total)) : "—"}
+                      {o.total ? formatVes(o.total) : "—"}
                     </TableCell>
                     <TableCell>
                       <span
@@ -234,7 +270,7 @@ export default function HistoryView({
                         size="sm"
                         variant="ghost"
                         className="h-7 text-xs"
-                        onClick={() => onDayDetail(o)}
+                        onClick={() => onDetail(o)}
                       >
                         {t("billing.details")}
                       </Button>

@@ -165,10 +165,9 @@ async function main() {
   console.log("✅ Turnos de trabajo creados");
 
   // 5. Taxes
-  const [ivaId, alcoholId] = [new mongoose.Types.ObjectId(), new mongoose.Types.ObjectId()];
+  const ivaId = new mongoose.Types.ObjectId();
   await db.collection("taxes").insertMany([
     { _id: ivaId, name: "IVA 16%", rate: 0.16, scope: "global", active: true, applyToServiceCharge: true, applyToDelivery: false, categoryIds: [], createdAt: new Date(), updatedAt: new Date() },
-    { _id: alcoholId, name: "Alcohol 5%", rate: 0.05, scope: "product", active: true, categoryIds: [], createdAt: new Date(), updatedAt: new Date() },
   ]);
   console.log("✅ Impuestos creados");
 
@@ -308,12 +307,16 @@ async function main() {
 
       const chargeAmount = Math.round(subtotal * 0.1 * 100) / 100;
       const totalTax = Math.round((subtotal + chargeAmount) * 0.16 * 100) / 100;
-      const total = Math.round((subtotal + chargeAmount + totalTax) * 100) / 100;
+      const totalUsd = Math.round((subtotal + chargeAmount + totalTax) * 100) / 100;
+      const rate = 60; // BCV rate from Config seed
+
+      const toVes = (usd: number) => Math.round(usd * rate * 100) / 100;
+
       const isPaid = shouldClose || Math.random() > 0.3;
       const pm = pickRandom(pms);
 
       if (isPaid && !isToday) {
-        orderDocs.push({ comandaId, pedidoIds, tableLabel: table.name, isDelivery: false, source: "backoffice", items: orderItems, serviceCharge: chargeAmount, deliveryCost: 0, orderCharges: [{ name: "Servicio 10%", type: "percentage", value: 10, amount: chargeAmount }], totalCharge: chargeAmount, subtotal, totalTax, total, globalTaxBreakdown: [{ name: "IVA 16%", rate: 0.16, amount: totalTax }], status: "paid", paymentMethod: pmLabels[pm], paymentType: pm, paymentData: { amountReceived: String(total + randInt(0, 20)) }, invoiceNumber: invoiceNum++, customer: { name: customer }, notes: "", createdBy: "Admin GERÍCHT", confirmedBy: "Admin GERÍCHT", createdAt, updatedAt: new Date(createdAt.getTime() + randInt(30, 120) * 60000) });
+        orderDocs.push({ comandaId, pedidoIds, tableLabel: table.name, isDelivery: false, source: "backoffice", items: orderItems, serviceCharge: toVes(chargeAmount), deliveryCost: 0, orderCharges: [{ name: "Servicio 10%", type: "percentage", value: 10, amount: toVes(chargeAmount) }], totalCharge: toVes(chargeAmount), subtotal: toVes(subtotal), totalTax: toVes(totalTax), total: toVes(totalUsd), totalUsdRef: totalUsd, exchangeRateBcv: rate, globalTaxBreakdown: [{ name: "IVA 16%", rate: 0.16, amount: toVes(totalTax) }], status: "paid", paymentMethod: pmLabels[pm], paymentType: pm, paymentData: { amountReceived: String(toVes(totalUsd) + randInt(0, 20)) }, invoiceNumber: invoiceNum++, customer: { name: customer }, notes: "", createdBy: "Admin GERÍCHT", confirmedBy: "Admin GERÍCHT", createdAt, updatedAt: new Date(createdAt.getTime() + randInt(30, 120) * 60000) });
       }
     }
 

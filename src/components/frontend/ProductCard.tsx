@@ -32,9 +32,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const dispatch = useAppDispatch();
   const items = useAppSelector(selectCartItems);
   const firstImage = product.images?.[0];
-  const imageSrc = firstImage
-    ? `/uploads/food/${firstImage}`
-    : undefined;
+  const imageSrc = firstImage || undefined;
 
   const inCart = items.find((i) => i.productId === product._id);
   const cartQty = inCart?.quantity ?? 0;

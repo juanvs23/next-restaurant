@@ -8,6 +8,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { useT } from "@/i18n/useT";
+import { formatVes } from "@/libs/currency";
 
 export interface CreditNoteDialogProps {
   open: boolean;
@@ -65,7 +66,7 @@ export default function CreditNoteDialog({ open, onOpenChange, order, onIssued }
             </div>
             <div className="border rounded-lg p-3 text-sm space-y-1">
               <div className="flex justify-between"><span>#</span><span className="font-medium">CN-{String(cnResult.note.creditNoteNumber).padStart(5, "0")}</span></div>
-              <div className="flex justify-between"><span>Amount</span><span className="font-medium">-${cnResult.note.total.toFixed(2)}</span></div>
+              <div className="flex justify-between"><span>Amount</span><span className="font-medium">-{formatVes(cnResult.note.total)}</span></div>
               <div className="flex justify-between"><span>Reason</span><span className="text-muted-foreground">{cnResult.note.reason}</span></div>
             </div>
             <Button variant="outline" className="w-full" onClick={() => { onOpenChange(false); setCnResult(null); }}>OK</Button>
@@ -76,7 +77,7 @@ export default function CreditNoteDialog({ open, onOpenChange, order, onIssued }
               <div className="text-sm text-muted-foreground space-y-1">
                 <div className="flex justify-between"><span>Original invoice</span><span className="font-medium"># INV-{String(order.invoiceNumber || "").padStart(5, "0")}</span></div>
                 <div className="flex justify-between"><span>{t("billing.customer")}</span><span className="font-medium">{order.customer?.name || t("billing.walkIn")}</span></div>
-                <div className="flex justify-between"><span>Original total</span><span className="font-medium">${order.total?.toFixed(2)}</span></div>
+                <div className="flex justify-between"><span>Original total</span><span className="font-medium">{formatVes(order.total)}</span></div>
               </div>
             )}
             <div className="grid gap-2">

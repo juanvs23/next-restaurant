@@ -9,6 +9,7 @@ const dayOpeningSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "WorkShift",
     },
+    exchangeRateBcv: { type: Number, required: true }, // BCV rate at opening
     notes: { type: String },
   },
   { timestamps: true }

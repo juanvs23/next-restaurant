@@ -19,6 +19,30 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
   await connectDB();
 
+  // If items are updated, recalculate totals and convert to VES
+  if (parsed.data.items && parsed.data.items.length > 0) {
+    const config = await Config.findOne();
+    const exchangeRateBcv = config?.exchangeRateBcv || 0;
+
+    // Subtotal in USD from item prices
+    const subtotalUsd = parsed.data.items.reduce(
+      (s: number, it: any) => s + (it.price || 0) * (it.quantity || 1),
+      0
+    );
+
+    // Total in VES using current exchange rate (frozen at edit time)
+    const totalVes = exchangeRateBcv > 0
+      ? Math.round(subtotalUsd * exchangeRateBcv * 100) / 100
+      : 0;
+
+    parsed.data.subtotal = totalVes;
+    parsed.data.total = totalVes;
+    parsed.data.totalUsdRef = Math.round(subtotalUsd * 100) / 100;
+    parsed.data.exchangeRateBcv = exchangeRateBcv;
+    parsed.data.totalTax = 0;
+    parsed.data.totalCharge = 0;
+  }
+
   // If confirming payment, assign sequential invoice number
   if (parsed.data.status === "paid") {
     // Atomically get and increment the invoice counter

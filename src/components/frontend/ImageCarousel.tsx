@@ -31,7 +31,7 @@ export default function ImageCarousel({
     );
   }
 
-  const imageSrc = (idx: number) => `/uploads/food/${images[idx]}`;
+  const imageSrc = (idx: number) => images[idx];
 
   return (
     <div className="space-y-4">

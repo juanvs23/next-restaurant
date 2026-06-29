@@ -68,8 +68,16 @@ export async function POST(req: NextRequest) {
     date: dateStr,
     openedBy: session.user?.name || session.user?.email || "unknown",
     workShiftId: parsed.data.workShiftId || undefined,
+    exchangeRateBcv: parsed.data.exchangeRateBcv,
     notes: parsed.data.notes || "",
   });
+
+  // Update the global exchange rate with the confirmed day rate
+  await Config.findOneAndUpdate(
+    {},
+    { exchangeRateBcv: parsed.data.exchangeRateBcv, lastRateUpdate: new Date() },
+    { upsert: true }
+  );
 
   return NextResponse.json(opening, { status: 201 });
 }

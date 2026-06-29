@@ -7,6 +7,7 @@ import {
   ResponsiveGrid,
   MenuFilters,
 } from "@/components/frontend";
+import { getBaseUrl } from "@/utils/getBaseUrl";
 
 export const metadata: Metadata = {
   title: "Menú — GERÍCHT",
@@ -44,7 +45,7 @@ export default async function MenuPage({
   searchParams: Promise<{ search?: string; category?: string }>;
 }) {
   const params = await searchParams;
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const baseUrl = await getBaseUrl();
 
   const qs = new URLSearchParams();
   if (params.search) qs.set("search", params.search);

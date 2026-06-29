@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { ImageCarousel } from "@/components/frontend";
 import { formatVes } from "@/libs/currency";
+import { getBaseUrl } from "@/utils/getBaseUrl";
 import { AddToCartButton } from "./AddToCartButton";
 
 // ── Types ──
@@ -32,7 +33,7 @@ export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const baseUrl = await getBaseUrl();
 
   const res = await fetch(`${baseUrl}/api/frontend/menu/${slug}`, {
     cache: "no-store",
@@ -51,7 +52,7 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const baseUrl = await getBaseUrl();
 
   const res = await fetch(`${baseUrl}/api/frontend/menu/${slug}`, {
     cache: "no-store",

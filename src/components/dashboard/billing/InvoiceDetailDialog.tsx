@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { useT } from "@/i18n/useT";
 import CreditNoteDialog from "./CreditNoteDialog";
+import { formatVes, formatUsd } from "@/libs/currency";
 
 interface InvoiceDetailDialogProps {
   open: boolean;
@@ -21,6 +22,9 @@ export default function InvoiceDetailDialog({ open, onOpenChange, order, onRefre
   const [cnOpen, setCnOpen] = useState(false);
 
   if (!order) return null;
+
+  const rate = order.exchangeRateBcv || 1;
+  const toVes = (usd: number) => usd * rate;
 
   const taxMap = new Map<string, number>();
   for (const it of order.items || []) {
@@ -72,7 +76,7 @@ export default function InvoiceDetailDialog({ open, onOpenChange, order, onRefre
                 {(order.items || []).map((it: any, i: number) => (
                   <div key={i} className="flex justify-between px-3 py-1.5 text-sm">
                     <span>{it.quantity}x {it.name}</span>
-                    <span className="font-medium">${(it.price * it.quantity).toFixed(2)}</span>
+                    <span className="font-medium">{formatVes(toVes(it.price * it.quantity))}</span>
                   </div>
                 ))}
               </div>
@@ -86,7 +90,7 @@ export default function InvoiceDetailDialog({ open, onOpenChange, order, onRefre
                   {(order.orderCharges || []).map((ch: any, i: number) => (
                     <div key={i} className="flex justify-between px-3 py-1.5 text-sm">
                       <span>{ch.name}</span>
-                      <span>${Number(ch.amount).toFixed(2)}</span>
+                      <span>{formatVes(toVes(Number(ch.amount)))}</span>
                     </div>
                   ))}
                 </div>
@@ -101,7 +105,7 @@ export default function InvoiceDetailDialog({ open, onOpenChange, order, onRefre
                   {Array.from(taxMap.entries()).map(([name, amount]) => (
                     <div key={name} className="flex justify-between px-3 py-1.5 text-sm">
                       <span>{name}</span>
-                      <span>${amount.toFixed(2)}</span>
+                      <span>{formatVes(amount)}</span>
                     </div>
                   ))}
                 </div>
@@ -112,21 +116,28 @@ export default function InvoiceDetailDialog({ open, onOpenChange, order, onRefre
             <div className="border-t pt-3 space-y-1 font-medium">
               <div className="flex justify-between text-sm">
                 <span>{t("billing.subtotal")}</span>
-                <span>${order.subtotal?.toFixed(2)}</span>
+                <span>{formatVes(order.subtotal)}</span>
               </div>
               {(order.orderCharges || []).length > 0 && (
                 <div className="flex justify-between text-sm text-muted-foreground">
                   <span>{t("reports.charges")}</span>
-                  <span>${order.totalCharge?.toFixed(2)}</span>
+                  <span>{formatVes(order.totalCharge)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm">
                 <span>{t("billing.iva")}</span>
-                <span>${order.totalTax?.toFixed(2)}</span>
+                <span>{formatVes(order.totalTax)}</span>
               </div>
               <div className="flex justify-between text-lg font-bold text-golden border-t pt-2">
                 <span>{t("billing.total")}</span>
-                <span>${order.total?.toFixed(2)}</span>
+                <div className="text-right">
+                  <span>{formatVes(order.total)}</span>
+                  {order.totalUsdRef > 0 && order.exchangeRateBcv > 0 && (
+                    <div className="text-xs font-normal text-muted-foreground">
+                      {formatUsd(order.totalUsdRef)}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

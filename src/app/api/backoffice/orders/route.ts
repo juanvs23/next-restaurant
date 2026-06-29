@@ -171,19 +171,28 @@ export async function POST(req: NextRequest) {
   totalTax += globalTaxAdded;
 
   totalTax = Math.round(totalTax * 100) / 100;
-  const total = Math.round((subtotal + totalCharge + totalTax) * 100) / 100;
+  const totalUsd = Math.round((subtotal + totalCharge + totalTax) * 100) / 100;
+
+  // ── Convert ALL monetary fields to VES using frozen exchange rate ──
+  const exchangeRateBcv = config?.exchangeRateBcv || 0;
+  const toVes = (usd: number) => exchangeRateBcv > 0
+    ? Math.round(usd * exchangeRateBcv * 100) / 100
+    : 0;
 
   const order = await Order.create({
     ...parsed.data,
-    items,
-    subtotal,
-    serviceCharge,
-    deliveryCost,
-    orderCharges: mergedCharges,
-    totalCharge,
-    totalTax,
-    globalTaxBreakdown,
-    total,
+    items, // item prices remain in USD (stable reference)
+    subtotal: toVes(subtotal),
+    serviceCharge: toVes(serviceCharge),
+    deliveryCost: toVes(deliveryCost),
+    orderCharges: mergedCharges.map((ch: any) => ({ ...ch, amount: toVes(ch.amount) })),
+    totalCharge: toVes(totalCharge),
+    totalTax: toVes(totalTax),
+    globalTaxBreakdown: globalTaxBreakdown.map((tx: any) => ({ ...tx, amount: toVes(tx.amount) })),
+    // USD reference + frozen rate
+    totalUsdRef: totalUsd,
+    exchangeRateBcv,
+    total: toVes(totalUsd),
   });
 
   return NextResponse.json(order, { status: 201 });

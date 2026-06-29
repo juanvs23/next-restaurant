@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { getSlidesContents } from "@/libs/data/slidesContents";
 import { SlideMenuSection } from "@/types/sections";
 import BackgroundImage from "@/public/menu/bg.jpg";
@@ -120,7 +121,7 @@ const SliderMenu = ({ slides }: PropsSlide) => {
 };
 
 export default function MenuHome() {
-  const [slidesContent, setSlidesContent] = useState<null | SlideMenuSection[]>(null);
+  const [slidesContent, setSlidesContent] = useState<SlideMenuSection[] | null>(null);
 
   useEffect(() => {
     getSlidesContents().then(setSlidesContent);
@@ -137,6 +138,14 @@ export default function MenuHome() {
     >
       <div className="container-menus">
         <div className="row">{ShowMenu}</div>
+        <div className="mt-10 text-center">
+          <Link
+            href="/menu"
+            className="inline-block rounded-sm border border-golden px-8 py-3 font-serif text-base font-semibold text-golden transition-colors hover:bg-golden/10"
+          >
+            Ver Menú Completo
+          </Link>
+        </div>
       </div>
     </section>
   );

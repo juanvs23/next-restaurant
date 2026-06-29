@@ -48,11 +48,8 @@ export async function POST(req: NextRequest) {
 
     const totalUsdRef = Math.round(totalUsd * 100) / 100;
 
-    // Total in VES using frozen exchange rate
-    const totalVes =
-      exchangeRateBcv > 0
-        ? Math.round(totalUsdRef * exchangeRateBcv * 100) / 100
-        : totalUsdRef;
+    // Total in VES using frozen exchange rate (rate already validated > 0 above)
+    const totalVes = Math.round(totalUsdRef * exchangeRateBcv * 100) / 100;
 
     const order = await Order.create({
       items,

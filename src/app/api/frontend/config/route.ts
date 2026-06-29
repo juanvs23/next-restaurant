@@ -14,5 +14,7 @@ export async function GET() {
     defaultLanguage: config.defaultLanguage,
     exchangeRateBcv: config.exchangeRateBcv ?? 0,
     exchangeRateUsdt: config.exchangeRateUsdt ?? 0,
+    taxRate: config.taxRate ?? 0,
+    serviceChargeRate: config.serviceChargeRate ?? 0,
   });
 }

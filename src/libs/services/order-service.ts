@@ -47,16 +47,14 @@ export async function calculateItemTaxes(
         appliedTaxes = productTaxes.filter((tx: any) => {
           const catIds = taxCategoryMap.get(tx._id.toString()) || [];
           return (
-            catIds.length === 0 ||
-            (prodCategoryId && catIds.includes(prodCategoryId))
+            catIds.length > 0 &&
+            prodCategoryId &&
+            catIds.includes(prodCategoryId)
           );
         });
       }
     } else {
-      appliedTaxes = productTaxes.filter((tx: any) => {
-        const catIds = taxCategoryMap.get(tx._id.toString()) || [];
-        return catIds.length === 0;
-      });
+      appliedTaxes = []; // No product lookup → no product-scope taxes
     }
 
     for (const tx of appliedTaxes) {

@@ -66,6 +66,7 @@ export function ProductFormDialog({
       images: form.images.filter(Boolean),
       SKU: form.SKU,
       available: form.available,
+      featured: form.featured,
       turnIds: form.turnIds,
       taxIds: form.taxIds,
     };
@@ -239,6 +240,17 @@ export function ProductFormDialog({
               className="rounded border-border"
             />
             <Label htmlFor="avail">{t("products.available")}</Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="featured"
+              checked={form.featured}
+              onChange={(e) => setForm({ ...form, featured: e.target.checked })}
+              className="rounded border-border"
+            />
+            <Label htmlFor="featured">{t("products.featured")}</Label>
           </div>
         </div>
 

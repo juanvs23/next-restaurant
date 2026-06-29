@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useT } from "@/i18n/useT";
-import { formatVes } from "@/libs/currency";
+import { formatVes, formatUsd } from "@/libs/currency";
 import BillCard from "./BillCard";
 
 interface TodayViewProps {
@@ -44,13 +44,41 @@ export default function TodayView({
 }: TodayViewProps) {
   const { t } = useT();
 
-  const toVes = (usd: number) => bcvRate > 0 ? usd * bcvRate : usd;
-
   const paidOrders = displayOrders.filter((o) => o.status === "paid");
-  const totalRevenue = paidOrders.reduce((s, o) => s + toVes(o.total || 0), 0);
-  const totalTax = paidOrders.reduce((s, o) => s + toVes(o.totalTax || 0), 0);
-  const totalCharges = paidOrders.reduce((s, o) => s + toVes(o.totalCharge || 0), 0);
-  const avgTicket = paidOrders.length > 0 ? totalRevenue / paidOrders.length : 0;
+  const totalRevenue = paidOrders.reduce((s, o) => s + (o.total || 0), 0);
+  const totalUsd = paidOrders.reduce((s, o) => s + (o.totalUsdRef || 0), 0);
+
+  // Aggregate charges by name
+  const chargesMap = new Map<string, number>();
+  for (const o of paidOrders) {
+    for (const ch of o.orderCharges || []) {
+      chargesMap.set(ch.name, (chargesMap.get(ch.name) || 0) + (ch.amount || 0));
+    }
+    // Legacy fields
+    if ((!o.orderCharges || o.orderCharges.length === 0) && o.serviceCharge > 0) {
+      chargesMap.set("Servicio", (chargesMap.get("Servicio") || 0) + o.serviceCharge);
+    }
+    if ((!o.orderCharges || o.orderCharges.length === 0) && o.deliveryCost > 0) {
+      chargesMap.set("Delivery", (chargesMap.get("Delivery") || 0) + o.deliveryCost);
+    }
+  }
+
+  // Aggregate taxes by name
+  const taxesMap = new Map<string, number>();
+  for (const o of paidOrders) {
+    for (const tx of o.globalTaxBreakdown || []) {
+      taxesMap.set(tx.name, (taxesMap.get(tx.name) || 0) + (tx.amount || 0));
+    }
+    for (const it of o.items || []) {
+      for (const tx of it.taxBreakdown || []) {
+        taxesMap.set(tx.name, (taxesMap.get(tx.name) || 0) + (tx.amount || 0));
+      }
+    }
+    // Fallback if no tax breakdown
+    if (taxesMap.size === 0 && (o.totalTax || 0) > 0) {
+      taxesMap.set("IVA", (taxesMap.get("IVA") || 0) + (o.totalTax || 0));
+    }
+  }
 
   return (
     <>
@@ -73,14 +101,19 @@ export default function TodayView({
 
       {/* Summary cards */}
       <div className="grid gap-4 md:grid-cols-4">
+        {/* Total Income */}
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs text-muted-foreground">{t("billing.totalRevenue") || "Revenue"}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-xl font-bold">{formatVes(totalRevenue)}</p>
+            {totalUsd > 0 && bcvRate > 0 && (
+              <p className="text-xs text-muted-foreground">{formatUsd(totalUsd)}</p>
+            )}
           </CardContent>
         </Card>
+        {/* Bill Count */}
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs text-muted-foreground">{t("billing.bills")}</CardTitle>
@@ -89,20 +122,40 @@ export default function TodayView({
             <p className="text-xl font-bold">{displayOrders.length}</p>
           </CardContent>
         </Card>
+        {/* Service Charges Breakdown */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs text-muted-foreground">{t("billing.avgTicket") || "Avg ticket"}</CardTitle>
+            <CardTitle className="text-xs text-muted-foreground">{t("reports.charges") || "Charges"}</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-xl font-bold">{formatVes(avgTicket)}</p>
+          <CardContent className="space-y-0.5">
+            {chargesMap.size === 0 ? (
+              <p className="text-xs text-muted-foreground">—</p>
+            ) : (
+              Array.from(chargesMap.entries()).map(([name, amount]) => (
+                <div key={name} className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">{name}</span>
+                  <span className="font-medium">{formatVes(amount)}</span>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
+        {/* Taxes Breakdown */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs text-muted-foreground">{t("billing.taxesAndCharges") || "Taxes + charges"}</CardTitle>
+            <CardTitle className="text-xs text-muted-foreground">{t("reports.totalTax") || "Taxes"}</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-xl font-bold">{formatVes(totalTax + totalCharges)}</p>
+          <CardContent className="space-y-0.5">
+            {taxesMap.size === 0 ? (
+              <p className="text-xs text-muted-foreground">—</p>
+            ) : (
+              Array.from(taxesMap.entries()).map(([name, amount]) => (
+                <div key={name} className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">{name}</span>
+                  <span className="font-medium">{formatVes(amount)}</span>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
       </div>

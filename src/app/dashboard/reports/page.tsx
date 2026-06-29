@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { ImCheckmark, ImCross, ImWarning } from "react-icons/im";
 import { useT } from "@/i18n/useT";
-import { formatVes } from "@/libs/currency";
+import { formatVes, formatUsd } from "@/libs/currency";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,6 +25,10 @@ import DayOrdersDialog from "@/components/dashboard/billing/DayOrdersDialog";
 export default function ReportsPage() {
   const { t } = useT();
   const now = new Date();
+  const todayStr = now.toISOString().slice(0, 10);
+
+  const [period, setPeriod] = useState<"day" | "week" | "month">("day");
+  const [reportDate, setReportDate] = useState(todayStr);
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [data, setData] = useState<any>(null);
@@ -32,12 +36,8 @@ export default function ReportsPage() {
   const [bcvRate, setBcvRate] = useState(0);
 
   useEffect(() => {
-    fetch("/api/backoffice/exchange-rate").then((r) => r.json()).then((d) => {
-      if (d.exchangeRateBcv) setBcvRate(d.exchangeRateBcv);
-    }).catch(() => {});
+    fetch("/api/frontend/config").then(r => r.json()).then(cfg => setBcvRate(cfg.exchangeRateBcv ?? 0)).catch(() => {});
   }, []);
-
-  const toVes = (usd: number) => bcvRate > 0 ? bcvRate * usd : usd;
 
   // Today's close dialog
   const [closeOpen, setCloseOpen] = useState(false);
@@ -58,13 +58,22 @@ export default function ReportsPage() {
 
   const fetchReports = () => {
     setLoading(true);
-    fetch(`/api/backoffice/reports?year=${year}&month=${month}`)
+    const params = new URLSearchParams({ period });
+    if (period === "day") {
+      params.set("date", reportDate);
+    } else if (period === "week") {
+      params.set("date", reportDate);
+    } else {
+      params.set("year", String(year));
+      params.set("month", String(month));
+    }
+    fetch(`/api/backoffice/reports?${params}`)
       .then((r) => r.json())
       .then(setData)
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { fetchReports(); }, [year, month]);
+  useEffect(() => { fetchReports(); }, [period, reportDate, year, month]);
 
   const months = [
     "January", "February", "March", "April", "May", "June",
@@ -72,7 +81,9 @@ export default function ReportsPage() {
   ];
 
   const isToday =
-    year === now.getFullYear() && month === now.getMonth() + 1;
+    period === "day" ? reportDate === todayStr
+    : period === "week" ? reportDate >= todayStr
+    : year === now.getFullYear() && month === now.getMonth() + 1;
   const isTodayClosed = data?.dayStatus?.isClosed;
 
   const handleCloseDay = async () => {
@@ -131,23 +142,69 @@ export default function ReportsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="dashboard-heading text-3xl font-bold tracking-tight">{t("reports.title")}</h1>
-        <div className="flex items-center gap-3">
-          <div className="grid gap-1">
-            <Label className="text-xs">{t("reports.month")}</Label>
-            <select value={month} onChange={(e) => setMonth(Number(e.target.value))}
-              className="bg-background border border-input rounded px-3 py-2 text-sm h-9">
-              {months.map((m, i) => (
-                <option key={i} value={i + 1}>{m}</option>
-              ))}
-            </select>
+        <div className="flex items-center gap-2">
+          {/* Period tabs */}
+          <div className="flex rounded-lg border border-input bg-background p-0.5">
+            {(["day", "week", "month"] as const).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPeriod(p)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                  period === p ? "bg-golden text-black2" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {p === "day" ? "Day" : p === "week" ? "Week" : "Month"}
+              </button>
+            ))}
           </div>
-          <div className="grid gap-1">
-            <Label className="text-xs">{t("reports.year")}</Label>
-            <Input type="number" value={year} onChange={(e) => setYear(Number(e.target.value))}
-              className="w-20 h-9" />
-          </div>
+          {/* Date controls */}
+          {period === "day" && (
+            <Input type="date" value={reportDate} onChange={(e) => setReportDate(e.target.value)}
+              className="w-36 h-9 text-xs" />
+          )}
+          {period === "week" && (
+            <div className="flex items-center gap-1">
+              <Button size="sm" variant="ghost" className="h-8 w-8 p-0"
+                onClick={() => {
+                  const d = new Date(reportDate + "T00:00:00");
+                  d.setDate(d.getDate() - 7);
+                  setReportDate(d.toISOString().slice(0, 10));
+                }}>
+                ←
+              </Button>
+              <span className="text-xs text-muted-foreground min-w-[140px] text-center">
+                {(() => {
+                  const end = new Date(reportDate + "T00:00:00");
+                  const start = new Date(end);
+                  start.setDate(start.getDate() - 6);
+                  return `${start.toLocaleDateString()} — ${end.toLocaleDateString()}`;
+                })()}
+              </span>
+              <Button size="sm" variant="ghost" className="h-8 w-8 p-0"
+                onClick={() => {
+                  const d = new Date(reportDate + "T00:00:00");
+                  d.setDate(d.getDate() + 7);
+                  setReportDate(d.toISOString().slice(0, 10));
+                }}
+                disabled={reportDate >= todayStr}>
+                →
+              </Button>
+            </div>
+          )}
+          {period === "month" && (
+            <div className="flex items-center gap-2">
+              <select value={month} onChange={(e) => setMonth(Number(e.target.value))}
+                className="bg-background border border-input rounded px-3 py-2 text-sm h-9">
+                {months.map((m, i) => (
+                  <option key={i} value={i + 1}>{m}</option>
+                ))}
+              </select>
+              <Input type="number" value={year} onChange={(e) => setYear(Number(e.target.value))}
+                className="w-20 h-9" />
+            </div>
+          )}
         </div>
       </div>
 
@@ -159,19 +216,39 @@ export default function ReportsPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">{t("reports.revenue")}</CardTitle></CardHeader>
-          <CardContent><p className="text-2xl font-bold text-green-600">{formatVes(toVes(data?.summary?.totalRevenue ?? 0))}</p></CardContent>
+          <CardContent>
+            <p className="text-2xl font-bold text-green-600">{formatVes(data?.summary?.totalRevenue ?? 0)}</p>
+            {bcvRate > 0 && (data?.summary?.totalRevenue ?? 0) > 0 && (
+              <p className="text-xs text-muted-foreground">{formatUsd((data?.summary?.totalRevenue ?? 0) / bcvRate)}</p>
+            )}
+          </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">{t("reports.avgTicket")}</CardTitle></CardHeader>
-          <CardContent><p className="text-2xl font-bold">{formatVes(toVes(data?.summary?.avgTicket ?? 0))}</p></CardContent>
+          <CardContent>
+            <p className="text-2xl font-bold">{formatVes(data?.summary?.avgTicket ?? 0)}</p>
+            {bcvRate > 0 && (data?.summary?.avgTicket ?? 0) > 0 && (
+              <p className="text-xs text-muted-foreground">{formatUsd((data?.summary?.avgTicket ?? 0) / bcvRate)}</p>
+            )}
+          </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">{t("reports.totalTax")}</CardTitle></CardHeader>
-          <CardContent><p className="text-2xl font-bold text-amber-600">{formatVes(toVes(data?.summary?.totalTax ?? 0))}</p></CardContent>
+          <CardContent>
+            <p className="text-2xl font-bold text-amber-600">{formatVes(data?.summary?.totalTax ?? 0)}</p>
+            {bcvRate > 0 && (data?.summary?.totalTax ?? 0) > 0 && (
+              <p className="text-xs text-muted-foreground">{formatUsd((data?.summary?.totalTax ?? 0) / bcvRate)}</p>
+            )}
+          </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">{t("reports.charges")}</CardTitle></CardHeader>
-          <CardContent><p className="text-2xl font-bold text-blue-600">{formatVes(toVes(data?.summary?.totalCharges ?? 0))}</p></CardContent>
+          <CardContent>
+            <p className="text-2xl font-bold text-blue-600">{formatVes(data?.summary?.totalCharges ?? 0)}</p>
+            {bcvRate > 0 && (data?.summary?.totalCharges ?? 0) > 0 && (
+              <p className="text-xs text-muted-foreground">{formatUsd((data?.summary?.totalCharges ?? 0) / bcvRate)}</p>
+            )}
+          </CardContent>
         </Card>
       </div>
 
@@ -238,10 +315,10 @@ export default function ReportsPage() {
                   <TableRow key={d._id}>
                     <TableCell>{new Date(d._id + "T00:00:00").toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">{d.orders}</TableCell>
-                    <TableCell className="text-right">{formatVes(toVes(d.subtotal))}</TableCell>
-                    <TableCell className="text-right">{formatVes(toVes(d.charges))}</TableCell>
-                    <TableCell className="text-right">{formatVes(toVes(d.tax))}</TableCell>
-                    <TableCell className="text-right font-medium">{formatVes(toVes(d.revenue))}</TableCell>
+                    <TableCell className="text-right">{formatVes(d.subtotal)}</TableCell>
+                    <TableCell className="text-right">{formatVes(d.charges)}</TableCell>
+                    <TableCell className="text-right">{formatVes(d.tax)}</TableCell>
+                    <TableCell className="text-right font-medium">{formatVes(d.revenue)}</TableCell>
                     <TableCell className="text-center">
                       <Button size="sm" variant="ghost" className="h-6 text-xs"
                         onClick={() => handleDayDetail(d._id)}>
@@ -291,7 +368,7 @@ export default function ReportsPage() {
                     <TableRow key={p._id}>
                       <TableCell className="capitalize">{p._id}</TableCell>
                       <TableCell className="text-right">{p.count}</TableCell>
-                      <TableCell className="text-right font-medium">{formatVes(toVes(p.total))}</TableCell>
+                      <TableCell className="text-right font-medium">{formatVes(p.total)}</TableCell>
                     </TableRow>
                   ))
                 )}
@@ -322,7 +399,7 @@ export default function ReportsPage() {
                     <TableRow key={p._id}>
                       <TableCell>{p._id}</TableCell>
                       <TableCell className="text-right">{p.quantity}</TableCell>
-                      <TableCell className="text-right font-medium">{formatVes(toVes(p.revenue))}</TableCell>
+                      <TableCell className="text-right font-medium">{formatVes(p.revenue)}</TableCell>
                     </TableRow>
                   ))
                 )}
@@ -385,8 +462,8 @@ export default function ReportsPage() {
               </div>
               <div className="border rounded-lg p-3 text-sm space-y-1">
                 <div className="flex justify-between"><span>{t("reports.orders")}</span><span className="font-medium">{closeResult.closing.summary.totalOrders}</span></div>
-                <div className="flex justify-between"><span>{t("reports.revenue")}</span><span className="font-medium">{formatVes(toVes(closeResult.closing.summary.totalRevenue))}</span></div>
-                <div className="flex justify-between"><span>{t("reports.avgTicket")}</span><span className="font-medium">{formatVes(toVes(closeResult.closing.summary.avgTicket))}</span></div>
+                <div className="flex justify-between"><span>{t("reports.revenue")}</span><span className="font-medium">{formatVes(closeResult.closing.summary.totalRevenue)}</span></div>
+                <div className="flex justify-between"><span>{t("reports.avgTicket")}</span><span className="font-medium">{formatVes(closeResult.closing.summary.avgTicket)}</span></div>
               </div>
               <Button variant="outline" className="w-full" onClick={() => { setCloseOpen(false); setCloseResult(null); }}>{t("common.ok")}</Button>
             </div>

@@ -367,6 +367,7 @@ Ambos son vulnerabilidades **moderadas en tooling/build**, no en runtime. Sin im
 | `src/utils/escapeRegex.ts` | Escapa metacaracteres de regex para búsqueda segura |
 | `src/utils/slugify.ts` | Genera slugs URL-friendly desde nombres (con tildes/ñ) |
 | `src/utils/phoneRegex.ts` | Validación de formato telefónico |
+| `src/utils/getBaseUrl.ts` | Deriva URL base para fetch SSR — prioriza NEXT_PUBLIC_BASE_URL, fallback a headers() |
 | `src/libs/currency.ts` | Funciones usdToVes, formatVes, formatUsd, fmtPrice, fmtPriceFull |
 | `src/schemas/frontend.ts` | Schemas checkoutSchema (customer+items+notes), reviewOrderSchema |
 | `src/app/api/frontend/menu/route.ts` | GET /api/frontend/menu — categorías con featured products + priceBs |
@@ -405,4 +406,41 @@ Entradas, Sopas, Ensaladas, Platos Principales, Pastas, Carnes, Pescados & Maris
 ## MongoDB
 
 - **Version**: 7.0.37 LTS (service: mongod7)
+- **Database**: `gericht` (MONGO_URI=mongodb://localhost:27017/gericht)
+
+## Session 2026-06-28 — PR 1 Foundation + Currency & UX Fixes
+
+### Monetary Contract (CRITICAL)
+**All Order monetary fields are stored in VES.** USD is only for reference (`totalUsdRef`).
+- `POST /api/backoffice/orders`: converts subtotal, totalCharge, totalTax, total, orderCharges amounts, globalTaxBreakdown amounts to VES using frozen Config.exchangeRateBcv
+- `POST /api/frontend/orders`: 503 if no exchange rate; stores totalUsdRef + exchangeRateBcv
+- `PATCH /api/backoffice/orders/[id]`: recalculates subtotal in VES when items edited
+- Seed: stores VES amounts with totalUsdRef and exchangeRateBcv
+
+### Bug Fixes
+- `toVes()` double conversion eliminated from TodayView, HistoryView, Reports
+- `order-service.ts`: `catIds.length === 0` no longer applies tax to ALL products (fix: `catIds.length > 0`)
+- `unclosedOnly=true` replaced with `dateFrom/dateTo` in Today billing tab
+- `t("common.select")` returns key (truthy) — fallback `||` never executes
+- `customer.email: ""` fails Zod `.email()` — omitted when empty
+- `orderCharges` now includes `type` and `value` (schema requires all 4 fields)
+- Alcohol tax removed from seed (no proper alcohol product classification)
+
+### New Features
+- **Day Opening**: BCV rate field with "Fetch" button (dolarapi.com/pydolarve.com/open.er-api.com)
+- **Reports**: Day/Week/Month tabs (default Day), sort desc, open/closed days visible
+- **NewBillDialog**: Comanda/Directo toggle mode; direct mode uses full menu products
+- **EditBillDialog**: edit items with +/- quantity; add products from full menu
+- **ProductSearch**: text input with filtered dropdown (no dependencies)
+- **CurrencyInput**: VE format (`.` thousands, `,` decimal) with focus/blur
+- **BillCard**: fixed structure (subtotal→charges→taxes→total), product names visible, USD ref on all lines
+- **Billing cards**: revenue, bill count, charges breakdown (by name), taxes breakdown (by name)
+- **Dashboard home**: formatVes + USD ref
+- **Mobile**: CartBadge always visible, BookingIcon (CalendarDays) in header
+
+### XPending
+- ~~CRITICAL-002: fetch `localhost:3000` in SSR pages~~ **(Resuelto — utility getBaseUrl.ts con headers())**
+- Review warnings (11) + suggestions (5) from adversarial audit
+- Pipeline: review → scribe → archive → PR
+
 - **Kernel note**: Ubuntu 26.04 (kernel 7.0.0) incompatible with MongoDB 8.0+ (SIGSEGV). Upgrade blocked until 8.x fixes.

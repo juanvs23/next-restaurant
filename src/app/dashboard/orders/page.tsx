@@ -28,22 +28,23 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [tz, setTz] = useState("-04:00");
+  const [tz, setTz] = useState<string | null>(null);
   const [bcvRate, setBcvRate] = useState(0);
 
   useEffect(() => {
     fetch("/api/backoffice/config").then((r) => r.json()).then((cfg) => {
       if (cfg?.timezone) setTz(cfg.timezone);
-    }).catch(() => {});
+      else setTz("-04:00");
+    }).catch(() => setTz("-04:00"));
     fetch("/api/backoffice/exchange-rate").then((r) => r.json()).then((d) => {
       if (d.exchangeRateBcv) setBcvRate(d.exchangeRateBcv);
     }).catch(() => {});
   }, []);
 
-  const todayLocal = (() => {
+  const todayLocal = tz ? (() => {
     const now = new Date();
     return new Date(now.getTime() + tzOffsetMs(tz)).toISOString().slice(0, 10);
-  })();
+  })() : "";
 
   // Dialog state
   const [newBillOpen, setNewBillOpen] = useState(false);
@@ -70,28 +71,32 @@ export default function OrdersPage() {
 
   const fetchOrders = (params?: string) => {
     setLoading(true);
-    fetch(`/api/backoffice/orders${params || ""}`).then((r) => r.json()).then((d) => {
+    return fetch(`/api/backoffice/orders${params || ""}`).then((r) => r.json()).then((d) => {
       setOrders(d);
       setLoading(false);
-    }).catch(() => setLoading(false));
+      return d;
+    }).catch(() => { setLoading(false); return []; });
   };
 
-  // Today: load unclosed orders
+  // Today: always show today's orders regardless of closure
   useEffect(() => {
-    if (tab !== 0) return;
+    if (tab !== 0 || !todayLocal) return;
     fetch("/api/backoffice/day-closings").then((r) => r.json()).then((closed) => {
       const closedDates = new Set(closed.map((c: any) => c.date));
       setTodayClosed(closedDates.has(todayLocal));
-      fetch("/api/backoffice/orders?unclosedOnly=true").then((r) => r.json()).then((orders) => {
-        setOrders(orders);
+
+      // Show today's orders
+      fetchOrders(`?dateFrom=${todayLocal}&dateTo=${todayLocal}`);
+
+      // Detect unclosed previous days for the warning banner
+      fetch("/api/backoffice/orders?unclosedOnly=true").then((r) => r.json()).then((unclosedOrders) => {
         const dates = new Set<string>();
-        orders.forEach((o: any) => {
+        unclosedOrders.forEach((o: any) => {
           const localDate = new Date(new Date(o.createdAt).getTime() + tzOffsetMs(tz)).toISOString().slice(0, 10);
-          if (!closedDates.has(localDate)) dates.add(localDate);
+          if (!closedDates.has(localDate) && localDate !== todayLocal) dates.add(localDate);
         });
         setUnclosedDays(Array.from(dates).sort());
-        setLoading(false);
-      }).catch(() => setLoading(false));
+      }).catch(() => {});
     }).catch(() => fetchOrders(`?dateFrom=${todayLocal}&dateTo=${todayLocal}`));
   }, [tab, todayLocal]);
 

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, CalendarDays, Users, DollarSign, TrendingUp, Clock } from "lucide-react";
 import { useT } from "@/i18n/useT";
+import { formatVes, formatUsd } from "@/libs/currency";
 
 function todayStr(): string {
   const d = new Date();
@@ -18,10 +19,6 @@ function yesterdayStr(): string {
 function monthStartStr(): string {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
-}
-
-function fmt(n: number | null): string {
-  return n !== null ? `$${n.toFixed(2)}` : "—";
 }
 
 async function fetchSum(url: string): Promise<number | null> {
@@ -45,13 +42,12 @@ export default function DashboardHome() {
   const [todayTotal, setTodayTotal] = useState<number | null>(null);
   const [yesterdayTotal, setYesterdayTotal] = useState<number | null>(null);
   const [monthTotal, setMonthTotal] = useState<number | null>(null);
+  const [bcvRate, setBcvRate] = useState(0);
 
   useEffect(() => {
     fetch("/api/auth/session")
       .then((r) => r.json())
-      .then((s) => {
-        if (s?.user?.name) setUserName(s.user.name);
-      })
+      .then((s) => { if (s?.user?.name) setUserName(s.user.name); })
       .catch(() => {});
   }, []);
 
@@ -67,6 +63,7 @@ export default function DashboardHome() {
       fetchSum(`/api/backoffice/orders?dateFrom=${today}&dateTo=${today}&status=paid`).then(setTodayTotal),
       fetchSum(`/api/backoffice/orders?dateFrom=${yesterday}&dateTo=${yesterday}&status=paid`).then(setYesterdayTotal),
       fetchSum(`/api/backoffice/orders?dateFrom=${monthStart}&dateTo=${today}&status=paid`).then(setMonthTotal),
+      fetch("/api/frontend/config").then(r => r.json()).then(cfg => setBcvRate(cfg.exchangeRateBcv ?? 0)).catch(() => {}),
     ]);
   }, []);
 
@@ -77,9 +74,9 @@ export default function DashboardHome() {
   ];
 
   const finances = [
-    { label: "dashboard.todayBalance", icon: DollarSign, value: fmt(todayTotal) },
-    { label: "dashboard.yesterdayBalance", icon: Clock, value: fmt(yesterdayTotal) },
-    { label: "dashboard.monthBalance", icon: TrendingUp, value: fmt(monthTotal) },
+    { label: "dashboard.todayBalance", icon: DollarSign, value: todayTotal },
+    { label: "dashboard.yesterdayBalance", icon: Clock, value: yesterdayTotal },
+    { label: "dashboard.monthBalance", icon: TrendingUp, value: monthTotal },
   ];
 
   return (
@@ -98,9 +95,7 @@ export default function DashboardHome() {
             <a key={s.labelKey} href={s.href} className="block">
               <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    {t(s.labelKey)}
-                  </CardTitle>
+                  <CardTitle className="text-sm font-medium text-muted-foreground">{t(s.labelKey)}</CardTitle>
                   <Icon className="w-4 h-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
@@ -119,13 +114,14 @@ export default function DashboardHome() {
           return (
             <Card key={f.label}>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {t(f.label)}
-                </CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">{t(f.label)}</CardTitle>
                 <Icon className="w-4 h-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">{f.value}</p>
+                <p className="text-2xl font-bold">{f.value !== null ? formatVes(f.value) : "—"}</p>
+                {f.value !== null && f.value > 0 && bcvRate > 0 && (
+                  <p className="text-xs text-muted-foreground">{formatUsd(f.value / bcvRate)}</p>
+                )}
               </CardContent>
             </Card>
           );

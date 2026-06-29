@@ -56,6 +56,7 @@ const emptyForm = {
   images: [""] as string[],
   SKU: "",
   available: true,
+  featured: false,
   turnIds: [] as string[],
   taxIds: [] as string[],
 };
@@ -127,7 +128,8 @@ export default function ProductsPage() {
       ingredients: (p.ingredients || []).join(", "),
       images: p.images?.length ? p.images : [""],
       SKU: p.SKU || "",
-      available: p.available,
+      available: p.available ?? true,
+      featured: p.featured ?? false,
       turnIds: (p as any).turnIds?.map((t: any) => typeof t === "string" ? t : t._id) || [],
       taxIds: (p as any).taxIds?.map((t: any) => typeof t === "string" ? t : t._id) || [],
     });

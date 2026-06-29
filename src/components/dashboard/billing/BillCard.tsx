@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useT } from "@/i18n/useT";
 import { useBilling } from "./BillingContext";
+import { formatVes, formatUsd } from "@/libs/currency";
 
 interface BillCardProps {
   order: any;
@@ -22,6 +23,7 @@ export default function BillCard({ order: o }: BillCardProps) {
   } = useBilling();
 
   const taxMap = new Map<string, number>();
+  const rate = o.exchangeRateBcv || 1;
   for (const it of o.items || []) {
     for (const tx of it.taxBreakdown || [])
       taxMap.set(tx.name, (taxMap.get(tx.name) || 0) + tx.amount);
@@ -52,8 +54,8 @@ export default function BillCard({ order: o }: BillCardProps) {
       </CardHeader>
       <CardContent className="space-y-1 text-sm">
         <div className="flex items-center justify-between">
-          <p className="text-muted-foreground">
-            {o.items?.length || 0} {t("billing.items")} · {o.paymentMethod}
+          <p className="text-xs text-muted-foreground">
+            {o.paymentMethod}
           </p>
           {o.invoiceNumber && (
             <span className="text-xs text-muted-foreground font-mono">
@@ -61,6 +63,16 @@ export default function BillCard({ order: o }: BillCardProps) {
             </span>
           )}
         </div>
+        {/* Items list */}
+        <div className="space-y-0.5">
+          {(o.items || []).map((it: any, i: number) => (
+            <div key={i} className="flex justify-between text-sm">
+              <span>{it.quantity}× {it.name}</span>
+              <span>{formatVes((it.price || 0) * (it.quantity || 1) * rate)}</span>
+            </div>
+          ))}
+        </div>
+
         {/* Creator / Register info */}
         {(o.createdBy || o.cashRegisterName) && (
           <p className="text-xs text-muted-foreground">
@@ -71,58 +83,104 @@ export default function BillCard({ order: o }: BillCardProps) {
           <p className="text-xs text-muted-foreground">{t("billing.delivery")}</p>
         )}
         <div className="border-t pt-2 space-y-0.5 font-medium">
+          {/* 1. Subtotal */}
+          <div className="flex justify-between text-sm text-muted-foreground">
+            <span>{t("billing.subtotal")}</span>
+            <div className="text-right">
+              <span>{formatVes(o.subtotal)}</span>
+              {rate > 1 && o.subtotal > 0 && (
+                <div className="text-[10px] text-muted-foreground/60">{formatUsd(o.subtotal / rate)}</div>
+              )}
+            </div>
+          </div>
+
+          {/* 2. Charges */}
           {(o.orderCharges || []).map((ch: any) => (
-            <div
-              key={ch.name}
-              className="flex justify-between text-xs text-muted-foreground"
-            >
+            <div key={ch.name} className="flex justify-between text-sm text-muted-foreground">
               <span>{ch.name}</span>
-              <span>${Number(ch.amount).toFixed(2)}</span>
+              <div className="text-right">
+                <span>{formatVes(ch.amount)}</span>
+                {rate > 1 && ch.amount > 0 && (
+                  <div className="text-[10px] text-muted-foreground/60">{formatUsd(ch.amount / rate)}</div>
+                )}
+              </div>
             </div>
           ))}
-          {(!o.orderCharges || o.orderCharges.length === 0) &&
-            o.serviceCharge > 0 && (
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{t("billing.service")}</span>
-                <span>${Number(o.serviceCharge).toFixed(2)}</span>
+          {(!o.orderCharges || o.orderCharges.length === 0) && o.serviceCharge > 0 && (
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>{t("billing.service")}</span>
+              <div className="text-right">
+                <span>{formatVes(o.serviceCharge)}</span>
+                {rate > 1 && (
+                  <div className="text-[10px] text-muted-foreground/60">{formatUsd(o.serviceCharge / rate)}</div>
+                )}
+              </div>
+            </div>
+          )}
+          {(!o.orderCharges || o.orderCharges.length === 0) && o.deliveryCost > 0 && (
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>{t("billing.delivery")}</span>
+              <div className="text-right">
+                <span>{formatVes(o.deliveryCost)}</span>
+                {rate > 1 && (
+                  <div className="text-[10px] text-muted-foreground/60">{formatUsd(o.deliveryCost / rate)}</div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 3. Taxes */}
+          {taxMap.size > 0
+            ? Array.from(taxMap.entries()).map(([name, amount]) => (
+                <div key={name} className="flex justify-between text-sm text-muted-foreground">
+                  <span>{name}</span>
+                  <div className="text-right">
+                    <span>{formatVes(amount)}</span>
+                    {rate > 1 && amount > 0 && (
+                      <div className="text-[10px] text-muted-foreground/60">{formatUsd(amount / rate)}</div>
+                    )}
+                  </div>
+                </div>
+              ))
+            : (
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>{t("billing.iva")}</span>
+                <div className="text-right">
+                  <span>{formatVes(o.totalTax || 0)}</span>
+                  {rate > 1 && (o.totalTax || 0) > 0 && (
+                    <div className="text-[10px] text-muted-foreground/60">{formatUsd((o.totalTax || 0) / rate)}</div>
+                  )}
+                </div>
               </div>
             )}
-          {(!o.orderCharges || o.orderCharges.length === 0) &&
-            o.deliveryCost > 0 && (
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>{t("billing.delivery")}</span>
-                <span>${Number(o.deliveryCost).toFixed(2)}</span>
-              </div>
-            )}
-          {taxMap.size > 0 &&
-            Array.from(taxMap.entries()).map(([name, amount]) => (
-              <div
-                key={name}
-                className="flex justify-between text-xs text-muted-foreground"
-              >
-                <span>{name}</span>
-                <span>${amount.toFixed(2)}</span>
-              </div>
-            ))}
+
+          {/* 4. Total */}
           {o.paymentData &&
             Object.keys(o.paymentData).length > 0 &&
             o.status === "paid" && (
-              <div className="border-t pt-1 mt-1 text-xs text-muted-foreground space-y-0.5">
+              <div className="pt-1 mt-1 text-xs text-muted-foreground space-y-0.5">
                 {Object.entries(o.paymentData)
                   .filter(([_, v]) => v)
                   .map(([key, val]) => (
                     <div key={key} className="flex justify-between">
-                      <span className="capitalize">
-                        {key.replace(/([A-Z])/g, " $1")}
-                      </span>
+                      <span className="capitalize">{key.replace(/([A-Z])/g, " $1")}</span>
                       <span>{val as string}</span>
                     </div>
                   ))}
               </div>
             )}
-          <div className="flex justify-between text-golden">
+
+          {/* Total */}
+          <div className="flex justify-between text-base font-bold text-golden border-t pt-1 mt-1">
             <span>{t("billing.total")}</span>
-            <span>${o.total?.toFixed(2)}</span>
+            <div className="text-right">
+              <span>{formatVes(o.total)}</span>
+              {o.totalUsdRef > 0 && o.exchangeRateBcv > 0 && (
+                <div className="text-xs text-muted-foreground">
+                  {formatUsd(o.totalUsdRef)}
+                </div>
+              )}
+            </div>
           </div>
         </div>
         {/* Actions */}
