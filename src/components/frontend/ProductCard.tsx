@@ -10,9 +10,10 @@ import { useAppSelector } from "@/libs/store/hooks";
 import { selectCartItems } from "@/libs/store/slicers/cartSlicer";
 import { cn } from "@/lib/utils";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Autoplay } from "swiper/modules";
+import { Pagination, Autoplay, EffectFade } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+import "swiper/css/effect-fade";
 
 // ── Types ──
 
@@ -79,7 +80,9 @@ export default function ProductCard({ product }: ProductCardProps) {
             />
           ) : (
             <Swiper
-              modules={[Pagination, Autoplay]}
+              modules={[Pagination, Autoplay, EffectFade]}
+              effect="fade"
+              speed={800}
               pagination={{
                 clickable: true,
                 dynamicBullets: true,
