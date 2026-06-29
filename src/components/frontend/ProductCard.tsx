@@ -111,7 +111,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
         {/* Dark overlay on hover */}
-        <div className="pointer-events-none absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="pointer-events-none absolute inset-0 z-10 bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </Link>
 
       {/* Body */}
