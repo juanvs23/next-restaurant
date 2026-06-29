@@ -110,6 +110,8 @@ export default function ProductCard({ product }: ProductCardProps) {
             <ImageIcon className="h-10 w-10 text-white2/20" />
           </div>
         )}
+        {/* Dark overlay on hover */}
+        <div className="pointer-events-none absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </Link>
 
       {/* Body */}
