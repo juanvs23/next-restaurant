@@ -1126,3 +1126,8 @@ span.hero-counter.swiper-pagination-bullet-active::after {
   text-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
 }
 
+.group:hover .card-swiper img {
+  opacity: 0.5;
+  transition: opacity 0.3s;
+}
+
