@@ -53,7 +53,7 @@ export default function DatingInfo() {
           <Inputs
             getValue={(value: string) => setDateTime(value)}
             name="dateTime"
-            title="Reservation date"
+            title="Fecha de reserva"
             placeHolder={placeholderDate}
             type="date"
           />
@@ -65,7 +65,7 @@ export default function DatingInfo() {
               <Inputs
                 getValue={(value: string) => setArrivalTime(value)}
                 name="arrivalTime"
-                title="Arrival"
+                title="Llegada"
                 type="time"
               />
             </div>
@@ -73,7 +73,7 @@ export default function DatingInfo() {
               <Inputs
                 getValue={(value: string) => setDepartureTime(value)}
                 name="departureTime"
-                title="Departure"
+                title="Salida"
                 type="time"
               />
             </div>

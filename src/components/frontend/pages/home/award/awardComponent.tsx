@@ -44,7 +44,7 @@ export default function AwardComponent() {
           <div className="element-50">
             <div className="imageaWard">
               <div className="steak">
-                <Image src={awardImga.src} height={awardImga.height} width={awardImga.width} alt="Grilled steak with vegetables" />
+                <Image src={awardImga.src} height={awardImga.height} width={awardImga.width}                  alt="Filete a la parrilla con verduras" />
               </div>
               <div className="gImage">
                 <Image src={G.src} height={G.height} width={G.width} alt="GERÍCHT ornamental letter G" />

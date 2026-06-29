@@ -15,7 +15,7 @@ export default function BookingButton() {
       onClick={() => {
         dispath(
           setModal({
-            modalTitle: "Booking a table",
+            modalTitle: "Reservar mesa",
             modalContent: <BookingForm />,
             ModalFooter: null,
           }),

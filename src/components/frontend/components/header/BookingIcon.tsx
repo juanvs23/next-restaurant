@@ -11,11 +11,11 @@ export default function BookingIcon() {
     <button
       type="button"
       className="flex items-center justify-center p-1 text-white2 hover:text-golden transition-colors"
-      aria-label="Book a table"
+      aria-label="Reservar mesa"
       onClick={() => {
         dispatch(
           setModal({
-            modalTitle: "Booking a table",
+            modalTitle: "Reservar mesa",
             modalContent: <BookingForm />,
             ModalFooter: null,
           })

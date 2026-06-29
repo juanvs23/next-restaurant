@@ -13,7 +13,7 @@ export default function OurChef() {
           <div className="element-50">
             <ImageContainer
               url={Chef.src}
-              altTitle={"Kevin Luo"}
+              altTitle={"Chef Kevin Luo"}
               heightProps={Chef.height}
               widthProps={Chef.width}
             />

@@ -5,7 +5,7 @@ import jsPDF from "jspdf";
 
 async function downloadTicket(data: any) {
   const tableName = data.table?.name || data.tableId?.name || "—";
-  const date = new Date(data.dateTime).toLocaleDateString("en-US", {
+  const date = new Date(data.dateTime).toLocaleDateString("es-ES", {
     weekday: "long", year: "numeric", month: "long", day: "numeric",
   });
   const id = data._id || "00000000";
@@ -27,7 +27,7 @@ async function downloadTicket(data: any) {
   doc.setFontSize(8);
   doc.setTextColor(170, 170, 170);
   doc.setFont("helvetica", "normal");
-  doc.text("Booking Confirmation", 50, 24, { align: "center" });
+  doc.text("Confirmación de reserva", 50, 24, { align: "center" });
 
   // Divider
   doc.setDrawColor(220, 202, 135);
@@ -40,13 +40,13 @@ async function downloadTicket(data: any) {
   const lineHeight = 6;
 
   const fields = [
-    { label: "Name", value: `${data.firstName} ${data.lastName}` },
-    { label: "Email", value: data.email },
-    { label: "Date", value: date },
-    { label: "Time", value: data.turnTime.charAt(0).toUpperCase() + data.turnTime.slice(1) },
-    { label: "Guests", value: String(data.numberPersons) },
-    { label: "Table", value: tableName },
-    { label: "Code", value: `#${shortId}` },
+    { label: "Nombre", value: `${data.firstName} ${data.lastName}` },
+    { label: "Correo", value: data.email },
+    { label: "Fecha", value: date },
+    { label: "Hora", value: data.turnTime.charAt(0).toUpperCase() + data.turnTime.slice(1) },
+    { label: "Comensales", value: String(data.numberPersons) },
+    { label: "Mesa", value: tableName },
+    { label: "Código", value: `#${shortId}` },
   ];
 
   fields.forEach((f) => {
@@ -82,7 +82,7 @@ async function downloadTicket(data: any) {
   // Footer
   doc.setFontSize(7);
   doc.setTextColor(170, 170, 170);
-  doc.text("Thank you for choosing GERÍCHT", 50, y + 45, { align: "center" });
+  doc.text("Gracias por elegir GERÍCHT", 50, y + 45, { align: "center" });
 
   doc.save(`gericht-booking-${id}.pdf`);
 }
@@ -94,7 +94,7 @@ export default function ResponseInfo() {
     return (
       <div className="text-center py-8">
         <div className="animate-spin w-8 h-8 border-2 border-golden border-t-transparent rounded-full mx-auto mb-4" />
-        <p className="text-white">Processing your booking...</p>
+        <p className="text-white">Procesando tu reserva...</p>
       </div>
     );
   }
@@ -102,7 +102,7 @@ export default function ResponseInfo() {
   if (!response) {
     return (
       <div className="text-center py-8">
-        <p className="text-white2">No booking data available.</p>
+        <p className="text-white2">No hay datos de reserva.</p>
       </div>
     );
   }
@@ -114,8 +114,8 @@ export default function ResponseInfo() {
     return (
       <div className="text-center space-y-4 py-4">
         <div className="text-red-500 text-5xl mb-2">✕</div>
-        <h2 className="text-red-500 text-2xl">Booking Failed</h2>
-        <p className="text-white2">{resp.error || "Please try again."}</p>
+        <h2 className="text-red-500 text-2xl">Reserva fallida</h2>
+        <p className="text-white2">{resp.error || "Intenta de nuevo."}</p>
       </div>
     );
   }
@@ -130,16 +130,16 @@ export default function ResponseInfo() {
 
       <div>
         <h2 className="text-golden text-2xl font-serif">Cheers!</h2>
-        <p className="text-white2 mt-1">Your table is reserved</p>
+        <p className="text-white2 mt-1">Tu mesa está reservada</p>
       </div>
 
       <div className="bg-black/50 border border-golden/20 rounded-lg p-5 text-left max-w-sm mx-auto space-y-2">
         <p className="text-white">
-          <span className="text-golden">Name:</span> {resp.firstName} {resp.lastName}
+          <span className="text-golden">Nombre:</span> {resp.firstName} {resp.lastName}
         </p>
         <p className="text-white">
-          <span className="text-golden">Date:</span>{" "}
-          {new Date(resp.dateTime).toLocaleDateString("en-US", {
+          <span className="text-golden">Fecha:</span>{" "}
+          {new Date(resp.dateTime).toLocaleDateString("es-ES", {
             weekday: "long",
             year: "numeric",
             month: "long",
@@ -147,15 +147,15 @@ export default function ResponseInfo() {
           })}
         </p>
         <p className="text-white">
-          <span className="text-golden">Time:</span>{" "}
+          <span className="text-golden">Hora:</span>{" "}
           <span className="capitalize">{resp.turnTime}</span>
         </p>
         <p className="text-white">
-          <span className="text-golden">Guests:</span> {resp.numberPersons}
+          <span className="text-golden">Comensales:</span> {resp.numberPersons}
         </p>
         {tableName && (
           <p className="text-white">
-            <span className="text-golden">Table:</span> {tableName}
+            <span className="text-golden">Mesa:</span> {tableName}
           </p>
         )}
       </div>
@@ -171,7 +171,7 @@ export default function ResponseInfo() {
               <polyline points="7 10 12 15 17 10"/>
               <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
-            Download Ticket
+            Descargar ticket
           </span>
         </button>
       </div>

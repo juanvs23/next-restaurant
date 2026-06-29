@@ -10,7 +10,7 @@ export default function FormSuscript() {
   const subcribeText = loading ? (
     <CgSpinner className="animate-spin " />
   ) : (
-    "Subscribe"
+    "Suscribirse"
   );
   const textError =
     error && error.data.code === "invalid_email" ? (
@@ -21,15 +21,15 @@ export default function FormSuscript() {
       <div className="form-content">
         <h2 className="">Newsletter</h2>
         <SponImage />
-        <h3>Subscribe to Our Newsletter</h3>
-        <p className="text-white">And never miss latest Updates!</p>
+        <h3>Suscríbete a nuestro boletín</h3>
+        <p className="text-white">¡Y no te pierdas las últimas novedades!</p>
         <form noValidate={true} onSubmit={handlerSubmit}>
           <label htmlFor="newsLetter">
             <input
               type="email"
               name="newsLetter"
               id="newsLetter"
-              placeholder="Email Address"
+              placeholder="Correo electrónico"
               onChange={handlerInput}
               ref={emailRef}
             />

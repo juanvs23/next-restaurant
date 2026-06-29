@@ -29,18 +29,18 @@ export default function BookingInfo() {
         <Inputs
           getValue={(value: string) => setPersonsNumber(value)}
           name="numberPersons"
-          title="Person numbers"
+          title="Número de personas"
           type="select"
           options={[
-            { value: "1", label: "One person" },
-            { value: "2", label: "Two persons" },
-            { value: "3", label: "Three persons" },
-            { value: "4", label: "Four persons" },
-            { value: "5", label: "Five persons" },
-            { value: "6", label: "Six persons" },
-            { value: "7", label: "Seven persons" },
-            { value: "8", label: "Eight persons" },
-            { value: "other", label: "More persons" },
+            { value: "1", label: "Una persona" },
+            { value: "2", label: "Dos personas" },
+            { value: "3", label: "Tres personas" },
+            { value: "4", label: "Cuatro personas" },
+            { value: "5", label: "Cinco personas" },
+            { value: "6", label: "Seis personas" },
+            { value: "7", label: "Siete personas" },
+            { value: "8", label: "Ocho personas" },
+            { value: "other", label: "Más personas" },
           ]}
         />
       </div>
@@ -48,7 +48,7 @@ export default function BookingInfo() {
         <Inputs
           getValue={(value: string) => setComments(value)}
           name="comments"
-          title="Any diners with intolerance/allergy?"
+          title="¿Algún comensal con intolerancia o alergia?"
           type="textarea"
         />
       </div>

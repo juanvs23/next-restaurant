@@ -51,8 +51,8 @@ export default function PersonalInfo() {
           <Inputs
             getValue={(value: string) => setFirst(value)}
             name="firstName"
-            title="first name"
-            placeHolder="Ex: John"
+            title="Nombre"
+            placeHolder="Ej: Juan"
             value={first}
             type="text"
           />
@@ -61,9 +61,9 @@ export default function PersonalInfo() {
           <Inputs
             getValue={(value: string) => setLast(value)}
             name="lastName"
-            title="Last name"
+            title="Apellido"
             value={last}
-            placeHolder="Ex: Doe"
+            placeHolder="Ej: Pérez"
             type="text"
           />
         </div>
@@ -73,9 +73,9 @@ export default function PersonalInfo() {
           <Inputs
             getValue={(value: string) => setMail(value)}
             name="email"
-            title="Email"
+            title="Correo"
             value={mail}
-            placeHolder="Ex: johndoe@example.com"
+            placeHolder="Ej: juanperez@ejemplo.com"
             type="text"
           />
         </div>
@@ -83,9 +83,9 @@ export default function PersonalInfo() {
           <Inputs
             getValue={(value: string) => setPhone(value)}
             name="phoneNumber"
-            title="Phone number"
+            title="Teléfono"
             value={phone}
-            placeHolder="Ex: +1 123 456 789"
+            placeHolder="Ej: +58 412 1234567"
             type="text"
           />
         </div>

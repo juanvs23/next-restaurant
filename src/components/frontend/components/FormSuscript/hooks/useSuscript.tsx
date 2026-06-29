@@ -27,7 +27,7 @@ export default function useSuscript(url: string) {
     if (!checkEmail.success) {
       setError({
         status: "error",
-        data: { message: "Please enter a valid email.", code: "invalid_email" },
+        data: { message: "Ingresa un correo electrónico válido.", code: "invalid_email" },
       });
       setLoading(false);
       return;
@@ -37,7 +37,7 @@ export default function useSuscript(url: string) {
       setData(response.data);
       dispatch(
         setModal({
-          modalTitle: "Thank you",
+          modalTitle: "¡Gracias!",
           modalContent: (
             <div className="flex flex-col items-center gap-4 py-6 text-center">
               <div className="w-16 h-16 rounded-full bg-golden/20 flex items-center justify-center">
@@ -45,14 +45,14 @@ export default function useSuscript(url: string) {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 className="text-golden text-xl font-serif">Successfully subscribed!</h3>
-              <p className="text-white2">Thank you for subscribing to our newsletter. You&apos;ll be the first to know about our latest updates and exclusive offers.</p>
+              <h3 className="text-golden text-xl font-serif">¡Suscripción exitosa!</h3>
+              <p className="text-white2">Gracias por suscribirte a nuestro boletín. Serás el primero en conocer nuestras últimas novedades y ofertas exclusivas.</p>
             </div>
           ),
           ModalFooter: (
             <div className="flex justify-center pt-2">
               <button className="button" onClick={handlerClose}>
-                Close
+                Cerrar
               </button>
             </div>
           ),

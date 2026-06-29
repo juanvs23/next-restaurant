@@ -47,30 +47,30 @@ export default function BookingForm() {
   const steps = [
     {
       stepIndex: 0,
-      title: "Personal Info",
+      title: "Datos personales",
       formKey: "profileInfo",
       content: <PersonalInfo />,
     },
     {
       stepIndex: 1,
-      title: "Booking Info",
+      title: "Reserva",
       formKey: "bookingInfo",
       content: <BookingInfo />,
     },
     {
       stepIndex: 2,
-      title: "Dating",
+      title: "Fecha y hora",
       formKey: "bookingDate",
       content: <DatingInfo />,
     },
     {
       stepIndex: 3,
-      title: "Confirmation",
+      title: "Confirmación",
       content: <Confirmation />,
     },
     {
       stepIndex: 4,
-      title: "Thank you!",
+      title: "¡Gracias!",
       content: <ResponseInfo />,
     },
   ];
