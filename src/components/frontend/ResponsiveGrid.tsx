@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -41,8 +42,8 @@ export default function ResponsiveGrid({
       )}
     >
       {Array.isArray(children)
-        ? children.map((child, i) => (
-            <motion.div key={i} variants={itemVariants}>
+        ? React.Children.toArray(children).map((child, i) => (
+            <motion.div key={child.key ?? i} variants={itemVariants}>
               {child}
             </motion.div>
           ))

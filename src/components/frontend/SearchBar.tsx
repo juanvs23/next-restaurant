@@ -23,7 +23,10 @@ export default function SearchBar({
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Debounce: sync value → callback after 300ms of inactivity
+  // Sync internal state with prop changes (e.g., browser back/forward)
+  useEffect(() => {
+    setValue(defaultValue);
+  }, [defaultValue]);
   useEffect(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -36,11 +37,13 @@ export default function ImageCarousel({
   return (
     <div className="space-y-4">
       {/* Main image */}
-      <div className="overflow-hidden rounded-lg border border-white2/10 bg-black2/60">
-        <img
+      <div className="relative aspect-square overflow-hidden rounded-lg border border-white2/10 bg-black2/60">
+        <Image
           src={imageSrc(selectedIndex)}
           alt={`${productName} - imagen ${selectedIndex + 1}`}
-          className="aspect-square w-full object-cover transition-opacity duration-300"
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          className="object-cover transition-opacity duration-300"
         />
       </div>
 
@@ -54,16 +57,18 @@ export default function ImageCarousel({
               onClick={() => setSelectedIndex(idx)}
               aria-label={`${productName} - miniatura ${idx + 1}`}
               className={cn(
-                "h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border-2 transition-all duration-200",
+                "relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border-2 transition-all duration-200",
                 idx === selectedIndex
                   ? "border-golden opacity-100 ring-1 ring-golden/40"
                   : "border-transparent opacity-60 hover:opacity-90"
               )}
             >
-              <img
+              <Image
                 src={imageSrc(idx)}
                 alt={`${productName} - miniatura ${idx + 1}`}
-                className="h-full w-full object-cover"
+                width={80}
+                height={80}
+                className="object-cover"
               />
             </button>
           ))}

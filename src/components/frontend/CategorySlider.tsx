@@ -33,8 +33,7 @@ export default function CategorySlider({
           type="button"
           onClick={() => onSelect(undefined)}
           className={cn(
-            "flex-shrink-0 scroll-ml-4 rounded-full px-5 py-2 text-sm font-medium transition-colors",
-            "scroll-snap-align-start",
+            "flex-shrink-0 snap-start scroll-ml-4 rounded-full px-5 py-2 text-sm font-medium transition-colors",
             !selectedCategory
               ? "bg-golden text-black2"
               : "bg-white2/10 text-white2 hover:bg-white2/20"
