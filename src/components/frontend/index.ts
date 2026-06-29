@@ -11,3 +11,4 @@ export { default as CategorySlider } from "./CategorySlider";
 export { default as SearchBar } from "./SearchBar";
 export { default as ImageCarousel } from "./ImageCarousel";
 export { default as MenuFilters } from "./MenuFilters";
+export { default as AosInitializer } from "./AosInitializer";
