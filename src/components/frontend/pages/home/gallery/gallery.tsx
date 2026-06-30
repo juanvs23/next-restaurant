@@ -1,31 +1,22 @@
 "use client";
-import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import VideoComponent from "@/components/frontend/components/video/videoComponent";
 import bggallery from "@/public/gallery/fondo.webp";
 import { SponImage } from "@/components/common";
 import InstagramCaroussel from "@/components/frontend/components/sliders/instagramCarousel/instagramCaroussel";
+import { useMedia } from "@/components/frontend";
 
 export default function HomeGallery() {
   const t = useTranslations("gallery");
-  const [images, setImages] = useState<any[]>([]);
+  const { images: mediaImages } = useMedia({ categories: ["gallery", "home"], limit: 8 });
 
-  useEffect(() => {
-    fetch("/api/frontend/media?category=gallery&category=home&limit=8")
-      .then((r) => r.json())
-      .then((items) =>
-        setImages(
-          items.map((m: any) => ({
-            src: m.url,
-            width: m.width || 400,
-            height: m.height || 400,
-            title: m.title,
-          }))
-        )
-      )
-      .catch(() => {});
-  }, []);
+  const images = mediaImages.map((m) => ({
+    src: m.url,
+    width: m.width || 400,
+    height: m.height || 400,
+    title: m.title,
+  }));
 
   return (
     <section id="gallery" className="gallery-home"

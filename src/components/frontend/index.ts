@@ -13,3 +13,4 @@ export { default as ImageCarousel } from "./ImageCarousel";
 export { default as ProductGrid } from "./ProductGrid";
 export { default as MenuFilters } from "./MenuFilters";
 export { default as AosInitializer } from "./AosInitializer";
+export { useMedia } from "./hooks/useMedia";
