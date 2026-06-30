@@ -57,6 +57,7 @@ export default function MediaPage() {
   const [uploadDescription, setUploadDescription] = useState("");
   const [uploadCategoryIds, setUploadCategoryIds] = useState<string[]>([]);
   const [editCategoryIds, setEditCategoryIds] = useState<string[]>([]);
+  const editCategoryIdsRef = useRef<string[]>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCatName, setNewCatName] = useState("");
   const [editingCat, setEditingCat] = useState<string | null>(null);
@@ -118,7 +119,9 @@ export default function MediaPage() {
     if (cat._id) {
       setCategories(prev => [...prev, cat]);
       setUploadCategoryIds(prev => [...prev, cat._id]);
-      setEditCategoryIds(prev => [...prev, cat._id]);
+      const nextEdit = [...editCategoryIdsRef.current, cat._id];
+      setEditCategoryIds(nextEdit);
+      editCategoryIdsRef.current = nextEdit;
       setNewCategoryName("");
     }
   };
@@ -130,9 +133,11 @@ export default function MediaPage() {
   };
 
   const toggleEditCategory = (id: string) => {
-    setEditCategoryIds(prev =>
-      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
-    );
+    setEditCategoryIds(prev => {
+      const next = prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id];
+      editCategoryIdsRef.current = next;
+      return next;
+    });
   };
 
   const uploadFiles = async (files: FileList) => {
@@ -189,7 +194,7 @@ export default function MediaPage() {
         alt: (document.getElementById("edit-alt") as HTMLInputElement)?.value,
         title: (document.getElementById("edit-title") as HTMLInputElement)?.value,
         caption: (document.getElementById("edit-caption") as HTMLTextAreaElement)?.value,
-        categories: editCategoryIds,
+        categories: editCategoryIdsRef.current,
       }),
     });
     setEditOpen(false);
@@ -415,7 +420,7 @@ export default function MediaPage() {
                     {copiedId === item._id ? <ImCheckmark /> : <ImCopy />}
                   </Button>
                   <Button variant="ghost" size="icon" className="text-white hover:text-golden"
-                    onClick={() => { setSelected(item); setEditCategoryIds(item.categories || []); setEditOpen(true); }}>
+                    onClick={() => { setSelected(item); const cats = item.categories || []; setEditCategoryIds(cats); editCategoryIdsRef.current = cats; setEditOpen(true); }}>
                     ✎
                   </Button>
                   <Button variant="ghost" size="icon" className="text-white hover:text-red-500"
