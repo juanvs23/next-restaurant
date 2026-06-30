@@ -7,16 +7,33 @@ import { SponImage } from "@/components/common";
 import InstagramCaroussel from "@/components/frontend/components/sliders/instagramCarousel/instagramCaroussel";
 import { useMedia } from "@/components/frontend";
 
-export default function HomeGallery() {
-  const t = useTranslations("gallery");
-  const { images: mediaImages } = useMedia({ categories: ["gallery", "home"], limit: 8 });
+interface GalleryImage {
+  src: string;
+  width?: number;
+  height?: number;
+  title?: string;
+}
 
-  const images = mediaImages.map((m) => ({
+interface Props {
+  initialImages?: GalleryImage[];
+}
+
+export default function HomeGallery({ initialImages }: Props = {}) {
+  const t = useTranslations("gallery");
+  const { images: mediaImages } = useMedia({
+    categories: ["gallery", "home"],
+    limit: 8,
+  });
+
+  const source = initialImages?.length ? initialImages : [];
+  const clientImages = mediaImages.map((m) => ({
     src: m.url,
     width: m.width || 400,
     height: m.height || 400,
     title: m.title,
   }));
+
+  const images = initialImages?.length ? source : clientImages;
 
   return (
     <section id="gallery" className="gallery-home"
