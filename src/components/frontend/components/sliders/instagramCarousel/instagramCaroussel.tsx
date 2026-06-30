@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { ImagesProps } from "@/types/sliders";
 import { A11y } from "swiper/modules";
-import { BsInstagram } from "react-icons/bs";
+import { Search } from "lucide-react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 import "swiper/css";
@@ -35,7 +35,7 @@ function ImageInstagram({ image, onClick }: ImageProps) {
       />
       <div className="instagram-overlay group-hover:opacity-100">
         <div className="instagrambuttom">
-          <BsInstagram />
+          <Search className="w-6 h-6" />
         </div>
       </div>
     </article>
