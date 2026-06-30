@@ -338,6 +338,19 @@ async function main() {
 
   await db.collection("configs").updateOne({}, { $set: { nextInvoiceNumber: invoiceNum } });
 
+  // ── Gallery Media ──
+  const galleryImages = [
+    { filename: "rammen-1.webp", url: "/gallery/rammen-1.webp", alt: "Plato de ramen en GERÍCHT", title: "Ramen", caption: "Nuestro ramen artesanal", description: "Ramen preparado con caldo casero y toppings frescos.", category: "gallery", refType: "gallery", mimeType: "image/webp" },
+    { filename: "whisky-2.webp", url: "/gallery/whisky-2.webp", alt: "Whisky en GERÍCHT", title: "Whisky", caption: "Selección premium de whiskies", description: "Nuestra exclusiva selección de whiskies de todo el mundo.", category: "gallery", refType: "gallery", mimeType: "image/webp" },
+    { filename: "egg-3.webp", url: "/gallery/egg-3.webp", alt: "Plato de huevo en GERÍCHT", title: "Huevo", caption: "Plato estrella del chef", description: "Huevo preparado con técnica sous-vide y guarnición de temporada.", category: "gallery", refType: "gallery", mimeType: "image/webp" },
+    { filename: "soup-4.webp", url: "/gallery/soup-4.webp", alt: "Sopa en GERÍCHT", title: "Sopa", caption: "Sopas artesanales", description: "Sopa preparada con ingredientes frescos del mercado local.", category: "gallery", refType: "gallery", mimeType: "image/webp" },
+    { filename: "waffle-5.webp", url: "/gallery/waffle-5.webp", alt: "Waffle en GERÍCHT", title: "Waffle", caption: "Postres irresistibles", description: "Waffle crujiente con frutas frescas y crema batida.", category: "gallery", refType: "gallery", mimeType: "image/webp" },
+  ];
+  for (const img of galleryImages) {
+    await db.collection("media").insertOne({ ...img, createdAt: new Date(), updatedAt: new Date() });
+  }
+  console.log("✅ " + galleryImages.length + " imágenes de galería");
+
   console.log(`✅ 14 días de operaciones (${invoiceNum - 1} facturas)`);
   console.log("");
   console.log("🎉 Seed completado!");
