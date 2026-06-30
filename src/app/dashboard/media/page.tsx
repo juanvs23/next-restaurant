@@ -43,6 +43,30 @@ export default function MediaPage() {
   const [page, setPage] = useState(1);
   const perPage = 12;
 
+  // Upload metadata state
+  const [uploadAlt, setUploadAlt] = useState("");
+  const [uploadTitle, setUploadTitle] = useState("");
+  const [uploadCaption, setUploadCaption] = useState("");
+  const [uploadDescription, setUploadDescription] = useState("");
+  const [uploadCategory, setUploadCategory] = useState("");
+
+  const uploadFiles = async (files: FileList) => {
+    for (const file of Array.from(files)) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("alt", uploadAlt);
+      formData.append("title", uploadTitle);
+      formData.append("caption", uploadCaption);
+      formData.append("description", uploadDescription);
+      formData.append("category", uploadCategory);
+      await fetch("/api/backoffice/media", { method: "POST", body: formData });
+    }
+    setUploadAlt(""); setUploadTitle(""); setUploadCaption("");
+    setUploadDescription(""); setUploadCategory("");
+    setUploadOpen(false);
+    fetchMedia();
+  };
+
   const filtered = items.filter((item) =>
     item.filename.toLowerCase().includes(search.toLowerCase()) ||
     item.alt?.toLowerCase().includes(search.toLowerCase()),
@@ -138,13 +162,7 @@ export default function MediaPage() {
                 setDragging(false);
                 const files = e.dataTransfer?.files;
                 if (!files?.length) return;
-                for (const file of Array.from(files)) {
-                  const formData = new FormData();
-                  formData.append("file", file);
-                  await fetch("/api/backoffice/media", { method: "POST", body: formData });
-                }
-                setUploadOpen(false);
-                fetchMedia();
+                await uploadFiles(files);
               }}
             >
               <ImImage className="w-10 h-10 mx-auto text-muted-foreground mb-2" />
@@ -153,15 +171,38 @@ export default function MediaPage() {
                 onChange={async (e) => {
                   const files = e.target.files;
                   if (!files?.length) return;
-                  for (const file of Array.from(files)) {
-                    const formData = new FormData();
-                    formData.append("file", file);
-                    await fetch("/api/backoffice/media", { method: "POST", body: formData });
-                  }
-                  setUploadOpen(false);
-                  fetchMedia();
+                  await uploadFiles(files);
                 }}
               />
+            </div>
+
+            {/* Metadata fields */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="grid gap-1">
+                <Label htmlFor="upload-title" className="text-xs">Title</Label>
+                <Input id="upload-title" value={uploadTitle} onChange={(e) => setUploadTitle(e.target.value)}
+                  placeholder="Image title" />
+              </div>
+              <div className="grid gap-1">
+                <Label htmlFor="upload-category" className="text-xs">Category</Label>
+                <Input id="upload-category" value={uploadCategory} onChange={(e) => setUploadCategory(e.target.value)}
+                  placeholder="ambiance, food, events..." />
+              </div>
+              <div className="grid gap-1">
+                <Label htmlFor="upload-alt" className="text-xs">Alt Text (SEO)</Label>
+                <Input id="upload-alt" value={uploadAlt} onChange={(e) => setUploadAlt(e.target.value)}
+                  placeholder="Describe the image" />
+              </div>
+              <div className="grid gap-1">
+                <Label htmlFor="upload-caption" className="text-xs">Caption</Label>
+                <Input id="upload-caption" value={uploadCaption} onChange={(e) => setUploadCaption(e.target.value)}
+                  placeholder="Short caption" />
+              </div>
+            </div>
+            <div className="grid gap-1">
+              <Label htmlFor="upload-desc" className="text-xs">Description</Label>
+              <Textarea id="upload-desc" value={uploadDescription} onChange={(e) => setUploadDescription(e.target.value)}
+                placeholder="Longer description..." rows={2} />
             </div>
 
             <div className="relative">
