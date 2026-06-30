@@ -24,6 +24,7 @@ export default function ImageContainer({
         width={widthProps}
         height={heightProps}
         priority
+        unoptimized
         className="image-product"
       />
       <Image
