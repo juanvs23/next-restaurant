@@ -12,17 +12,17 @@ export default function HeroHome() {
               <span className="hero-rotate">#Bar</span>
             </div>
             <div>
-              <h3 className="text-white tracking-[4px] max-md:text-[1.2rem] max-md:tracking-[2px]">Chase the new Flavour</h3>
+              <h3 className="text-white tracking-[4px] max-md:text-[1.2rem] max-md:tracking-[2px]">Persigue el nuevo sabor</h3>
               <SponImage justify="start" />
-              <h1 className="text-golden text-[5.5rem] leading-[1.2] tracking-[8px] max-md:text-[3rem] max-md:tracking-[2px]">The key to Fine dining</h1>
+              <h1 className="text-golden text-[5.5rem] leading-[1.2] tracking-[8px] max-md:text-[3rem] max-md:tracking-[2px]">La llave de la Alta Cocina</h1>
               <p>
-                Sit tellus lobortis sed senectus vivamus molestie. Condimentum
-                volutpat morbi facilisis quam scelerisque sapien. Et, penatibus
-                aliquam amet tellus
+                Una experiencia gastronómica única donde cada plato cuenta una
+                historia. Ingredientes seleccionados, técnicas magistrales y un
+                ambiente que despierta todos los sentidos.
               </p>
               <div>
                 <a className="button" href="#menu">
-                  Explore Menu
+                  Explorar Menú
                 </a>
               </div>
             </div>

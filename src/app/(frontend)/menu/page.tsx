@@ -11,7 +11,7 @@ import { getBaseUrl } from "@/utils/getBaseUrl";
 
 export const metadata: Metadata = {
   title: "Menú — GERÍCHT",
-  description: "Explora nuestro menú en el mejor restaurante de Berlín",
+  description: "Explora nuestro menú en GERÍCHT Restaurant",
 };
 
 // ── Types (matching API response) ──

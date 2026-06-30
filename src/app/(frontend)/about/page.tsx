@@ -6,11 +6,12 @@ export default function AboutPage() {
       {/* Hero */}
       <section className="pt-32 pb-16 px-4">
         <div className="container max-w-5xl text-center">
-          <h1 className="text-golden text-5xl md:text-7xl font-serif mb-6">About Us</h1>
+          <h1 className="text-golden text-5xl md:text-7xl font-serif mb-6">Sobre Nosotros</h1>
           <SponImage justify="center" />
           <p className="text-white2 text-lg max-w-2xl mx-auto mt-6 leading-relaxed">
-            Embark on a culinary journey at GERÍCHT, where exquisite flavors and 
-            impeccable service intertwine to create an unforgettable dining experience.
+            Embárcate en un viaje culinario en GERÍCHT, donde sabores exquisitos 
+            y un servicio impecable se entrelazan para crear una experiencia 
+            gastronómica inolvidable.
           </p>
         </div>
       </section>
@@ -20,25 +21,28 @@ export default function AboutPage() {
         <div className="container max-w-5xl">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-golden text-4xl font-serif mb-4">Our Story</h2>
+              <h2 className="text-golden text-4xl font-serif mb-4">Nuestra Historia</h2>
               <SponImage justify="start" />
               <p className="text-white2 mt-4 leading-relaxed">
-                Founded in 2012, GERÍCHT was born from a shared passion for exceptional cuisine. 
-                Our founder and head chef, Kevin Luo, along with a group of devoted friends, 
-                transformed a simple dream into a celebrated fine dining destination.
+                Fundado en 2012, GERÍCHT nació de una pasión compartida por la 
+                cocina excepcional. Nuestro fundador y chef principal, Kevin Luo, 
+                junto a un grupo de amigos dedicados, transformó un simple sueño 
+                en un reconocido destino de alta cocina.
               </p>
               <p className="text-white2 mt-4 leading-relaxed">
-                Located in the heart of Chicago, our restaurant combines modern elegance with 
-                timeless culinary traditions. Every dish tells a story, every ingredient is 
-                carefully selected, and every guest is treated as family.
+                Ubicado en el corazón de Chicago, nuestro restaurante combina 
+                elegancia moderna con tradiciones culinarias atemporales. Cada 
+                plato cuenta una historia, cada ingrediente es cuidadosamente 
+                seleccionado y cada comensal es tratado como familia.
               </p>
             </div>
             <div className="bg-black/50 border border-golden/20 rounded-lg p-8">
-              <h3 className="text-golden text-2xl font-serif mb-4">Our Mission</h3>
+              <h3 className="text-golden text-2xl font-serif mb-4">Nuestra Misión</h3>
               <p className="text-white2 leading-relaxed">
-                To create extraordinary dining experiences that linger in memory long after 
-                the last bite. We believe in the power of food to bring people together, 
-                to celebrate life&apos;s moments, and to explore new horizons of flavor.
+                Crear experiencias gastronómicas extraordinarias que perduren en 
+                la memoria mucho después del último bocado. Creemos en el poder 
+                de la comida para unir a las personas, celebrar los momentos de 
+                la vida y explorar nuevos horizontes de sabor.
               </p>
             </div>
           </div>
@@ -48,12 +52,12 @@ export default function AboutPage() {
       {/* Values */}
       <section className="py-16 px-4 bg-black/30">
         <div className="container max-w-5xl">
-          <h2 className="text-golden text-4xl font-serif text-center mb-12">Our Values</h2>
+          <h2 className="text-golden text-4xl font-serif text-center mb-12">Nuestros Valores</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { title: "Quality", desc: "Only the finest ingredients, prepared with precision and passion." },
-              { title: "Hospitality", desc: "Every guest deserves warmth, attention, and a memorable experience." },
-              { title: "Tradition", desc: "Honoring culinary heritage while embracing innovation and creativity." },
+              { title: "Calidad", desc: "Solo los mejores ingredientes, preparados con precisión y pasión." },
+              { title: "Hospitalidad", desc: "Cada comensal merece calidez, atención y una experiencia memorable." },
+              { title: "Tradición", desc: "Honrando la herencia culinaria mientras abrazamos la innovación y creatividad." },
             ].map((v) => (
               <div key={v.title} className="border border-golden/20 rounded-lg p-6 text-center">
                 <h3 className="text-golden text-xl font-serif mb-3">{v.title}</h3>

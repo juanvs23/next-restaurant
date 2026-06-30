@@ -14,43 +14,43 @@ export default function AboutUs() {
         <div className="container">
           <div className="row">
             <div className="element-40 about">
-              <h2>About Us</h2>
+              <h2>Sobre Nosotros</h2>
               <div className="spoon">
                 <SponImage />
               </div>
               <p>
-                Embark on a culinary journey at GERÍCHT, where exquisite flavors
-                and impeccable service intertwine to create an unforgettable
-                dining experience.
+                Embárcate en un viaje culinario en GERÍCHT, donde sabores
+                exquisitos y un servicio impecable se entrelazan para crear
+                una experiencia gastronómica inolvidable.
               </p>
               <div className="about-button">
                 <Link href="/about" className="button">
-                  Know More
+                  Saber Más
                 </Link>
               </div>
             </div>
             <div className="element-20 no-gutter knife">
               <Image
                 src={KnifeImage.src}
-                alt="knife"
+                alt="cuchillo"
                 height={KnifeImage.height}
                 width={KnifeImage.width}
                 priority
               />
             </div>
             <div className="element-40 history">
-              <h2>Our History</h2>
+              <h2>Nuestra Historia</h2>
               <div className="spoon">
                 <SponImage />
               </div>
               <p>
-                In 2012 our principal and winner chef and experienced groups of
-                friends with great passion for cook was founded Gericht. A
-                modern place with pleased locate in middle Heart of Chicago.
+                En 2012, nuestro chef principal Kevin Luo junto a un grupo de
+                amigos apasionados por la cocina, fundó GERÍCHT. Un lugar
+                moderno ubicado en el corazón de Chicago.
               </p>
               <div className="history-button">
                 <Link href="/about#our-history" className="button">
-                  Know More
+                  Saber Más
                 </Link>
               </div>
             </div>

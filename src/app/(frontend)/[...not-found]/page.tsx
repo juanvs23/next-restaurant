@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Pages } from "@/components/frontend";
 
 export const metadata: Metadata = {
-  title: "Upss Sorry - Not Found",
+  title: "Página no encontrada — GERÍCHT",
   description:
-    "Gerisht, the best restaurant in Berlin - This page does not exist",
+    "GERÍCHT, el mejor restaurante de Chicago — Esta página no existe",
 };
 export default function Home() {
   return <Pages.NotFound />;
