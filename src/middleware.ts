@@ -1,5 +1,9 @@
 import { auth } from "./app/auth";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
+import createMiddleware from "next-intl/middleware";
+import { routing } from "./i18n/routing";
+
+// ── Auth middleware (dashboard + API) ──
 
 const adminOnly = [
   "/dashboard/users",
@@ -8,7 +12,7 @@ const adminOnly = [
   "/dashboard/config",
 ];
 
-export default auth((req) => {
+const authMiddleware = auth((req) => {
   const { pathname } = req.nextUrl;
   const role = req.auth?.role;
   const isAuth = !!(req.auth?.accessToken || req.auth?.userId);
@@ -44,6 +48,36 @@ function redirectToLogin(req: any) {
   return response;
 }
 
+// ── i18n middleware (frontend routes only) ──
+
+const intlMiddleware = createMiddleware(routing);
+
+// ── Composed middleware ──
+
+export default function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  // Auth routes: dashboard + API
+  if (
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/api/backoffice") ||
+    pathname.startsWith("/login")
+  ) {
+    return authMiddleware(req as any, {} as any);
+  }
+
+  // Frontend routes: i18n
+  return intlMiddleware(req);
+}
+
 export const config = {
-  matcher: ["/dashboard/:path*", "/dashboard", "/api/:path*", "/api"],
+  matcher: [
+    // Dashboard + API + Login (auth)
+    "/dashboard/:path*",
+    "/dashboard",
+    "/api/backoffice/:path*",
+    "/login",
+    // Frontend (i18n)
+    "/((?!api|_next|_vercel|.*\\..*).*)",
+  ],
 };

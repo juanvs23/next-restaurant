@@ -6,6 +6,7 @@ import Modal from "../modal/modal";
 import MobilMenuWrapper from "./MobilMenuWrapper";
 import CartBadge from "@/components/frontend/CartBadge";
 import BookingIcon from "./BookingIcon";
+import LangSwitcher from "./LangSwitcher";
 
 export default function Header() {
   return (
@@ -19,6 +20,7 @@ export default function Header() {
             </div>
             <MenuNav />
             <div className="flex items-center gap-3">
+              <LangSwitcher />
               <CartBadge />
               <div className="lg:hidden">
                 <BookingIcon />
