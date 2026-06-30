@@ -129,7 +129,9 @@
   },
   "notFound": {
     "title": "Page not found — GERÍCHT",
-    "description": "GERÍCHT, the best restaurant in Chicago — This page does not exist"
+    "description": "GERÍCHT, the best restaurant in Chicago — This page does not exist",
+    "heading": "Page Not Found",
+    "message": "Sorry, we can't find this page. While you're here, have a drink with us."
   },
   "lang": {
     "es": "ES",

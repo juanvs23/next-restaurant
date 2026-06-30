@@ -129,7 +129,9 @@
   },
   "notFound": {
     "title": "Página no encontrada — GERÍCHT",
-    "description": "GERÍCHT, el mejor restaurante de Chicago — Esta página no existe"
+    "description": "GERÍCHT, el mejor restaurante de Chicago — Esta página no existe",
+    "heading": "Página no encontrada",
+    "message": "Lo sentimos, no podemos encontrar esta página. Mientras tanto, toma un trago con nosotros."
   },
   "lang": {
     "es": "ES",
