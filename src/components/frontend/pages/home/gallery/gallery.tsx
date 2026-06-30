@@ -12,7 +12,7 @@ export default function HomeGallery() {
   const [images, setImages] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch("/api/frontend/media?category=gallery&limit=8")
+    fetch("/api/frontend/media?category=gallery&category=home&limit=8")
       .then((r) => r.json())
       .then((items) =>
         setImages(

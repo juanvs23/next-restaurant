@@ -7,18 +7,16 @@ export async function GET(req: NextRequest) {
   await connectDB();
 
   const { searchParams } = new URL(req.url);
-  const category = searchParams.get("category");
+  const categorySlugs = searchParams.getAll("category");
   const limit = parseInt(searchParams.get("limit") || "20", 10);
 
   const filter: any = {};
-  if (category) {
-    const cat = await MediaCategory.findOne({ slug: category }).lean();
-    if (cat) {
-      filter.categories = cat._id;
-    } else {
-      // Slug not found → return empty
+  if (categorySlugs.length > 0) {
+    const cats = await MediaCategory.find({ slug: { $in: categorySlugs } }).lean();
+    if (cats.length === 0) {
       return NextResponse.json([]);
     }
+    filter.categories = { $in: cats.map((c) => c._id) };
   }
 
   const media = await Media.find(filter)
