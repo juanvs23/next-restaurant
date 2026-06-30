@@ -57,7 +57,7 @@ export default async function AboutPage() {
       </section>
 
       {/* History */}
-      <section className="py-16 px-4">
+      <section id="our-history" className="py-16 px-4">
         <div className="container max-w-5xl">
           <h2 className="text-golden text-4xl font-serif text-center mb-4">{t("historyTitle")}</h2>
           <SponImage justify="center" />
@@ -81,7 +81,7 @@ export default async function AboutPage() {
       </section>
 
       {/* Chef */}
-      <section className="py-16 px-4 bg-black/30">
+      <section id="chef" className="py-16 px-4 bg-black/30">
         <div className="container max-w-5xl">
           <h2 className="text-golden text-4xl font-serif text-center mb-4">{t("chefTitle")}</h2>
           <SponImage justify="center" />
