@@ -22,7 +22,17 @@
     "hospitality": "Hospitality",
     "hospitalityDesc": "Every guest deserves warmth, attention, and a memorable experience.",
     "tradition": "Tradition",
-    "traditionDesc": "Honoring culinary heritage while embracing innovation and creativity."
+    "traditionDesc": "Honoring culinary heritage while embracing innovation and creativity.",
+    "historyTitle": "Our History",
+    "history2012": "GERÍCHT opens its doors in the heart of Chicago. Chef Kevin Luo and a small team of passionate individuals bring a dream to life: creating a space where fine dining meets the warmth of home.",
+    "history2015": "The restaurant receives its first Michelin star. The menu expands to include seasonal ingredients and cutting-edge techniques, establishing GERÍCHT as a benchmark in Chicago's culinary scene.",
+    "history2018": "We expand our facilities with a private terrace and a wine cellar featuring over 300 labels. We launch our wine pairing dinners, attracting diners from across the country.",
+    "history2021": "During the pandemic, GERÍCHT reinvents itself with premium delivery service and at-home dining experiences. Our commitment to quality never wavers, even in the toughest times.",
+    "history2024": "Today, GERÍCHT continues to evolve. With a cuisine that honors tradition and embraces innovation, we keep creating unforgettable experiences for every guest who walks through our doors.",
+    "chefTitle": "Our Chef",
+    "chefName": "Kevin Luo",
+    "chefRole": "Executive Chef & Founder",
+    "chefBio": "Kevin Luo discovered his passion for cooking at age 12 in his grandmother's kitchen in Shanghai. After training at Le Cordon Bleu and working in some of the world's finest restaurants — from Paris to Tokyo — Kevin decided to create his own culinary destination. In 2012, he founded GERÍCHT with a clear vision: to offer a dining experience that celebrates ingredients, techniques, and above all, people. His philosophy can be summed up in one phrase: 'Cooking is an act of love.'"
   },
   "menu": {
     "title": "Menu",

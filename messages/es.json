@@ -22,7 +22,17 @@
     "hospitality": "Hospitalidad",
     "hospitalityDesc": "Cada comensal merece calidez, atención y una experiencia memorable.",
     "tradition": "Tradición",
-    "traditionDesc": "Honrando la herencia culinaria mientras abrazamos la innovación y creatividad."
+    "traditionDesc": "Honrando la herencia culinaria mientras abrazamos la innovación y creatividad.",
+    "historyTitle": "Nuestra Historia",
+    "history2012": "GERÍCHT abre sus puertas en el corazón de Chicago. El chef Kevin Luo y un pequeño equipo de apasionados dan vida a un sueño: crear un espacio donde la alta cocina se encuentra con la calidez del hogar.",
+    "history2015": "El restaurante recibe su primera estrella Michelin. El menú se expande para incluir ingredientes de temporada y técnicas de vanguardia, consolidando a GERÍCHT como un referente en la escena gastronómica de Chicago.",
+    "history2018": "Ampliamos nuestras instalaciones con una terraza privada y una cava de vinos con más de 300 etiquetas. Lanzamos nuestro programa de cenas maridaje que atrae a comensales de todo el país.",
+    "history2021": "En plena pandemia, GERÍCHT se reinventa con un servicio de delivery premium y experiencias gastronómicas en casa. Nuestro compromiso con la calidad nunca flaquea, incluso en los momentos más difíciles.",
+    "history2024": "Hoy, GERÍCHT sigue evolucionando. Con una cocina que honra la tradición y abraza la innovación, continuamos creando experiencias inolvidables para cada comensal que cruza nuestras puertas.",
+    "chefTitle": "Nuestro Chef",
+    "chefName": "Kevin Luo",
+    "chefRole": "Chef Ejecutivo & Fundador",
+    "chefBio": "Kevin Luo descubrió su pasión por la cocina a los 12 años en la cocina de su abuela en Shanghai. Tras formarse en Le Cordon Bleu y trabajar en algunos de los mejores restaurantes del mundo — desde París hasta Tokio — Kevin decidió crear su propio destino culinario. En 2012 fundó GERÍCHT con una visión clara: ofrecer una experiencia gastronómica que celebre los ingredientes, las técnicas y, sobre todo, a las personas. Su filosofía se resume en una frase: 'Cocinar es un acto de amor'."
   },
   "menu": {
     "title": "Menú",
