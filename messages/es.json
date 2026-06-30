@@ -135,5 +135,14 @@
     "es": "ES",
     "en": "EN",
     "switchTo": "Cambiar a {lang}"
+  },
+  "nav": {
+    "home": "Inicio",
+    "about": "Sobre Nosotros",
+    "menu": "Menú",
+    "chef": "Chef",
+    "gallery": "Galería",
+    "awards": "Premios",
+    "findUs": "Encuéntranos"
   }
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { ArrowLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import {
   ProductCard,
   ResponsiveGrid,
@@ -9,10 +10,17 @@ import {
 } from "@/components/frontend";
 import { getBaseUrl } from "@/utils/getBaseUrl";
 
-export const metadata: Metadata = {
-  title: "Menú — GERÍCHT",
-  description: "Explora nuestro menú en GERÍCHT Restaurant",
+type Props = {
+  searchParams: Promise<{ search?: string; category?: string }>;
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("menu");
+  return {
+    title: t("title") + " — GERÍCHT",
+    description: t("title") + " GERÍCHT Restaurant",
+  };
+}
 
 // ── Types (matching API response) ──
 
@@ -39,11 +47,8 @@ interface MenuResponse {
 
 // ── Page ──
 
-export default async function MenuPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ search?: string; category?: string }>;
-}) {
+export default async function MenuPage({ searchParams }: Props) {
+  const t = await getTranslations("menu");
   const params = await searchParams;
   const baseUrl = await getBaseUrl();
 
@@ -60,12 +65,12 @@ export default async function MenuPage({
   if (!res.ok) {
     return (
       <div className="container mx-auto px-4 py-20 text-center text-white2">
-        <p className="text-lg">Error al cargar el menú. Intenta de nuevo más tarde.</p>
+        <p className="text-lg">{t("error")}</p>
         <Link
           href="/"
           className="mt-4 inline-block text-golden hover:text-golden2 transition-colors"
         >
-          Volver al inicio
+          {t("backHome")}
         </Link>
       </div>
     );
@@ -84,26 +89,26 @@ export default async function MenuPage({
       {/* Breadcrumbs */}
       <nav className="mb-6 text-sm text-white2/50">
         <Link href="/" className="hover:text-golden transition-colors">
-          Inicio
+          {t("home")}
         </Link>
         <span className="mx-2">/</span>
-        <span className="text-white2">Menú</span>
+        <span className="text-white2">{t("title")}</span>
       </nav>
 
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="font-serif text-4xl font-bold text-golden">Menú</h1>
+        <h1 className="font-serif text-4xl font-bold text-golden">{t("title")}</h1>
         {params.search || params.category ? (
           <Link
             href="/menu"
             className="flex items-center gap-1 text-sm text-white2/60 hover:text-golden transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Limpiar filtros
+            {t("clearFilters")}
           </Link>
         ) : null}
       </div>
 
-      {/* Filters — wrapped in Suspense for useSearchParams */}
+      {/* Filters */}
       <Suspense
         fallback={
           <div className="mb-8 h-10 animate-pulse rounded bg-white2/5" />
@@ -121,14 +126,14 @@ export default async function MenuPage({
         <div className="py-20 text-center text-white2/50">
           <p className="text-lg">
             {params.search
-              ? `No encontramos resultados para "${params.search}"`
-              : "No hay productos disponibles en esta categoría."}
+              ? t("noResults", { search: params.search })
+              : t("noCategory")}
           </p>
           <Link
             href="/menu"
             className="mt-3 inline-block text-golden hover:text-golden2 transition-colors"
           >
-            Ver todo el menú
+            {t("viewAll")}
           </Link>
         </div>
       ) : (

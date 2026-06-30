@@ -2,6 +2,7 @@
 
 import { Search, X } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 // ── Types ──
@@ -16,9 +17,10 @@ interface SearchBarProps {
 
 export default function SearchBar({
   onSearch,
-  placeholder = "Buscar en el menú...",
+  placeholder,
   defaultValue = "",
 }: SearchBarProps) {
+  const t = useTranslations("menu");
   const [value, setValue] = useState(defaultValue);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -56,8 +58,8 @@ export default function SearchBar({
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder={placeholder}
-        aria-label={placeholder}
+        placeholder={placeholder ?? t("search")}
+        aria-label={placeholder ?? t("search")}
         className={cn(
           "w-full rounded-full border border-white2/20 bg-black2/60 py-2.5 pl-10 pr-10",
           "text-sm text-white2 placeholder:text-white2/30",
@@ -70,7 +72,7 @@ export default function SearchBar({
           type="button"
           onClick={handleClear}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-white2/40 hover:text-white2 transition-colors"
-          aria-label="Limpiar búsqueda"
+          aria-label={t("clearSearch")}
         >
           <X className="h-4 w-4" />
         </button>

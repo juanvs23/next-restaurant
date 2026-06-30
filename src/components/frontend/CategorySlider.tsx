@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 // ── Types ──
@@ -22,6 +23,7 @@ export default function CategorySlider({
   selectedCategory,
   onSelect,
 }: CategorySliderProps) {
+  const t = useTranslations("menu");
   return (
     <div className="overflow-x-auto scroll-smooth scrollbar-none">
       <div
@@ -39,7 +41,7 @@ export default function CategorySlider({
               : "bg-white2/10 text-white2 hover:bg-white2/20"
           )}
         >
-          Todas
+          {t("all")}
         </button>
 
         {categories.map((cat) => (

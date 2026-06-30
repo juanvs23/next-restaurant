@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ export default function ImageCarousel({
   images,
   productName,
 }: ImageCarouselProps) {
+  const t = useTranslations("product");
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   // No images fallback
@@ -26,7 +28,7 @@ export default function ImageCarousel({
       <div className="flex aspect-square items-center justify-center rounded-lg bg-white2/5">
         <div className="flex flex-col items-center gap-2 text-white2/30">
           <ImageIcon className="h-16 w-16" />
-          <span className="text-sm">Sin imagen disponible</span>
+          <span className="text-sm">{t("noImage")}</span>
         </div>
       </div>
     );

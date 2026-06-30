@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { ImageCarousel } from "@/components/frontend";
 import { formatVes } from "@/libs/currency";
 import { getBaseUrl } from "@/utils/getBaseUrl";
@@ -53,6 +54,8 @@ export async function generateMetadata({
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
   const baseUrl = await getBaseUrl();
+  const t = await getTranslations("menu");
+  const pt = await getTranslations("product");
 
   const res = await fetch(`${baseUrl}/api/frontend/menu/${slug}`, {
     next: { revalidate: 60 },
@@ -67,11 +70,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
       {/* Breadcrumbs */}
       <nav className="mb-8 flex items-center gap-2 text-sm text-white2/50">
         <Link href="/" className="hover:text-golden transition-colors">
-          Inicio
+          {t("home")}
         </Link>
         <ChevronRight className="h-3.5 w-3.5" />
         <Link href="/menu" className="hover:text-golden transition-colors">
-          Menú
+          {t("title")}
         </Link>
         {product.categoryName && (
           <>
@@ -113,7 +116,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           {product.description && (
             <div>
               <h2 className="mb-2 font-serif text-lg font-semibold text-golden/80">
-                Descripción
+                {pt("description")}
               </h2>
               <p className="text-white2/70 leading-relaxed">
                 {product.description}
@@ -124,7 +127,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           {product.ingredients && product.ingredients.length > 0 && (
             <div>
               <h2 className="mb-2 font-serif text-lg font-semibold text-golden/80">
-                Ingredientes
+                {pt("ingredients")}
               </h2>
               <ul className="flex flex-wrap gap-2">
                 {product.ingredients.map((ing, i) => (

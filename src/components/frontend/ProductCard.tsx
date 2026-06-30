@@ -3,6 +3,7 @@
 import { ImageIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useAppDispatch } from "@/libs/store/hooks";
 import { addItem } from "@/libs/store/slicers/cartSlicer";
 import { formatVes } from "@/libs/currency";
@@ -35,6 +36,7 @@ interface ProductCardProps {
 // ── Component ──
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const t = useTranslations("product");
   const dispatch = useAppDispatch();
   const items = useAppSelector(selectCartItems);
   const images = product.images?.length ? product.images : [];
@@ -141,7 +143,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               "bg-golden text-black2 hover:bg-golden2 active:scale-95"
             )}
           >
-            {cartQty > 0 ? `Agregado (${cartQty})` : "Agregar"}
+            {cartQty > 0 ? `${t("added")} (${cartQty})` : t("addToCart")}
           </button>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useAppDispatch, useAppSelector } from "@/libs/store/hooks";
 import {
   selectCartItems,
@@ -22,6 +23,7 @@ import {
 } from "@/components/ui/sheet";
 
 export default function CartSheet() {
+  const t = useTranslations("cart");
   const { isCartOpen, setCartOpen } = useCart();
   const items = useAppSelector(selectCartItems);
   const subtotalBs = useAppSelector(selectSubtotalBs);
@@ -40,20 +42,20 @@ export default function CartSheet() {
       <SheetContent side="right" className="flex flex-col bg-black2 border-golden/20">
         <SheetHeader>
           <SheetTitle className="text-golden text-xl font-serif">
-            Tu Orden
+            {t("title")}
           </SheetTitle>
         </SheetHeader>
 
         {items.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 text-white2">
             <ShoppingBag className="h-12 w-12 text-white2/40" />
-            <p className="text-lg">El carrito está vacío</p>
+            <p className="text-lg">{t("empty")}</p>
             <SheetClose asChild>
               <Link
                 href="/menu"
                 className="rounded-md bg-golden px-6 py-2 text-sm font-semibold text-black2 transition-colors hover:bg-golden2"
               >
-                Ver menú
+                {t("viewMenu")}
               </Link>
             </SheetClose>
           </div>
@@ -81,7 +83,7 @@ export default function CartSheet() {
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center text-white2/30 text-xs">
-                          Sin img
+                          {t("noImage")}
                         </div>
                       )}
                     </div>
@@ -99,7 +101,7 @@ export default function CartSheet() {
                           type="button"
                           onClick={() => dispatch(removeItem(item.productId))}
                           className="flex-shrink-0 text-white2/40 hover:text-red-400 transition-colors"
-                          aria-label={`Eliminar ${item.name}`}
+                          aria-label={t("remove", { name: item.name })}
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -107,7 +109,7 @@ export default function CartSheet() {
 
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-golden">
-                          {formatVes(item.priceBs)} c/u
+                          {formatVes(item.priceBs)} {t("perUnit")}
                         </span>
                         <span className="text-sm font-semibold text-white2">
                           {formatVes(itemSubtotal)}
@@ -121,7 +123,7 @@ export default function CartSheet() {
                           disabled={atMin}
                           onClick={() => handleQuantity(item.productId, -1)}
                           className="flex h-6 w-6 items-center justify-center rounded border border-white2/20 text-white2 disabled:opacity-30 hover:border-golden/50 transition-colors"
-                          aria-label="Reducir cantidad"
+                          aria-label={t("quantityDecrease")}
                         >
                           <Minus className="h-3 w-3" />
                         </button>
@@ -133,7 +135,7 @@ export default function CartSheet() {
                           disabled={atMax}
                           onClick={() => handleQuantity(item.productId, 1)}
                           className="flex h-6 w-6 items-center justify-center rounded border border-white2/20 text-white2 disabled:opacity-30 hover:border-golden/50 transition-colors"
-                          aria-label="Aumentar cantidad"
+                          aria-label={t("quantityIncrease")}
                         >
                           <Plus className="h-3 w-3" />
                         </button>
@@ -147,7 +149,7 @@ export default function CartSheet() {
             {/* Footer */}
             <div className="border-t border-white2/10 pt-4 space-y-3">
               <div className="flex items-center justify-between text-lg">
-                <span className="text-white2">Subtotal</span>
+                <span className="text-white2">{t("subtotal")}</span>
                 <span className="font-semibold text-golden">
                   {formatVes(subtotalBs)}
                 </span>
@@ -159,7 +161,7 @@ export default function CartSheet() {
                   onClick={() => dispatch(clearCart())}
                   className="rounded-md border border-white2/20 px-4 py-2 text-sm text-white2 hover:border-red-400/50 hover:text-red-400 transition-colors"
                 >
-                  Vaciar
+                  {t("clear")}
                 </button>
 
                 <SheetClose asChild>
@@ -171,7 +173,7 @@ export default function CartSheet() {
                         : "bg-white2/10 text-white2/40 pointer-events-none"
                     }`}
                   >
-                    Ir al Checkout
+                    {t("checkout")}
                   </Link>
                 </SheetClose>
               </div>
