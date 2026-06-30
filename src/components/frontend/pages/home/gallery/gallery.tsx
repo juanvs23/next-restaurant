@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import VideoComponent from "@/components/frontend/components/video/videoComponent";
@@ -6,15 +7,26 @@ import bggallery from "@/public/gallery/fondo.webp";
 import { SponImage } from "@/components/common";
 import InstagramCaroussel from "@/components/frontend/components/sliders/instagramCarousel/instagramCaroussel";
 
-import image1 from "@/public/gallery/rammen-1.webp";
-import image2 from "@/public/gallery/whisky-2.webp";
-import image3 from "@/public/gallery/egg-3.webp";
-import image4 from "@/public/gallery/soup-4.webp";
-import image5 from "@/public/gallery/waffle-5.webp";
-
 export default function HomeGallery() {
   const t = useTranslations("gallery");
-  const imagesList = [image1, image2, image3, image4, image5];
+  const [images, setImages] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/frontend/media?category=gallery&limit=8")
+      .then((r) => r.json())
+      .then((items) =>
+        setImages(
+          items.map((m: any) => ({
+            src: m.url,
+            width: m.width || 400,
+            height: m.height || 400,
+            title: m.title,
+          }))
+        )
+      )
+      .catch(() => {});
+  }, []);
+
   return (
     <section id="gallery" className="gallery-home"
       style={{
@@ -45,7 +57,7 @@ export default function HomeGallery() {
           </div>
         </div>
         <div className="instagram-gallery">
-          <InstagramCaroussel images={imagesList} />
+          {images.length > 0 && <InstagramCaroussel images={images} />}
         </div>
       </div>
     </section>

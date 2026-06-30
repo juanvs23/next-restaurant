@@ -41,6 +41,9 @@ export async function POST(req: NextRequest) {
       size,
       alt: (formData.get("alt") as string) || "",
       title: (formData.get("title") as string) || "",
+      caption: (formData.get("caption") as string) || "",
+      description: (formData.get("description") as string) || "",
+      category: (formData.get("category") as string) || "",
     });
 
     return NextResponse.json(media, { status: 201 });
