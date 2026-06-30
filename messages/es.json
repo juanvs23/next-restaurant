@@ -136,6 +136,14 @@
     "en": "EN",
     "switchTo": "Cambiar a {lang}"
   },
+  "chef": {
+    "word": "Palabra del Chef",
+    "belief": "En lo que creemos",
+    "quote": "La cocina es el arte de transformar ingredientes simples en experiencias inolvidables. Cada plato que servimos lleva consigo nuestra pasión, dedicación y el compromiso de honrar la tradición culinaria mientras abrazamos la innovación.",
+    "name": "Kevin Luo",
+    "role": "Chef & Fundador",
+    "meetChef": "Conoce al Chef"
+  },
   "nav": {
     "home": "Inicio",
     "about": "Sobre Nosotros",

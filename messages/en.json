@@ -136,6 +136,14 @@
     "en": "EN",
     "switchTo": "Switch to {lang}"
   },
+  "chef": {
+    "word": "Chef's Word",
+    "belief": "What we believe in",
+    "quote": "Cooking is the art of transforming simple ingredients into unforgettable experiences. Every dish we serve carries our passion, dedication, and commitment to honoring culinary tradition while embracing innovation.",
+    "name": "Kevin Luo",
+    "role": "Chef & Founder",
+    "meetChef": "Meet the Chef"
+  },
   "nav": {
     "home": "Home",
     "about": "About Us",

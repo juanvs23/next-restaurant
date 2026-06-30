@@ -1,3 +1,6 @@
+"use client";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
 import ImageContainer from "@/components/frontend/components/imageContainer/imageContainer";
 import Image from "next/image";
 import { SponImage } from "@/components/common";
@@ -6,6 +9,8 @@ import Quote from "@/public/quote.svg";
 import Firm from "@/public/chef/Kevin Luo.png";
 
 export default function OurChef() {
+  const t = useTranslations("chef");
+
   return (
     <section id="chef" className="bg-overlay">
       <div className="container">
@@ -19,9 +24,9 @@ export default function OurChef() {
             />
           </div>
           <div className="element-50">
-            <p className="subtitle">Chef’s Word</p>
+            <p className="subtitle">{t("word")}</p>
             <SponImage justify="start" />
-            <h2 className="title">What we believe in</h2>
+            <h2 className="title">{t("belief")}</h2>
             <p className="text-Chef">
               <Image
                 src={Quote.src}
@@ -29,13 +34,10 @@ export default function OurChef() {
                 width={Quote.width}
                 alt={"Quote"}
               />
-              auctor sit iaculis in arcu. Vulputate nulla lobortis mauris eget
-              sit. Nulla scelerisque scelerisque congue ac consequat, aliquam
-              molestie lectus eu. Congue iaculis integer curabitur semper sit
-              nunc.
+              {t("quote")}
             </p>
-            <h3>Kevin Luo</h3>
-            <h5>Chef & Founder</h5>
+            <h3>{t("name")}</h3>
+            <h5>{t("role")}</h5>
             <div className="firmImage">
               <Image
                 src={Firm.src}
@@ -43,6 +45,11 @@ export default function OurChef() {
                 width={Firm.width}
                 alt={"Kevin Luo"}
               />
+            </div>
+            <div className="mt-6">
+              <Link href="/chef" className="button">
+                {t("meetChef")}
+              </Link>
             </div>
           </div>
         </div>
