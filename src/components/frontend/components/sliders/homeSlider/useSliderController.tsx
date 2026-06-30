@@ -20,8 +20,8 @@ export function useSliderController() {
       .then((data: any[]) => {
         const mapped = data.map((m) => ({
           src: m.url,
-          width: m.width || 435,
-          height: m.height || 435,
+          width: m.width || 929,
+          height: m.height || 1032,
         }));
         if (mapped.length > 0) setImages(mapped);
       })
