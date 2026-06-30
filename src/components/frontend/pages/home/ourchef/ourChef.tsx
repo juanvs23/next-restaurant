@@ -47,7 +47,7 @@ export default function OurChef() {
               />
             </div>
             <div className="mt-6">
-              <Link href="/chef" className="button">
+              <Link href="/about#chef" className="button">
                 {t("meetChef")}
               </Link>
             </div>
