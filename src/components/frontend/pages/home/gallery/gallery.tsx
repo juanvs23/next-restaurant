@@ -1,4 +1,6 @@
 "use client";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
 import VideoComponent from "@/components/frontend/components/video/videoComponent";
 import bggallery from "@/public/gallery/fondo.webp";
 import { SponImage } from "@/components/common";
@@ -11,6 +13,7 @@ import image4 from "@/public/gallery/soup-4.webp";
 import image5 from "@/public/gallery/waffle-5.webp";
 
 export default function HomeGallery() {
+  const t = useTranslations("gallery");
   const imagesList = [image1, image2, image3, image4, image5];
   return (
     <section id="gallery" className="gallery-home"
@@ -20,8 +23,8 @@ export default function HomeGallery() {
       }}
     >
       <VideoComponent
-        videoUrl={"/gallery/restaurant.mp4"}
-        typeVideo={"video/mp4"}
+        videoUrl="/gallery/restaurant.mp4"
+        typeVideo="video/mp4"
         showcontrol={false}
         mutedControl={true}
         autoPlayed={false}
@@ -30,17 +33,14 @@ export default function HomeGallery() {
       <div className="gallery-container">
         <div className="call-to-action-gallery">
           <div className="text-content">
-            <h3>Instagram</h3>
+            <h3>{t("subtitle")}</h3>
             <SponImage justify="start" />
-            <h2>Photo Gallery</h2>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Volutpat
-              mattis ipsum turpis elit elit scelerisque egestas mu.
-            </p>
+            <h2>{t("title")}</h2>
+            <p>{t("description")}</p>
             <div className="button-container">
-              <a href="#find" className="button">
-                View More
-              </a>
+              <Link href="/gallery" className="button">
+                {t("viewMore")}
+              </Link>
             </div>
           </div>
         </div>

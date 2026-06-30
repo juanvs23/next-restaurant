@@ -169,6 +169,14 @@
     "weekendsHours": "07:00 am - 11:00 pm",
     "copyright": "2026 GERÍCHT. Todos los derechos reservados."
   },
+  "gallery": {
+    "subtitle": "Nuestra Galería",
+    "title": "Galería de Fotos",
+    "description": "Descubre la esencia de GERÍCHT a través de nuestra galería. Cada imagen captura la pasión, el arte y la dedicación que ponemos en cada plato y en cada rincón de nuestro restaurante.",
+    "viewMore": "Ver Más",
+    "experience": "Vive la Experiencia",
+    "experienceText": "Cada visita a GERÍCHT es un viaje sensorial. Desde el ambiente cuidadosamente diseñado hasta la presentación impecable de cada plato, cada detalle está pensado para crear momentos inolvidables."
+  },
   "contact": {
     "subtitle": "Contacto",
     "title": "Encuéntranos",

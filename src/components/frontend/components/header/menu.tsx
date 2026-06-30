@@ -6,7 +6,7 @@ const routeKeys = [
   { path: "/about", key: "about" },
   { path: "/menu", key: "menu" },
   { path: "/about#chef", key: "chef" },
-  { path: "/#gallery", key: "gallery" },
+  { path: "/gallery", key: "gallery" },
   { path: "/#awards", key: "awards" },
   { path: "/#find", key: "findUs" },
 ] as const;
