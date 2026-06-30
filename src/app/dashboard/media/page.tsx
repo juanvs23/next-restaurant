@@ -23,6 +23,7 @@ interface MediaItem {
   title: string;
   caption: string;
   description: string;
+  category: string;
   createdAt: string;
 }
 
@@ -79,6 +80,7 @@ export default function MediaPage() {
         alt: (document.getElementById("edit-alt") as HTMLInputElement)?.value,
         title: (document.getElementById("edit-title") as HTMLInputElement)?.value,
         caption: (document.getElementById("edit-caption") as HTMLTextAreaElement)?.value,
+        category: (document.getElementById("edit-category") as HTMLInputElement)?.value,
       }),
     });
     setEditOpen(false);
@@ -198,6 +200,10 @@ export default function MediaPage() {
               <div className="grid gap-2">
                 <Label htmlFor="edit-caption">Caption</Label>
                 <Textarea id="edit-caption" defaultValue={selected.caption} rows={2} />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-category">Category</Label>
+                <Input id="edit-category" defaultValue={selected.category} placeholder="ambiance, food, events..." />
               </div>
             </div>
           )}
