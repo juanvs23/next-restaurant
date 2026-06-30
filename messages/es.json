@@ -148,6 +148,14 @@
     "en": "EN",
     "switchTo": "Cambiar a {lang}"
   },
+  "awards": {
+    "subtitle": "Premios y reconocimientos",
+    "title": "Nuestros Laureles",
+    "trophy1": { "name": "Estrella Michelin", "desc": "Excelencia culinaria reconocida internacionalmente." },
+    "trophy2": { "name": "Mejor Restaurante", "desc": "Galardonado como el mejor restaurante de Chicago 2023." },
+    "trophy3": { "name": "Copa de Oro", "desc": "Premio a la mejor carta de vinos y maridaje." },
+    "trophy4": { "name": "Chef del Año", "desc": "Kevin Luo reconocido como Chef del Año 2022." }
+  },
   "chef": {
     "word": "Palabra del Chef",
     "belief": "En lo que creemos",
