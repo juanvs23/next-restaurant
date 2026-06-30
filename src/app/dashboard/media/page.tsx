@@ -58,12 +58,53 @@ export default function MediaPage() {
   const [uploadCategoryIds, setUploadCategoryIds] = useState<string[]>([]);
   const [editCategoryIds, setEditCategoryIds] = useState<string[]>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCatName, setNewCatName] = useState("");
+  const [editingCat, setEditingCat] = useState<string | null>(null);
+  const [editingCatName, setEditingCatName] = useState("");
 
   const fetchCategories = () => {
     fetch("/api/backoffice/media-categories")
       .then(r => r.json())
       .then(setCategories);
   };
+
+  const createCat = async () => {
+    const name = newCatName.trim();
+    if (!name) return;
+    await fetch("/api/backoffice/media-categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    setNewCatName("");
+    fetchCategories();
+  };
+
+  const deleteCategory = async (id: string) => {
+    if (!confirm("Delete this category? Images will keep their other categories.")) return;
+    await fetch(`/api/backoffice/media-categories/${id}`, { method: "DELETE" });
+    fetchCategories();
+  };
+
+  const startEdit = (cat: MediaCategory) => {
+    setEditingCat(cat._id);
+    setEditingCatName(cat.name);
+  };
+
+  const saveEdit = async (id: string) => {
+    const name = editingCatName.trim();
+    if (!name) return;
+    await fetch(`/api/backoffice/media-categories/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    setEditingCat(null);
+    fetchCategories();
+  };
+
+  const countForCategory = (catId: string) =>
+    items.filter((i) => i.categories?.includes(catId)).length;
 
   const createCategory = async () => {
     const name = newCategoryName.trim();
@@ -453,6 +494,72 @@ export default function MediaPage() {
           </div>
         )}
       </div>
+
+      {/* ── Categories Management ── */}
+      <Card className="mt-8">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">Categories</h3>
+            <div className="flex gap-2">
+              <Input
+                value={newCatName}
+                onChange={(e) => setNewCatName(e.target.value)}
+                placeholder="New category name..."
+                className="text-sm h-8 w-48"
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); createCat(); } }}
+              />
+              <Button size="sm" onClick={createCat} disabled={!newCatName.trim()}>
+                <ImPlus className="w-3 h-3 mr-1" /> Add
+              </Button>
+            </div>
+          </div>
+
+          {categories.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No categories yet.</p>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {categories.map((cat) => (
+                <div
+                  key={cat._id}
+                  className="flex items-center justify-between rounded-lg border border-white2/10 bg-white2/5 px-3 py-2"
+                >
+                  {editingCat === cat._id ? (
+                    <input
+                      autoFocus
+                      value={editingCatName}
+                      onChange={(e) => setEditingCatName(e.target.value)}
+                      onBlur={() => saveEdit(cat._id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") saveEdit(cat._id);
+                        if (e.key === "Escape") setEditingCat(null);
+                      }}
+                      className="text-sm bg-transparent border-b border-golden outline-none flex-1 mr-2"
+                    />
+                  ) : (
+                    <span
+                      className="text-sm cursor-pointer hover:text-golden flex-1"
+                      onClick={() => startEdit(cat)}
+                      title="Click to edit"
+                    >
+                      {cat.name}
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        ({countForCategory(cat._id)})
+                      </span>
+                    </span>
+                  )}
+                  <button
+                    onClick={() => deleteCategory(cat._id)}
+                    className="text-white2/30 hover:text-red-400 transition-colors ml-2"
+                    title="Delete category"
+                  >
+                    <ImBin className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
