@@ -156,6 +156,28 @@
     "trophy3": { "name": "Copa de Oro", "desc": "Premio a la mejor carta de vinos y maridaje." },
     "trophy4": { "name": "Chef del Año", "desc": "Kevin Luo reconocido como Chef del Año 2022." }
   },
+  "footer": {
+    "contact": "Contáctanos",
+    "address": "Calle Principal 123, Chicago, IL 60601, USA",
+    "phone1": "+1 312-555-0199",
+    "phone2": "+1 312-555-0188",
+    "motto": "La mejor manera de encontrarte a ti mismo es perderte en el servicio a los demás.",
+    "hours": "Horario",
+    "weekdays": "Lunes a Viernes:",
+    "weekdaysHours": "08:00 am - 12:00 am",
+    "weekends": "Sábado y Domingo:",
+    "weekendsHours": "07:00 am - 11:00 pm",
+    "copyright": "2026 GERÍCHT. Todos los derechos reservados."
+  },
+  "contact": {
+    "subtitle": "Contacto",
+    "title": "Encuéntranos",
+    "address": "Calle Principal 123, Chicago, IL 60601, USA",
+    "hours": "Horario de Apertura",
+    "weekdays": "Lun - Vie: 10:00 am - 02:00 am",
+    "weekends": "Sáb - Dom: 10:00 am - 03:00 am",
+    "visitUs": "Visítanos"
+  },
   "chef": {
     "word": "Palabra del Chef",
     "belief": "En lo que creemos",
