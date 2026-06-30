@@ -10,5 +10,6 @@ export { default as ResponsiveGrid } from "./ResponsiveGrid";
 export { default as CategorySlider } from "./CategorySlider";
 export { default as SearchBar } from "./SearchBar";
 export { default as ImageCarousel } from "./ImageCarousel";
+export { default as ProductGrid } from "./ProductGrid";
 export { default as MenuFilters } from "./MenuFilters";
 export { default as AosInitializer } from "./AosInitializer";

@@ -4,8 +4,7 @@ import { Suspense } from "react";
 import { ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import {
-  ProductCard,
-  ResponsiveGrid,
+  ProductGrid,
   MenuFilters,
 } from "@/components/frontend";
 import { getBaseUrl } from "@/utils/getBaseUrl";
@@ -137,11 +136,7 @@ export default async function MenuPage({ searchParams }: Props) {
           </Link>
         </div>
       ) : (
-        <ResponsiveGrid>
-          {allProducts.map((product) => (
-            <ProductCard key={product._id} product={product} />
-          ))}
-        </ResponsiveGrid>
+        <ProductGrid products={allProducts} />
       )}
     </div>
   );
