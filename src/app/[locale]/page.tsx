@@ -13,8 +13,8 @@ export default async function Home() {
       const data = await res.json();
       galleryImages = data.map((m: any) => ({
         src: m.url,
-        width: m.width,
-        height: m.height,
+        width: m.width || 400,
+        height: m.height || 400,
         title: m.title,
       }));
     }
