@@ -34,6 +34,19 @@ export async function POST(req: NextRequest) {
       file.type,
     );
 
+    const categoryIds: string[] = [];
+    const raw = formData.getAll("categories") as string[];
+    // Support both JSON array and individual values
+    for (const val of raw) {
+      try {
+        const parsed = JSON.parse(val);
+        if (Array.isArray(parsed)) categoryIds.push(...parsed);
+        else categoryIds.push(parsed);
+      } catch {
+        if (val) categoryIds.push(val);
+      }
+    }
+
     const media = await Media.create({
       filename: file.name,
       url,
@@ -43,7 +56,7 @@ export async function POST(req: NextRequest) {
       title: (formData.get("title") as string) || "",
       caption: (formData.get("caption") as string) || "",
       description: (formData.get("description") as string) || "",
-      category: (formData.get("category") as string) || "",
+      categories: categoryIds,
     });
 
     return NextResponse.json(media, { status: 201 });

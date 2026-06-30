@@ -25,6 +25,10 @@ const mediaSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    categories: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "MediaCategory",
+    }],
   },
   { timestamps: true }
 );

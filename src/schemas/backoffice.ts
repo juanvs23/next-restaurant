@@ -186,6 +186,7 @@ export const createMediaSchema = z.object({
   size: z.number().nonnegative().optional(),
   alt: z.string().optional(),
   title: z.string().optional(),
+  categories: z.array(z.string()).optional(),
 });
 
 export const updateMediaSchema = z.object({
@@ -195,6 +196,7 @@ export const updateMediaSchema = z.object({
   size: z.number().nonnegative().optional(),
   alt: z.string().optional(),
   title: z.string().optional(),
+  categories: z.array(z.string()).optional(),
 });
 
 // ── Close Day (Reports) ──

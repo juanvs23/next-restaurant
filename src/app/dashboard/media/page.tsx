@@ -14,6 +14,12 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { useT } from "@/i18n/useT";
 
+interface MediaCategory {
+  _id: string;
+  name: string;
+  slug: string;
+}
+
 interface MediaItem {
   _id: string;
   filename: string;
@@ -23,7 +29,7 @@ interface MediaItem {
   title: string;
   caption: string;
   description: string;
-  category: string;
+  categories: string[];
   createdAt: string;
 }
 
@@ -42,13 +48,51 @@ export default function MediaPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const perPage = 12;
+  const [categories, setCategories] = useState<MediaCategory[]>([]);
 
-  // Upload metadata state
+  // Upload state
   const [uploadAlt, setUploadAlt] = useState("");
   const [uploadTitle, setUploadTitle] = useState("");
   const [uploadCaption, setUploadCaption] = useState("");
   const [uploadDescription, setUploadDescription] = useState("");
-  const [uploadCategory, setUploadCategory] = useState("");
+  const [uploadCategoryIds, setUploadCategoryIds] = useState<string[]>([]);
+  const [editCategoryIds, setEditCategoryIds] = useState<string[]>([]);
+  const [newCategoryName, setNewCategoryName] = useState("");
+
+  const fetchCategories = () => {
+    fetch("/api/backoffice/media-categories")
+      .then(r => r.json())
+      .then(setCategories);
+  };
+
+  const createCategory = async () => {
+    const name = newCategoryName.trim();
+    if (!name) return;
+    const res = await fetch("/api/backoffice/media-categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    const cat = await res.json();
+    if (cat._id) {
+      setCategories(prev => [...prev, cat]);
+      setUploadCategoryIds(prev => [...prev, cat._id]);
+      setEditCategoryIds(prev => [...prev, cat._id]);
+      setNewCategoryName("");
+    }
+  };
+
+  const toggleUploadCategory = (id: string) => {
+    setUploadCategoryIds(prev =>
+      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+    );
+  };
+
+  const toggleEditCategory = (id: string) => {
+    setEditCategoryIds(prev =>
+      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+    );
+  };
 
   const uploadFiles = async (files: FileList) => {
     for (const file of Array.from(files)) {
@@ -58,11 +102,11 @@ export default function MediaPage() {
       formData.append("title", uploadTitle);
       formData.append("caption", uploadCaption);
       formData.append("description", uploadDescription);
-      formData.append("category", uploadCategory);
+      formData.append("categories", JSON.stringify(uploadCategoryIds));
       await fetch("/api/backoffice/media", { method: "POST", body: formData });
     }
     setUploadAlt(""); setUploadTitle(""); setUploadCaption("");
-    setUploadDescription(""); setUploadCategory("");
+    setUploadDescription(""); setUploadCategoryIds([]);
     setUploadOpen(false);
     fetchMedia();
   };
@@ -80,7 +124,7 @@ export default function MediaPage() {
       .then((d) => { setItems(d); setLoading(false); });
   };
 
-  useEffect(fetchMedia, []);
+  useEffect(() => { fetchMedia(); fetchCategories(); }, []);
 
   const handleUploadUrl = async () => {
     if (!urlInput) return;
@@ -104,7 +148,7 @@ export default function MediaPage() {
         alt: (document.getElementById("edit-alt") as HTMLInputElement)?.value,
         title: (document.getElementById("edit-title") as HTMLInputElement)?.value,
         caption: (document.getElementById("edit-caption") as HTMLTextAreaElement)?.value,
-        category: (document.getElementById("edit-category") as HTMLInputElement)?.value,
+        categories: editCategoryIds,
       }),
     });
     setEditOpen(false);
@@ -184,11 +228,6 @@ export default function MediaPage() {
                   placeholder="Image title" />
               </div>
               <div className="grid gap-1">
-                <Label htmlFor="upload-category" className="text-xs">Category</Label>
-                <Input id="upload-category" value={uploadCategory} onChange={(e) => setUploadCategory(e.target.value)}
-                  placeholder="ambiance, food, events..." />
-              </div>
-              <div className="grid gap-1">
                 <Label htmlFor="upload-alt" className="text-xs">Alt Text (SEO)</Label>
                 <Input id="upload-alt" value={uploadAlt} onChange={(e) => setUploadAlt(e.target.value)}
                   placeholder="Describe the image" />
@@ -203,6 +242,41 @@ export default function MediaPage() {
               <Label htmlFor="upload-desc" className="text-xs">Description</Label>
               <Textarea id="upload-desc" value={uploadDescription} onChange={(e) => setUploadDescription(e.target.value)}
                 placeholder="Longer description..." rows={2} />
+            </div>
+
+            {/* Categories */}
+            <div className="grid gap-1">
+              <Label className="text-xs">Categories</Label>
+              <div className="flex flex-wrap gap-1.5">
+                {categories.map((cat) => (
+                  <button
+                    key={cat._id}
+                    type="button"
+                    onClick={() => toggleUploadCategory(cat._id)}
+                    className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${
+                      uploadCategoryIds.includes(cat._id)
+                        ? "bg-golden/20 border-golden text-golden"
+                        : "bg-white2/5 border-white2/10 text-white2/60 hover:border-white2/30"
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-2 mt-1">
+                <Input
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  placeholder="New category..."
+                  className="text-xs h-8"
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); createCategory(); } }}
+                />
+                <Button type="button" size="sm" variant="outline" onClick={createCategory}
+                  disabled={!newCategoryName.trim()}
+                  className="text-xs h-8">
+                  + Add
+                </Button>
+              </div>
             </div>
 
             <div className="relative">
@@ -242,9 +316,40 @@ export default function MediaPage() {
                 <Label htmlFor="edit-caption">Caption</Label>
                 <Textarea id="edit-caption" defaultValue={selected.caption} rows={2} />
               </div>
+
+              {/* Categories */}
               <div className="grid gap-2">
-                <Label htmlFor="edit-category">Category</Label>
-                <Input id="edit-category" defaultValue={selected.category} placeholder="ambiance, food, events..." />
+                <Label>Categories</Label>
+                <div className="flex flex-wrap gap-1.5">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat._id}
+                      type="button"
+                      onClick={() => toggleEditCategory(cat._id)}
+                      className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${
+                        editCategoryIds.includes(cat._id)
+                          ? "bg-golden/20 border-golden text-golden"
+                          : "bg-white2/5 border-white2/10 text-white2/60 hover:border-white2/30"
+                      }`}
+                    >
+                      {cat.name}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-2 mt-1">
+                  <Input
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    placeholder="New category..."
+                    className="text-xs h-8"
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); createCategory(); } }}
+                  />
+                  <Button type="button" size="sm" variant="outline" onClick={createCategory}
+                    disabled={!newCategoryName.trim()}
+                    className="text-xs h-8">
+                    + Add
+                  </Button>
+                </div>
               </div>
             </div>
           )}
@@ -269,7 +374,7 @@ export default function MediaPage() {
                     {copiedId === item._id ? <ImCheckmark /> : <ImCopy />}
                   </Button>
                   <Button variant="ghost" size="icon" className="text-white hover:text-golden"
-                    onClick={() => { setSelected(item); setEditOpen(true); }}>
+                    onClick={() => { setSelected(item); setEditCategoryIds(item.categories || []); setEditOpen(true); }}>
                     ✎
                   </Button>
                   <Button variant="ghost" size="icon" className="text-white hover:text-red-500"

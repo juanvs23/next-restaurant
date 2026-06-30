@@ -1,5 +1,6 @@
 import { connectDB } from "@/database/connection";
 import { Media } from "@/database/models/media";
+import { MediaCategory } from "@/database/models/media-category";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -10,7 +11,15 @@ export async function GET(req: NextRequest) {
   const limit = parseInt(searchParams.get("limit") || "20", 10);
 
   const filter: any = {};
-  if (category) filter.category = category;
+  if (category) {
+    const cat = await MediaCategory.findOne({ slug: category }).lean();
+    if (cat) {
+      filter.categories = cat._id;
+    } else {
+      // Slug not found → return empty
+      return NextResponse.json([]);
+    }
+  }
 
   const media = await Media.find(filter)
     .sort({ createdAt: -1 })
