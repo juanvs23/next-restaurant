@@ -5,7 +5,7 @@ const routeKeys = [
   { path: "/", key: "home" },
   { path: "/about", key: "about" },
   { path: "/menu", key: "menu" },
-  { path: "/#chef", key: "chef" },
+  { path: "/about#chef", key: "chef" },
   { path: "/#gallery", key: "gallery" },
   { path: "/#awards", key: "awards" },
   { path: "/#find", key: "findUs" },
