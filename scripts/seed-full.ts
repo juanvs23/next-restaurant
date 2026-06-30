@@ -357,6 +357,23 @@ async function main() {
   }
   console.log("✅ " + galleryImages.length + " imágenes de galería");
 
+  // ── Hero Slider Media ──
+  let heroCat = await db.collection("mediacategories").findOne({ slug: "hero" });
+  if (!heroCat) {
+    const r = await db.collection("mediacategories").insertOne({ name: "Hero", slug: "hero", createdAt: new Date(), updatedAt: new Date() });
+    heroCat = { _id: r.insertedId };
+  }
+  const heroSliderImages = [
+    { filename: "image-1.jpg", url: "/hero/image-1.jpg", alt: "Plato principal GERÍCHT", title: "Especialidad de la casa", mimeType: "image/jpeg" },
+    { filename: "image-2.jpg", url: "/hero/image-2.jpg", alt: "Cóctel GERÍCHT", title: "Coctelería de autor", mimeType: "image/jpeg" },
+    { filename: "image-3.jpg", url: "/hero/image-3.jpg", alt: "Postre GERÍCHT", title: "Postres gourmet", mimeType: "image/jpeg" },
+    { filename: "image-4.jpg", url: "/hero/image-4.jpg", alt: "Ambiente GERÍCHT", title: "Nuestro salón", mimeType: "image/jpeg" },
+  ];
+  for (const img of heroSliderImages) {
+    await db.collection("media").insertOne({ ...img, categories: [heroCat._id], createdAt: new Date(), updatedAt: new Date() });
+  }
+  console.log("✅ " + heroSliderImages.length + " imágenes del hero");
+
   console.log(`✅ 14 días de operaciones (${invoiceNum - 1} facturas)`);
   console.log("");
   console.log("🎉 Seed completado!");
