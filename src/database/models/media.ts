@@ -21,10 +21,6 @@ const mediaSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       default: null,
     },
-    category: {
-      type: String,
-      default: "",
-    },
     categories: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "MediaCategory",
