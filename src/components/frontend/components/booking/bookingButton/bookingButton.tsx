@@ -1,9 +1,11 @@
 "use client";
+import { useTranslations } from "next-intl";
 import { useAppDispatch, useAppSelector } from "@/libs/store/hooks";
 import { setModal, setOpenModal } from "@/libs/store/slicers/modalSlicer";
 import BookingForm from "../bookingForm/bookingForm";
 
 export default function BookingButton() {
+  const t = useTranslations("booking");
   const dispath = useAppDispatch();
   const { openModal } = useAppSelector((state) => state.modal);
   const activeButton = openModal
@@ -15,7 +17,7 @@ export default function BookingButton() {
       onClick={() => {
         dispath(
           setModal({
-            modalTitle: "Reservar mesa",
+            modalTitle: t("title"),
             modalContent: <BookingForm />,
             ModalFooter: null,
           }),
@@ -23,7 +25,7 @@ export default function BookingButton() {
         dispath(setOpenModal(true));
       }}
     >
-      BOOK A TABLE
+      {t("title")}
     </button>
   );
 }
