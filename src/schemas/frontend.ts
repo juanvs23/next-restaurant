@@ -35,6 +35,7 @@ export const checkoutSchema = z.object({
     .min(1, "At least one item is required")
     .max(50, "Maximum 50 items allowed"),
   notes: z.string().optional(),
+  paymentMethod: z.enum(["whatsapp", "stripe"]).optional(),
 });
 
 export const reviewOrderSchema = z.object({
