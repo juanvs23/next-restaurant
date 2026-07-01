@@ -194,6 +194,28 @@
     "role": "Chef & Fundador",
     "meetChef": "Conoce al Chef"
   },
+  "checkout": {
+    "title": "Checkout",
+    "backToMenu": "Volver al menú",
+    "emptyCart": "Tu carrito está vacío",
+    "orderSummary": "Resumen del pedido",
+    "fullName": "Nombre completo",
+    "fullNamePlaceholder": "Tu nombre",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "tu@email.com",
+    "phone": "Teléfono",
+    "deliveryAddress": "Dirección de entrega",
+    "addressPlaceholder": "Calle, número, colonia, ciudad",
+    "notes": "Notas adicionales",
+    "notesPlaceholder": "Referencias, instrucciones especiales...",
+    "whatsappPay": "Pagar por WhatsApp",
+    "stripeComing": "Pago con tarjeta (próximamente)",
+    "processing": "Procesando...",
+    "orderReceived": "¡Pedido recibido!",
+    "orderNumber": "Número de pedido",
+    "orderPending": "Tu pedido está siendo revisado. Te contactaremos pronto.",
+    "continueShopping": "Seguir comprando"
+  },
   "nav": {
     "home": "Inicio",
     "about": "Sobre Nosotros",

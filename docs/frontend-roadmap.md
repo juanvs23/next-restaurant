@@ -97,10 +97,24 @@ _**Importante**: Usar Redux Toolkit existente, NO Zustand._
 | **2 — Landing Menu** | Sección menú en home, Ver más → | 1 | Fase 1 |
 | **3 — Breakdown `/menu`** | Slider categorías, buscador, grilla completa | 1-2 | Fase 1 |
 | **4 — Detalle `/menu/[slug]`** | Galería, info completa, breadcrumb | 1 | Fase 3 |
-| **5 — Carrito + Checkout + Staff Review** | Redux cart, sheet, checkout, API order, vista staff | 2 | Fases 3, 4 |
-| **6 — Pedidos desde mesa** | ⏴ Pospuesto | — | Fases 1-5 |
+| **5 — Carrito + Checkout + Staff Review** | Redux cart, sheet, checkout, API order, vista staff | ✅ Completado |
+| **6 — Checkout + Pagos** | Página checkout, Stripe, WhatsApp | ⏳ Pendiente |
+| **7 — Pedidos desde mesa** | ⏴ Pospuesto | — | Fases 1-5 |
 
-**Total estimado: 6-8 días hábiles.**
+**Total estimado (fase 6): 1-2 días hábiles.**
+
+---
+
+## Fase 6 — Checkout + Pagos
+
+_Requiere: Fase 5 (carrito funcional, POST /api/frontend/orders)_
+
+| # | Tarea | Descripción |
+|---|-------|-------------|
+| 6.1 | **Página `/checkout`** | Resumen del pedido, datos del cliente, selección de método de pago |
+| 6.2 | **WhatsApp Checkout** | Botón "Pagar por WhatsApp" → abre wa.me con mensaje pre-armado |
+| 6.3 | **Stripe Checkout** | Stripe Elements, PaymentIntent, webhook de confirmación |
+| 6.4 | **Confirmación post-pago** | Página de éxito/error según resultado del pago |
 
 ---
 

@@ -194,6 +194,28 @@
     "role": "Chef & Founder",
     "meetChef": "Meet the Chef"
   },
+  "checkout": {
+    "title": "Checkout",
+    "backToMenu": "Back to menu",
+    "emptyCart": "Your cart is empty",
+    "orderSummary": "Order summary",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "you@email.com",
+    "phone": "Phone",
+    "deliveryAddress": "Delivery address",
+    "addressPlaceholder": "Street, number, city",
+    "notes": "Additional notes",
+    "notesPlaceholder": "References, special instructions...",
+    "whatsappPay": "Pay via WhatsApp",
+    "stripeComing": "Card payment (coming soon)",
+    "processing": "Processing...",
+    "orderReceived": "Order received!",
+    "orderNumber": "Order number",
+    "orderPending": "Your order is being reviewed. We'll contact you soon.",
+    "continueShopping": "Continue shopping"
+  },
   "nav": {
     "home": "Home",
     "about": "About Us",
