@@ -406,7 +406,13 @@ Entradas, Sopas, Ensaladas, Platos Principales, Pastas, Carnes, Pescados & Maris
 ## MongoDB
 
 - **Version**: 7.0.37 LTS (service: mongod7)
-- **Database**: `gericht` (MONGO_URI=mongodb://localhost:27017/gericht)
+- **Host local**: `localhost:27017` (desarrollo local)
+- **Host remoto**: `mongo.coltmandev.dev:27017` (servidor Dokploy)
+- **Database**: `gericht`
+- **Migración**: 02 Jul 2026 — 533 documentos migrados de local → remoto (23 colecciones)
+- **Auth**: Usuario `admin` via `admin` authSource (credenciales en `.env` local)
+- **URI remote**: `mongodb://admin:****@mongo.coltmandev.dev:27017/gericht?authSource=admin`
+- **Cloudflare**: DNS only (gris) — TCP MongoDB directo
 
 ## Session 2026-06-28 — PR 1 Foundation + Currency & UX Fixes
 
