@@ -209,11 +209,15 @@
     "notes": "Additional notes",
     "notesPlaceholder": "References, special instructions...",
     "whatsappPay": "Pay via WhatsApp",
-    "stripeComing": "Card payment (coming soon)",
+    "stripePay": "Pay with card",
     "processing": "Processing...",
     "orderReceived": "Order received!",
     "orderNumber": "Order number",
     "orderPending": "Your order is being reviewed. We'll contact you soon.",
+    "paymentSuccess": "Payment successful!",
+    "paymentSuccessDesc": "Your order has been received and payment is confirmed.",
+    "paymentSuccessInfo": "We're preparing everything. You'll receive updates on your order.",
+    "paymentCanceled": "Payment was canceled. You can try again or choose another method.",
     "continueShopping": "Continue shopping"
   },
   "nav": {

@@ -87,6 +87,10 @@ const orderSchema = new mongoose.Schema(
     totalUsdRef: { type: Number },       // USD equivalent (BCV rate) when order was created
     exchangeRateBcv: { type: Number },   // BCV rate frozen at order creation
     exchangeRateUsdt: { type: Number },  // USDT rate frozen at order creation
+
+    // Stripe payment tracking
+    stripeSessionId: { type: String, index: true },
+    stripePaymentIntentId: { type: String },
   },
   { timestamps: true }
 );

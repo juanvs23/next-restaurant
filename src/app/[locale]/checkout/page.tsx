@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/routing";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useAppSelector, useAppDispatch } from "@/libs/store/hooks";
 import { selectCartItems, selectSubtotalBs, clearCart } from "@/libs/store/slicers/cartSlicer";
@@ -27,6 +28,14 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [canceled, setCanceled] = useState(false);
+
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get("canceled") === "true") {
+      setCanceled(true);
+    }
+  }, [searchParams]);
 
   const canSubmit = name.trim() && phone.trim() && address.trim() && items.length > 0;
 
@@ -36,36 +45,65 @@ export default function CheckoutPage() {
     setError("");
 
     try {
-      const res = await fetch("/api/frontend/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customer: { name: name.trim(), email: email.trim() || undefined, phone: phone.trim() },
-          items: items.map((i) => ({
-            productId: i.productId,
-            productName: i.name,
-            price: i.price,
-            quantity: i.quantity,
-          })),
-          notes: `${t("deliveryAddress")}: ${address.trim()}${notes.trim() ? ". " + notes.trim() : ""}`,
-          paymentMethod,
-        }),
-      });
+      if (paymentMethod === "stripe") {
+        const res = await fetch("/api/stripe/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customer: { name: name.trim(), email: email.trim() || undefined, phone: phone.trim() },
+            items: items.map((i) => ({
+              productId: i.productId,
+              productName: i.name,
+              price: i.price,
+              quantity: i.quantity,
+            })),
+            notes: `${t("deliveryAddress")}: ${address.trim()}${notes.trim() ? ". " + notes.trim() : ""}`,
+            paymentMethod: "stripe",
+          }),
+        });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Error al crear el pedido");
-      }
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Error al procesar el pago");
+        }
 
-      const order = await res.json();
-      setOrderId(order._id || order.orderNumber || "—");
+        const { url } = await res.json();
+        if (url) {
+          dispatch(clearCart());
+          window.location.href = url;
+        } else {
+          throw new Error("No se pudo obtener la URL de pago");
+        }
+      } else {
+        const res = await fetch("/api/frontend/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            customer: { name: name.trim(), email: email.trim() || undefined, phone: phone.trim() },
+            items: items.map((i) => ({
+              productId: i.productId,
+              productName: i.name,
+              price: i.price,
+              quantity: i.quantity,
+            })),
+            notes: `${t("deliveryAddress")}: ${address.trim()}${notes.trim() ? ". " + notes.trim() : ""}`,
+            paymentMethod,
+          }),
+        });
 
-      if (paymentMethod === "whatsapp") {
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Error al crear el pedido");
+        }
+
+        const order = await res.json();
+        setOrderId(order._id || order.orderNumber || "—");
+
         const message = buildWhatsAppMessage(order, items, subtotalBs, { name, phone, address, notes }, t);
         window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
-      }
 
-      dispatch(clearCart());
+        dispatch(clearCart());
+      }
     } catch (err: any) {
       setError(err.message || "Error al procesar el pedido");
     } finally {
@@ -187,6 +225,12 @@ export default function CheckoutPage() {
         </div>
       </div>
 
+      {canceled && (
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 mb-6 text-amber-400 text-sm">
+          {t("paymentCanceled")}
+        </div>
+      )}
+
       {error && (
         <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-6 text-red-400 text-sm">
           {error}
@@ -211,11 +255,16 @@ export default function CheckoutPage() {
 
         <button
           type="button"
-          disabled
-          className="w-full rounded-md border border-white2/20 bg-white2/5 px-6 py-3.5 text-sm font-semibold text-white2/40 cursor-not-allowed flex items-center justify-center gap-2"
+          onClick={() => handleSubmit("stripe")}
+          disabled={!canSubmit || submitting}
+          className="w-full rounded-md bg-[#635BFF] px-6 py-3.5 text-sm font-semibold text-white hover:bg-[#4a43d4] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
         >
-          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M22.5 9.5h-21v12h21v-12zm-19.5 10.5v-9h18v9h-18zm2-5.5h3v-2h-3v2zm5 0h3v-2h-3v2zm5 0h3v-2h-3v2z"/></svg>
-          {t("stripeComing")}
+          {submitting ? (
+            <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+          ) : (
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M22.5 9.5h-21v12h21v-12zm-19.5 10.5v-9h18v9h-18zm2-5.5h3v-2h-3v2zm5 0h3v-2h-3v2zm5 0h3v-2h-3v2z"/></svg>
+          )}
+          {submitting ? t("processing") : t("stripePay")}
         </button>
       </div>
     </div>

@@ -438,9 +438,62 @@ Entradas, Sopas, Ensaladas, Platos Principales, Pastas, Carnes, Pescados & Maris
 - **Dashboard home**: formatVes + USD ref
 - **Mobile**: CartBadge always visible, BookingIcon (CalendarDays) in header
 
+## Stripe Payment Integration (2026-07-02)
+
+### Estado
+✅ Completado: Fase 6 del frontend roadmap (Checkout + Pagos)
+
+### Flujo de pago Stripe
+```
+Usuario completa checkout → click "Pagar con tarjeta"
+    ↓
+POST /api/stripe/checkout → crea Order(status:"pending", source:"frontend", paymentType:"stripe")
+    ↓                       + crea Checkout Session en Stripe
+Redirige a Stripe Checkout (hosted page)
+    ↓
+Usuario paga en Stripe
+    ↓
+Éxito → Stripe redirige a /checkout/success
+        → Webhook checkout.session.completed → Order → "paid" + invoiceNumber
+Cancelación → Stripe redirige a /checkout?canceled=true
+```
+
+### Archivos nuevos
+| Archivo | Rol |
+|---------|-----|
+| `src/app/api/stripe/checkout/route.ts` | POST — crea Order + Checkout Session, devuelve URL |
+| `src/app/api/stripe/webhook/route.ts` | POST — verifica firma, confirma pago, asigna invoice |
+| `src/app/[locale]/checkout/success/page.tsx` | Pantalla de éxito post-pago |
+
+### Cambios en archivos existentes
+| Archivo | Cambio |
+|---------|--------|
+| `src/database/models/order.ts` | Agregados `stripeSessionId` y `stripePaymentIntentId` |
+| `src/app/[locale]/checkout/page.tsx` | Botón Stripe habilitado, redirección a Checkout URL, manejo de cancelación |
+| `messages/es.json` | Nuevos keys: `stripePay`, `paymentSuccess`, `paymentSuccessDesc`, `paymentSuccessInfo`, `paymentCanceled` |
+| `messages/en.json` | Ídem en inglés |
+| `.env` | Stripe keys agregadas |
+| `.env.example` | Stripe keys como referencia |
+| `package.json` | Dependencia `stripe` agregada |
+
+### Stripe CLI (dev)
+- Túnel local: `stripe listen --forward-to localhost:3000/api/stripe/webhook`
+- Cuenta: `acct_1P57ZhJ` (test mode)
+- Webhook secret: `whsec_feedcac3...`
+
+### Decisiones arquitectónicas
+- **Stripe Checkout (hosted)** en lugar de Elements — menos código, PCI compliance delegado a Stripe
+- **Checkout Session** recibe metadata con `orderId` para correlacionar webhook
+- **Webhook** asigna invoice number atómicamente con `findOneAndUpdate` + `$inc`
+- **Moneda**: Stripe cobra en USD usando `totalUsdRef`; el order en DB queda en VES con tasa congelada
+- **Orden "pending" → "paid"**: El webhook transiciona automáticamente. Staff ve la orden como pagada sin necesidad de confirmar pago manualmente.
+- **No se fuerza auto-creación de comanda**: Staff aún revisa y acepta pedidos pagados para procesar en cocina.
+
 ### XPending
 - ~~CRITICAL-002: fetch `localhost:3000` in SSR pages~~ **(Resuelto — utility getBaseUrl.ts con headers())**
 - ~~Review warnings (11) + suggestions (5) from adversarial audit~~ **(Resueltos — commit ad33d43)**
+- Stripe: reembolsos desde el backoffice (CRUD notas de crédito + Stripe refund API)
+- Stripe: webhook idempotency key para evitar duplicados
 - Pipeline: review → scribe → archive → PR
 
 - **Kernel note**: Ubuntu 26.04 (kernel 7.0.0) incompatible with MongoDB 8.0+ (SIGSEGV). Upgrade blocked until 8.x fixes.
