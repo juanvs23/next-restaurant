@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
     // Build response
     const resultCategories: any[] = [];
     for (const [catId, catProducts] of grouped) {
-      const cat = categoryMap.get(catId);
+      const cat = categoryMap.get(catId) as any;
       if (!cat) continue;
 
       resultCategories.push({

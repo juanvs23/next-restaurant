@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "@/i18n/routing";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -13,6 +13,14 @@ import { ArrowLeft, ShoppingBag } from "lucide-react";
 const WHATSAPP_NUMBER = "584248310009";
 
 export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto px-4 py-20 text-center"><span className="animate-spin w-6 h-6 border-2 border-golden border-t-transparent rounded-full inline-block" /></div>}>
+      <CheckoutContent />
+    </Suspense>
+  );
+}
+
+function CheckoutContent() {
   const t = useTranslations("checkout");
   const ct = useTranslations("cart");
   const router = useRouter();

@@ -345,6 +345,10 @@ export const updateOrderStatusSchema = z.object({
   notes: z.string().optional(),
   confirmedBy: z.string().optional(),
   invoiceNumber: z.number().optional(),
+  totalUsdRef: z.number().optional(),
+  exchangeRateBcv: z.number().optional(),
+  totalTax: z.number().optional(),
+  totalCharge: z.number().optional(),
 });
 
 // ── Comanda (update via PATCH) ──

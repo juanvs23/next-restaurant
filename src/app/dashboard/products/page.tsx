@@ -129,7 +129,7 @@ export default function ProductsPage() {
       images: p.images?.length ? p.images : [""],
       SKU: p.SKU || "",
       available: p.available ?? true,
-      featured: p.featured ?? false,
+      featured: (p as any).featured ?? false,
       turnIds: (p as any).turnIds?.map((t: any) => typeof t === "string" ? t : t._id) || [],
       taxIds: (p as any).taxIds?.map((t: any) => typeof t === "string" ? t : t._id) || [],
     });

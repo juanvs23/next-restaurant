@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     if (cats.length === 0) {
       return NextResponse.json([]);
     }
-    filter.categories = { $in: cats.map((c) => c._id) };
+    filter.categories = { $in: cats.map((c: any) => c._id) };
   }
 
   const media = await Media.find(filter)

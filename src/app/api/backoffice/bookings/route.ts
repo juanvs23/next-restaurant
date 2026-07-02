@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   const endOfDay = new Date(`${datePart}T23:59:59.999`);
 
   const candidateTables = await TableModel.find({
-    capacity: { $gte: parseInt(numberPersons) },
+    capacity: { $gte: numberPersons },
     status: { $ne: "maintenance" },
   });
 

@@ -218,7 +218,7 @@ async function main() {
       taxRate: 0.16, taxIds: [], available: true,
       createdAt: new Date(), updatedAt: new Date(),
     });
-    await db.collection("categories").updateOne({ _id: catId }, { $push: { items: productId } });
+    await db.collection("categories").updateOne({ _id: catId }, { $push: { items: productId } } as any);
     skuCounter++;
   }
   console.log(`✅ ${PRODUCTS.length} productos creados con imágenes`);

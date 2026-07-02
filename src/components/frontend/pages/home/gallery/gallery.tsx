@@ -65,7 +65,7 @@ export default function HomeGallery({ initialImages }: Props = {}) {
           </div>
         </div>
         <div className="instagram-gallery">
-          {images.length > 0 && <InstagramCaroussel images={images} />}
+          {images.length > 0 && <InstagramCaroussel images={images as any} />}
         </div>
       </div>
     </section>

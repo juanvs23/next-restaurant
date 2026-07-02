@@ -34,7 +34,7 @@ export async function GET() {
     // Build response — exclude categories with no featured products
     const resultCategories: any[] = [];
     for (const [catId, products] of grouped) {
-      const cat = categoryMap.get(catId);
+      const cat = categoryMap.get(catId) as any;
       if (!cat) continue;
 
       const sorted = (products as any[])

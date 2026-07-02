@@ -43,7 +43,7 @@ export default function OrdersPage() {
 
   const todayLocal = tz ? (() => {
     const now = new Date();
-    return new Date(now.getTime() + tzOffsetMs(tz)).toISOString().slice(0, 10);
+    return new Date(now.getTime() + tzOffsetMs(tz ?? "-04:00")).toISOString().slice(0, 10);
   })() : "";
 
   // Dialog state
@@ -92,7 +92,7 @@ export default function OrdersPage() {
       fetch("/api/backoffice/orders?unclosedOnly=true").then((r) => r.json()).then((unclosedOrders) => {
         const dates = new Set<string>();
         unclosedOrders.forEach((o: any) => {
-          const localDate = new Date(new Date(o.createdAt).getTime() + tzOffsetMs(tz)).toISOString().slice(0, 10);
+          const localDate = new Date(new Date(o.createdAt).getTime() + tzOffsetMs(tz ?? "-04:00")).toISOString().slice(0, 10);
           if (!closedDates.has(localDate) && localDate !== todayLocal) dates.add(localDate);
         });
         setUnclosedDays(Array.from(dates).sort());
@@ -168,7 +168,7 @@ export default function OrdersPage() {
   };
 
   const isTodayOrder = (bill: any) => {
-    const billLocal = new Date(new Date(bill.createdAt).getTime() + tzOffsetMs(tz)).toISOString().slice(0, 10);
+    const billLocal = new Date(new Date(bill.createdAt).getTime() + tzOffsetMs(tz ?? "-04:00")).toISOString().slice(0, 10);
     return billLocal === todayLocal;
   };
 

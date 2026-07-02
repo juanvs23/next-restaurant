@@ -2,15 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/database/connection";
 import { Order } from "@/database/models/order";
 import { Config } from "@/database/models/config";
+import type Stripe from "stripe";
 
 export async function POST(req: NextRequest) {
-  const Stripe = await import("stripe");
-  const stripe = new Stripe.default(process.env.STRIPE_SECRET_KEY!);
+  const StripeModule = await import("stripe");
+  const stripe = new StripeModule.default(process.env.STRIPE_SECRET_KEY!);
 
   const body = await req.text();
   const sig = req.headers.get("stripe-signature") || "";
 
-  let event: Stripe.default.Event;
+  let event: Stripe.Event;
 
   try {
     event = stripe.webhooks.constructEvent(

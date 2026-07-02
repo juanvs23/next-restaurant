@@ -22,7 +22,7 @@ export default function ResponsiveGrid({
       {Array.isArray(children)
         ? React.Children.toArray(children).map((child, i) => (
             <div
-              key={child.key ?? i}
+              key={(child as any).key ?? i}
               data-aos="fade-up"
               data-aos-duration="400"
               data-aos-delay={i * 50}
