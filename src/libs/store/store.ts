@@ -9,6 +9,14 @@ export const store = configureStore({
     booking: bookingSlicer,
     cart: cartSlicer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // The modal slice intentionally stores React elements (non-serializable)
+        // as modalContent and ModalFooter. This is by design.
+        ignoredPaths: ["modal.modal.modalContent", "modal.modal.ModalFooter"],
+      },
+    }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

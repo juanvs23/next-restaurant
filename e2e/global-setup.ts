@@ -34,6 +34,7 @@ export default async function run() {
     holidays: [],
     defaultLanguage: "es",
     timezone: "-04:00",
+    exchangeRateBcv: 36.5,
     nextInvoiceNumber: 1,
     nextCreditNoteNumber: 1,
     storageProvider: "local",

@@ -13,7 +13,7 @@ export default function Footer() {
   return (
     <footer
       id="footer"
-      className="footer-wrapper"
+      className="footer-wrapper mt-[70px]"
       style={{ backgroundImage: `url(${lackfooter.src})` }}
     >
       <div className="container">
