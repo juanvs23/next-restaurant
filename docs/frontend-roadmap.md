@@ -98,7 +98,7 @@ _**Importante**: Usar Redux Toolkit existente, NO Zustand._
 | **3 — Breakdown `/menu`** | Slider categorías, buscador, grilla completa | 1-2 | Fase 1 |
 | **4 — Detalle `/menu/[slug]`** | Galería, info completa, breadcrumb | 1 | Fase 3 |
 | **5 — Carrito + Checkout + Staff Review** | Redux cart, sheet, checkout, API order, vista staff | ✅ Completado |
-| **6 — Checkout + Pagos** | Página checkout, Stripe, WhatsApp | ⏳ Pendiente |
+| **6 — Checkout + Pagos** | Página checkout, Stripe, WhatsApp | ✅ Completado (02 Jul 2026) |
 | **7 — Pedidos desde mesa** | ⏴ Pospuesto | — | Fases 1-5 |
 
 **Total estimado (fase 6): 1-2 días hábiles.**

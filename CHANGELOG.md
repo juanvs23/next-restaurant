@@ -2,7 +2,37 @@
 
 All notable changes to the GERÍCHT restaurant project.
 
-## [Unreleased] — PR #1 Foundation
+## [Unreleased] — PR #2 Stripe + Deploy
+
+### Added
+
+- **Stripe Checkout**: `POST /api/stripe/checkout` crea Order + Checkout Session, redirección a Stripe
+- **Stripe Webhook**: `POST /api/stripe/webhook` confirma pago, asigna invoice number atómicamente
+- **Checkout page**: botón Stripe funcional, manejo de cancelación (`?canceled=true`), loading state
+- **Success page**: `/checkout/success` con confirmación post-pago
+- **Order model**: campos `stripeSessionId`, `stripePaymentIntentId`
+- **Test suite**: 20 tests unitarios (checkout + webhook) + 7 tests e2e Playwright
+- **Footer**: `mt-[70px]` agregado
+
+### Changed
+
+- **MongoDB**: migrado de local a `mongo.coltmandev.dev` (533 docs, 23 colecciones)
+- **Vercel deploy**: envars configuradas para Production y Preview
+- **Google Auth**: `GOOGLE_CLIENT_ID` corregido (apuntaba a proyecto incorrecto)
+- **Redux store**: `serializableCheck` ignora paths del modal slice (contiene React elements)
+- **Seed e2e**: agregado `exchangeRateBcv` al config de test
+- **checkout/page.tsx**: envuelto en `<Suspense>` por `useSearchParams`
+
+### Fixed
+
+- **Build TS errors**: 14 errores pre-existentes corregidos (tipados, schemas, null checks)
+- **@testing-library/react**: upgrade a v16 para compatibilidad con React 19
+- **MongoDB auth**: `MONGO_URI` actualizada + `DB_NAME` corregido (`new-restaurant` → `gericht`)
+- **Stripe API version**: removido `apiVersion` hardcodeado (versión obsoleta)
+- **useSearchParams**: envuelto en Suspense boundary (Next.js 16 requirement)
+- **CSP warnings**: `vercel.live` agregado a `frame-src`
+
+## 1.0.0 — 2024-06-19
 
 ### Added
 

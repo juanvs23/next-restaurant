@@ -45,3 +45,4 @@ pnpm-lock.yaml
 
 .playwright-mcp/
 public/uploads/
+.env*

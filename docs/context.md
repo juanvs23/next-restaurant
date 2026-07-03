@@ -495,11 +495,39 @@ Cancelación → Stripe redirige a /checkout?canceled=true
 - **Orden "pending" → "paid"**: El webhook transiciona automáticamente. Staff ve la orden como pagada sin necesidad de confirmar pago manualmente.
 - **No se fuerza auto-creación de comanda**: Staff aún revisa y acepta pedidos pagados para procesar en cocina.
 
+## Deploy a Producción (2026-07-02)
+
+### Vercel
+- **Dominio prod**: `https://restaurant.coltmandev.dev`
+- **Dominio preview**: `https://dev.restaurant.coltmandev.dev`
+- **Branch**: `dev` → preview automático, `master` → producción
+- **Build**: Next.js 16.2.9 (Turbopack)
+
+### Env vars en Vercel
+| Variable | Production | Preview |
+|----------|-----------|---------|
+| `NEXT_PUBLIC_BASE_URL` | `https://restaurant.coltmandev.dev` | `https://dev.restaurant.coltmandev.dev` |
+| `AUTH_URL` | `https://restaurant.coltmandev.dev` | `https://dev.restaurant.coltmandev.dev` |
+| `MONGO_URI` | `mongodb://admin:****@mongo.coltmandev.dev:27017/gericht?authSource=admin` | igual |
+| `DB_NAME` | `gericht` | `gericht` |
+| `GOOGLE_CLIENT_ID` | `212464504442-0im0...` | `212464504442-0im0...` |
+| Stripe keys | ✅ | ✅ |
+
+### Problemas resueltos durante el deploy
+1. **TS Build errors** — 14 errores pre-existentes fixeados
+2. **@testing-library/react** — v15 incompatible con React 19, upgrade a v16
+3. **NEXT_PUBLIC_BASE_URL=localhost** — causaba fallos en SSR
+4. **MONGO_URI antigua** — apuntaba a servidor `62.171.164.5` con credenciales viejas
+5. **DB_NAME incorrecto** — `new-restaurant` en vez de `gericht` (Mongoose usaba dbName sobre URI)
+6. **GOOGLE_CLIENT_ID incorrecto** — Vercel tenía otro proyecto de Google (453d old)
+7. **useSearchParams sin Suspense** — envuelto en Suspense boundary
+
 ### XPending
 - ~~CRITICAL-002: fetch `localhost:3000` in SSR pages~~ **(Resuelto — utility getBaseUrl.ts con headers())**
 - ~~Review warnings (11) + suggestions (5) from adversarial audit~~ **(Resueltos — commit ad33d43)**
 - Stripe: reembolsos desde el backoffice (CRUD notas de crédito + Stripe refund API)
 - Stripe: webhook idempotency key para evitar duplicados
+- Configurar dominio personalizado preview DNS
 - Pipeline: review → scribe → archive → PR
 
 - **Kernel note**: Ubuntu 26.04 (kernel 7.0.0) incompatible with MongoDB 8.0+ (SIGSEGV). Upgrade blocked until 8.x fixes.
