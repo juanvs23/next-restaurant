@@ -522,12 +522,12 @@ Cancelación → Stripe redirige a /checkout?canceled=true
 6. **GOOGLE_CLIENT_ID incorrecto** — Vercel tenía otro proyecto de Google (453d old)
 7. **useSearchParams sin Suspense** — envuelto en Suspense boundary
 
-### XPending
-- ~~CRITICAL-002: fetch `localhost:3000` in SSR pages~~ **(Resuelto — utility getBaseUrl.ts con headers())**
-- ~~Review warnings (11) + suggestions (5) from adversarial audit~~ **(Resueltos — commit ad33d43)**
-- Stripe: reembolsos desde el backoffice (CRUD notas de crédito + Stripe refund API)
-- Stripe: webhook idempotency key para evitar duplicados
-- Configurar dominio personalizado preview DNS
-- Pipeline: review → scribe → archive → PR
+### Proyecto Demo — Completado (2026-07-02)
+- ✅ Stripe Checkout + Webhook
+- ✅ Google OAuth
+- ✅ Frontend público (menú, carrito, checkout)
+- ✅ Dashboard backoffice completo
+- ✅ MongoDB remoto + deploy Vercel
+- ~~Phase 7 (Pedidos desde mesa)~~ — pospuesta, no necesaria para demo
 
 - **Kernel note**: Ubuntu 26.04 (kernel 7.0.0) incompatible with MongoDB 8.0+ (SIGSEGV). Upgrade blocked until 8.x fixes.
